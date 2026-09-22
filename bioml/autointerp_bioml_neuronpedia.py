@@ -55,8 +55,14 @@ NP_BASE = "https://www.neuronpedia.org"
 NP_MODEL = "gemma-2-9b"
 NP_SAE = "20-gemmascope-res-131k"
 # Neuronpedia source id -> the Gemma Scope release it was built from.
+# Neuronpedia publishes two L0 variants per (layer, site, width): the canonical
+# one and a sparser "-l0_32plus" one. average_l0_53 is NOT published for layer 20
+# residual 131k, so runs on that SAE cannot be interpreted against Neuronpedia.
 NP_SAE_EXPECTED_FOLDER = {
     "20-gemmascope-res-131k": "layer_20/width_131k/average_l0_114",
+    "20-gemmascope-res-131k-l0_32plus": "layer_20/width_131k/average_l0_34",
+    "20-gemmascope-res-16k": "layer_20/width_16k/average_l0_68",
+    "20-gemmascope-res-16k-l0_32plus": "layer_20/width_16k/average_l0_36",
 }
 METRICS = ("sae_info_reliability", "sae_info", "sae_logodds", "sae_mean")
 

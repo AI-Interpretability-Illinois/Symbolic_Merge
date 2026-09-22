@@ -56,6 +56,13 @@ import numpy as np
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+# Gemma Scope layer_20/width_131k/average_l0_114: the canonical release, and the
+# only layer-20 residual 131k variant with full Neuronpedia auto-interp coverage
+# (its source id is gemma-2-9b/20-gemmascope-res-131k). Keep runs on this SAE so
+# feature indices stay comparable across benchmarks and remain interpretable.
+DEFAULT_SAE_PATH = ("/projects/biro/shared/sae/gemma-scope-9b-pt-res-131k/layer_20/width_131k/average_l0_114/params.npz")
+DEFAULT_MODEL_PATH = "/projects/biro/shared/models/gemma-2-9b"
+
 LANGS = ("C++", "Java", "Python", "C#", "Javascript", "PHP", "C")
 SIDES = ("query", "candidate")
 
@@ -197,8 +204,9 @@ def main():
                     help="metadata only; inferred from --data_dir when omitted")
     ap.add_argument("--output_dir", type=Path, required=True)
 
-    ap.add_argument("--model_path", default="~/models/gemma-2-9b")
-    ap.add_argument("--sae_path", required=True)
+    ap.add_argument("--model_path", default=DEFAULT_MODEL_PATH)
+    ap.add_argument("--sae_path", default=DEFAULT_SAE_PATH,
+                    help="defaults to average_l0_114 (Neuronpedia-interpretable)")
     ap.add_argument("--layer", type=int, default=20)
     ap.add_argument("--device", default="cuda")
     ap.add_argument("--max_length", type=int, default=1024,
