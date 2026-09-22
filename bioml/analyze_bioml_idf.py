@@ -38,7 +38,7 @@ from pathlib import Path
 import numpy as np
 import torch
 
-METHODS = ["dense_mean", "sae_mean", "sae_stable_0.80",
+METHODS = ["dense_mean", "dense_centered", "dense_pc1", "sae_mean", "sae_stable_0.80",
            "sae_info", "sae_info_reliability", "sae_logodds", "sae_idf"]
 
 
@@ -89,6 +89,38 @@ def dense_cos(a, b):
     na = float(torch.linalg.vector_norm(a))
     nb = float(torch.linalg.vector_norm(b))
     return float(torch.dot(a, b)) / (na * nb) if na and nb else 0.0
+
+
+def dense_stats(reps):
+    """Corpus mean and first principal direction of the background population."""
+    x = np.stack([r["aggregate"]["dense_mean"].detach().cpu().float().numpy().astype(np.float64)
+                  for r in reps])
+    mu = x.mean(0)
+    xc = x - mu
+    v = np.random.default_rng(0).normal(size=xc.shape[1])
+    v /= np.linalg.norm(v)
+    for _ in range(50):
+        v = xc.T @ (xc @ v)
+        n = np.linalg.norm(v)
+        if n == 0:
+            return mu, None
+        v /= n
+    return mu, v
+
+
+def dense_vec(rep, method, mu, pc):
+    x = rep["aggregate"]["dense_mean"].detach().cpu().float().numpy().astype(np.float64)
+    if method == "dense_mean":
+        return x
+    x = x - mu
+    if method == "dense_pc1" and pc is not None:
+        x = x - (x @ pc) * pc
+    return x
+
+
+def np_cos(a, b):
+    na, nb = np.linalg.norm(a), np.linalg.norm(b)
+    return float(a @ b / (na * nb)) if na and nb else 0.0
 
 
 def norm_sparse(x):
@@ -216,6 +248,12 @@ def main():
     print(f"background: mode={args.background} contexts={bg_total} features={len(bg)} "
           f"documents(entities)={n_docs}")
 
+    mu, pc = dense_stats(bg_reps)
+    print("dense controls: corpus mean ||mu||=%.1f, median cos(h, mu)=%.3f" % (
+        np.linalg.norm(mu),
+        float(np.median([np_cos(r["aggregate"]["dense_mean"].detach().cpu().float().numpy()
+                                .astype(np.float64), mu) for r in bg_reps[:500]]))))
+
     print("building signatures...", flush=True)
     ssig = {i: build_signature(r, bg, bg_total, doc_freq, n_docs) for i, r in src.items()}
     tsig = {i: build_signature(r, bg, bg_total, doc_freq, n_docs) for i, r in tgt.items()}
@@ -231,9 +269,9 @@ def main():
         for m in METHODS:
             scored = []
             for c in cands:
-                if m == "dense_mean":
-                    score = dense_cos(src[s]["aggregate"]["dense_mean"],
-                                      tgt[c]["aggregate"]["dense_mean"])
+                if m.startswith("dense"):
+                    score = np_cos(dense_vec(src[s], m, mu, pc),
+                                   dense_vec(tgt[c], m, mu, pc))
                 elif m in ("sae_mean", "sae_stable_0.80"):
                     score = sparse_cos(existing(src[s], m), existing(tgt[c], m))
                 else:
