@@ -40,7 +40,8 @@ from pathlib import Path
 import numpy as np
 import torch
 
-DEFAULT_METRICS = "dense,sae_mean,sae_idf,sae_info,sae_info_reliability,sae_logodds"
+DEFAULT_METRICS = ("dense,dense_centered,dense_pc1,sae_mean,sae_idf,"
+                   "sae_info,sae_info_reliability,sae_logodds")
 
 
 def load_pt(path):
@@ -125,6 +126,43 @@ def cos_sparse(a, b):
     nb = math.sqrt(sum(v * v for v in b.values()))
     return dot / (na * nb) if na and nb else 0.0
 
+
+
+def _top_pc(x, iters=50):
+    """First principal direction of x (rows = samples), by power iteration."""
+    v = np.random.default_rng(0).normal(size=x.shape[1])
+    v /= np.linalg.norm(v)
+    for _ in range(iters):
+        v = x.T @ (x @ v)
+        n = np.linalg.norm(v)
+        if n == 0:
+            return None
+        v /= n
+    return v
+
+
+def dense_variants(queries, candidates, metric):
+    """dense, dense_centered (subtract the candidate-corpus mean), dense_pc1
+    (also project out the corpus's first principal direction).
+
+    The control for the claim that SAE weighting beats dense: pooled hidden
+    states share a large common component (cos(h, mean h) ~ 0.9), which
+    compresses every dense cosine. Centering removes it without any SAE.
+    """
+    q = np.stack([d["dense"].numpy().astype(np.float64) for d in queries])
+    c = np.stack([d["dense"].numpy().astype(np.float64) for d in candidates])
+    if metric != "dense":
+        mu = c.mean(0)
+        q = q - mu
+        c = c - mu
+        if metric == "dense_pc1":
+            pc = _top_pc(c)
+            if pc is not None:
+                q = q - np.outer(q @ pc, pc)
+                c = c - np.outer(c @ pc, pc)
+    qn = np.linalg.norm(q, axis=1, keepdims=True); qn[qn == 0] = 1.0
+    cn = np.linalg.norm(c, axis=1, keepdims=True); cn[cn == 0] = 1.0
+    return (q / qn).astype(np.float32), (c / cn).astype(np.float32)
 
 def cos_dense(a, b):
     x = a.numpy().astype(np.float64)
@@ -244,11 +282,13 @@ def main():
                "source_columns": len(src_cols), "target_columns": len(tgt_cols),
                "gold_pairs": len(gt)}
         for metric in metrics:
-            if metric == "dense":
+            if metric.startswith("dense"):
+                dq, dc = dense_variants(src_cols, tgt_cols, metric)
                 scores = {ColumnPair(p["source"]["table"], s["column"],
                                      p["target"]["table"], t["column"]):
-                          cos_dense(s["dense"], t["dense"])
-                          for s in src_cols for t in tgt_cols}
+                          float(dq[i] @ dc[j])
+                          for i, s in enumerate(src_cols)
+                          for j, t in enumerate(tgt_cols)}
             else:
                 sv = {s["column"]: sparse_vec(s, metric, corpus, args.epsilon) for s in src_cols}
                 tv = {t["column"]: sparse_vec(t, metric, corpus, args.epsilon) for t in tgt_cols}

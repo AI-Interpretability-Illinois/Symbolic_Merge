@@ -55,10 +55,16 @@ NP_BASE = "https://www.neuronpedia.org"
 NP_MODEL = "gemma-2-9b"
 NP_SAE = "20-gemmascope-res-131k"
 # Neuronpedia source id -> the Gemma Scope release it was built from.
+# Neuronpedia publishes two L0 variants per (layer, site, width): the canonical
+# one and a sparser "-l0_32plus" one. average_l0_53 is NOT published for layer 20
+# residual 131k, so runs on that SAE cannot be interpreted against Neuronpedia.
 NP_SAE_EXPECTED_FOLDER = {
     "20-gemmascope-res-131k": "layer_20/width_131k/average_l0_114",
+    "20-gemmascope-res-131k-l0_32plus": "layer_20/width_131k/average_l0_34",
+    "20-gemmascope-res-16k": "layer_20/width_16k/average_l0_68",
+    "20-gemmascope-res-16k-l0_32plus": "layer_20/width_16k/average_l0_36",
 }
-METRICS = ("sae_info_reliability", "sae_info", "sae_logodds", "sae_mean")
+METRICS = ("sae_idf", "sae_info_reliability", "sae_info", "sae_logodds", "sae_mean")
 
 STOPWORDS = {
     "the", "of", "and", "or", "in", "to", "a", "an", "with", "for", "by", "on",
@@ -206,19 +212,24 @@ def verify_sae_mapping(run_dirs, reps, np_sae, force):
 # =============================================================================
 
 def build_background(reps):
-    """Feature presence counted once per context, over the target population."""
+    """Feature presence per context, plus per-entity document frequency (for idf)."""
     counts = Counter()
+    doc_freq = Counter()
     total = 0
     for rep in reps:
+        seen = set()
         for c in rep["contexts"]:
-            counts.update(set(int(i) for i in c["sae"]["idx"].detach().cpu().tolist()))
+            idx = set(int(i) for i in c["sae"]["idx"].detach().cpu().tolist())
+            counts.update(idx)
+            seen |= idx
             total += 1
+        doc_freq.update(seen)
     if not total:
         raise RuntimeError("empty background")
-    return counts, total
+    return counts, total, doc_freq, len(reps)
 
 
-def feature_stats(rep, bg, bg_total, eps=1e-6):
+def feature_stats(rep, bg, bg_total, doc_freq=None, n_docs=0, eps=1e-6):
     """Per-feature activation pattern of one entity across its contexts."""
     n = len(rep["contexts"])
     values = defaultdict(lambda: [0.0] * n)
@@ -240,6 +251,8 @@ def feature_stats(rep, bg, bg_total, eps=1e-6):
         pe2 = min(max(p_entity, eps), 1 - eps)
         pb2 = min(max(p_background, eps), 1 - eps)
         logodds = max(math.log(pe2 / (1 - pe2)) - math.log(pb2 / (1 - pb2)), 0.0)
+        idf = max(math.log(n_docs / (1.0 + doc_freq.get(f, 0))), 0.0) \
+            if doc_freq is not None and n_docs else 0.0
         out[f] = {
             "n_contexts": n,
             "n_active": int((x > 0).sum()),
@@ -254,6 +267,9 @@ def feature_stats(rep, bg, bg_total, eps=1e-6):
             "sae_info_reliability": mean * p_entity * info * reliability,
             "sae_logodds": mean * logodds,
             "sae_mean": mean,
+            "sae_idf": mean * idf,
+            "idf": idf,
+            "doc_freq": doc_freq.get(f, 0) if doc_freq is not None else 0,
         }
     return out
 
@@ -269,14 +285,15 @@ def signature(stats, metric):
 def filter_entity_features(stats, args):
     """Conserved across contexts, enriched over background, stable in magnitude."""
     kept = []
+    idf_only = args.metric == "sae_idf"
     for f, s in stats.items():
-        if s["p_entity"] < args.min_p_entity:
+        if not idf_only and s["p_entity"] < args.min_p_entity:
             continue
         if s["p_background"] > args.max_p_background:
             continue
-        if s["information"] <= args.min_information:
+        if not idf_only and s["information"] <= args.min_information:
             continue
-        if s["reliability"] < args.min_reliability:
+        if not idf_only and s["reliability"] < args.min_reliability:
             continue
         if s["mean_activation"] < args.min_mean_activation:
             continue
@@ -612,7 +629,7 @@ def main():
     ap.add_argument("--context_run_dirs", required=True,
                     help="comma-separated dirs containing selected_queries.json")
     ap.add_argument("--output_dir", type=Path, required=True)
-    ap.add_argument("--metric", default="sae_info_reliability", choices=METRICS,
+    ap.add_argument("--metric", default="sae_idf", choices=METRICS,
                     help="weighting used for ranking and for prioritising features")
     ap.add_argument("--background", choices=("target", "all"), default="target")
 
@@ -678,7 +695,7 @@ def main():
 
     bg_source = list(tgt_reps.values()) if args.background == "target" \
         else list(src_reps.values()) + list(tgt_reps.values())
-    bg, bg_total = build_background(bg_source)
+    bg, bg_total, doc_freq, n_docs = build_background(bg_source)
     print(f"background: {len(bg_source)} entities, {bg_total} contexts, {len(bg)} features seen")
 
     all_reps = {**src_reps, **tgt_reps}
@@ -687,7 +704,8 @@ def main():
         keep = set(iris[:args.limit_entities]) | {q["src"] for q in queries} \
             | {q["gold"] for q in queries}
         iris = [i for i in iris if i in keep]
-    stats_by_iri = {i: feature_stats(all_reps[i], bg, bg_total) for i in iris}
+    stats_by_iri = {i: feature_stats(all_reps[i], bg, bg_total, doc_freq, n_docs)
+                    for i in iris}
     sigs = {i: signature(s, args.metric) for i, s in stats_by_iri.items()}
     print(f"feature statistics built for {len(stats_by_iri)} entities "
           f"({sum(len(s) for s in stats_by_iri.values()):,} entity-feature pairs)")

@@ -10,13 +10,21 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from kg_sae_utils import SAE, aggregate_context_sae, load_contexts, safe_name, token_ids
 
+# Gemma Scope layer_20/width_131k/average_l0_114: the canonical release, and the
+# only layer-20 residual 131k variant with full Neuronpedia auto-interp coverage
+# (source id gemma-2-9b/20-gemmascope-res-131k). Keep runs on this SAE so feature
+# indices stay comparable across benchmarks and remain interpretable.
+DEFAULT_SAE_PATH = ("/projects/biro/shared/sae/gemma-scope-9b-pt-res-131k/layer_20/width_131k/average_l0_114/params.npz")
+DEFAULT_MODEL_PATH = "/projects/biro/shared/models/gemma-2-9b"
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
     parser.add_argument("--output_dir", required=True)
-    parser.add_argument("--model_path", default="~/models/gemma-2-9b")
-    parser.add_argument("--sae_path", required=True)
+    parser.add_argument("--model_path", default=DEFAULT_MODEL_PATH)
+    parser.add_argument("--sae_path", default=DEFAULT_SAE_PATH,
+                        help="defaults to average_l0_114 (Neuronpedia-interpretable)")
     parser.add_argument("--layer", type=int, default=20)
     parser.add_argument("--contexts", type=int, default=5)
     parser.add_argument("--device", default="cuda")
