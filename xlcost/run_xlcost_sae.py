@@ -196,9 +196,12 @@ class Encoder:
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--data_dir", type=Path, required=True,
+    ap.add_argument("--data_dir", type=Path, default=None,
                     help="XLCoST code2codesearch dataset/{snippet_level,program_level}")
-    ap.add_argument("--lang", required=True, choices=LANGS)
+    ap.add_argument("--lang", default=None, choices=LANGS)
+    ap.add_argument("--dataset_file", type=Path, default=None,
+                    help="any jsonl in the same format (e.g. formal/prepare_minif2f.py "
+                         "output); replaces --data_dir/--lang/--split")
     ap.add_argument("--split", default="test", choices=("test", "val", "train"))
     ap.add_argument("--level", default=None, choices=("snippet", "program"),
                     help="metadata only; inferred from --data_dir when omitted")
@@ -227,8 +230,16 @@ def main():
                          "repeat once per target language)")
     args = ap.parse_args()
 
-    data_dir = args.data_dir.expanduser().resolve()
-    path = data_dir / args.lang / f"{args.split}.jsonl"
+    if args.dataset_file:
+        path = args.dataset_file.expanduser().resolve()
+        data_dir = path.parent
+        args.lang = args.lang or path.parent.name
+        args.split = path.stem
+    else:
+        if not (args.data_dir and args.lang):
+            ap.error("--data_dir and --lang are required without --dataset_file")
+        data_dir = args.data_dir.expanduser().resolve()
+        path = data_dir / args.lang / f"{args.split}.jsonl"
     if not path.is_file():
         raise FileNotFoundError(f"missing dataset file: {path}")
     level = args.level or ("snippet" if "snippet" in data_dir.name else "program")
