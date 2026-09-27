@@ -101,3 +101,50 @@ the top 100, and relevance is a prefix match on `idx.split("/")[0]`. It writes
 MRR and Precision@6 definitions. `--official_evaluator` additionally runs their
 script as a cross-check; the two agree exactly. `--exclude_self` reports the harder
 variant without the free hit.
+---
+
+## miniF2F cross-prover statement matching (formal mathematics)
+
+Fourth benchmark: the same competition problem formalised independently in Lean 4,
+Isabelle, Metamath and HOL Light. Given a problem's Lean 4 statement, retrieve the
+statement of the same problem in another prover. `formal/prepare_minif2f.py` keeps
+only the statement and strips everything that identifies the problem without
+reading the mathematics (theorem names, proofs, comments, Metamath labels). It
+refuses to write a dataset if a problem id survives in any statement. The output is
+in XLCoST format, so the XLCoST runner and evaluator are reused as is (`--dataset_file`).
+
+```bash
+python formal/prepare_minif2f.py --minif2f <openai/miniF2F> \
+    --minif2f_lean4 <yangky11/miniF2F-lean4> --output_dir <minif2f_xsys>
+python xlcost/run_xlcost_sae.py --dataset_file <minif2f_xsys>/Metamath/all.jsonl \
+    --output_dir <out>/lean4_Metamath
+python xlcost/eval_xlcost_sae.py --run_dir <out>/lean4_Metamath \
+    --output_dir <out>/lean4_Metamath/eval
+python tools/lexical_baseline.py --dataset_file <minif2f_xsys>/Metamath/all.jsonl
+```
+
+`tools/lexical_baseline.py` gives the surface-string controls (TF-IDF over words
+and character n-grams, BM25). sae_idf is TF-IDF over SAE features, so TF-IDF over the
+strings is the baseline that separates the features from the weighting.
+
+---
+
+## Bio-ML SAE ablation (layer, width, L0, SAE family)
+
+`bioml/cache_bioml_hidden.py` runs the language model once and stores the
+label-span residual stream at several layers. `bioml/encode_bioml_cached.py` then
+turns that cache into a standard Bio-ML run directory for any (layer, SAE) pair
+without the model: Gemma Scope `params.npz`, or Llama Scope `final.safetensors`.
+Its output is bit-identical to `run_bioml_sae_from_bio8b_contexts.py` for the same
+SAE, and `analyze_bioml_idf.py` reads it unchanged. Pass
+`--universal_density none` to the analyzer for any SAE other than layer-20
+`average_l0_114`, since the Pile density file indexes that dictionary only.
+
+```bash
+python bioml/cache_bioml_hidden.py --context_run_dirs <slices> --output_dir <cache> \
+    --layers 5,9,10,15,20,25,30,31,35,40 --num_workers 4 --worker 0 --device cuda:0
+python bioml/encode_bioml_cached.py --cache_dir <cache> --layer 20 \
+    --sae_path <gemma-scope>/layer_20/width_16k/average_l0_68/params.npz --output_dir <run>
+python bioml/analyze_bioml_idf.py --sae_run_dirs <run> --context_run_dirs <slices> \
+    --universal_density none --output_dir <run>/analysis
+```
