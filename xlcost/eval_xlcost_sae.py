@@ -194,6 +194,7 @@ def background(docs, unit, size):
     n_docs = max(1, len(docs))
     corpus = {
         "p_bg": counts / max(1, total_tokens),
+        "idf_universal": load_universal_idf(size),
         "idf": np.log(n_docs / (1.0 + doc_freq)),
         "doc_freq": doc_freq,
         "n_docs": n_docs,
@@ -204,6 +205,31 @@ def background(docs, unit, size):
 # =============================================================================
 # Weights
 # =============================================================================
+
+
+UNIVERSAL_DENSITY_FILE = "/projects/biro/xiaocong/pile_density_l0_114.json"
+
+
+def load_universal_idf(size, path=None, floor=1e-6):
+    """idf_universal(f) = -log(Pile density of f), from Neuronpedia's feature dump.
+
+    The corpus-derived idf is relative to whichever candidates happen to be in
+    the pool. This one is a fixed property of the feature, so signatures from
+    systems that never co-occur are still comparable -- the property a global
+    coordinate system needs.
+    """
+    import json as _json
+    p = path or UNIVERSAL_DENSITY_FILE
+    try:
+        raw = _json.load(open(p, encoding="utf-8"))
+    except Exception as e:
+        raise RuntimeError(f"universal density file unreadable ({p}): {e}")
+    out = np.zeros(size, dtype=np.float64)
+    for k, v in raw.items():
+        i = int(k)
+        if i < size:
+            out[i] = -math.log(max(float(v), floor))
+    return np.maximum(out, 0.0)
 
 def doc_weights(doc, metric, corpus, eps):
     """Per-feature weights of one document under one metric."""
@@ -216,6 +242,8 @@ def doc_weights(doc, metric, corpus, eps):
     if metric == "sae_mean":
         return idx, mean
 
+    if metric == "sae_idf_universal":
+        return idx, mean * corpus["idf_universal"][idx]
     if metric == "sae_idf":
         # TF-IDF over SAE features: no p_doc factor, so nothing compares a
         # token fraction against a document fraction.
@@ -379,7 +407,7 @@ def main():
     ap.add_argument("--output_dir", type=Path, default=None)
     ap.add_argument("--metrics",
                     default="dense,dense_centered,dense_pc1,sae_mean,sae_idf,"
-                            "sae_info,sae_info_reliability,sae_logodds")
+                            "sae_idf_universal,sae_info,sae_info_reliability,sae_logodds")
     ap.add_argument("--stable_frequencies", default="0.05,0.10,0.25",
                     help="adds sae_stable_<f> metrics; views are TOKENS, so these "
                          "are much lower than the Bio-ML context thresholds")

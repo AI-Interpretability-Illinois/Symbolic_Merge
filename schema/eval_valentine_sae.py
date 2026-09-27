@@ -41,7 +41,7 @@ import numpy as np
 import torch
 
 DEFAULT_METRICS = ("dense,dense_centered,dense_pc1,sae_mean,sae_idf,"
-                   "sae_info,sae_info_reliability,sae_logodds")
+                   "sae_idf_universal,sae_info,sae_info_reliability,sae_logodds")
 
 
 def load_pt(path):
@@ -78,9 +78,35 @@ def corpus_stats(columns, size):
         total_views += int(c["n_views"])
     n = max(1, len(columns))
     return {"p_bg": counts / max(1, total_views),
+            "idf_universal": load_universal_idf(size),
             "idf": np.log(n / (1.0 + doc_freq)),
             "n_cols": n, "total_views": total_views}
 
+
+
+UNIVERSAL_DENSITY_FILE = "/projects/biro/xiaocong/pile_density_l0_114.json"
+
+
+def load_universal_idf(size, path=None, floor=1e-6):
+    """idf_universal(f) = -log(Pile density of f), from Neuronpedia's feature dump.
+
+    The corpus-derived idf is relative to whichever candidates happen to be in
+    the pool. This one is a fixed property of the feature, so signatures from
+    systems that never co-occur are still comparable -- the property a global
+    coordinate system needs.
+    """
+    import json as _json
+    p = path or UNIVERSAL_DENSITY_FILE
+    try:
+        raw = _json.load(open(p, encoding="utf-8"))
+    except Exception as e:
+        raise RuntimeError(f"universal density file unreadable ({p}): {e}")
+    out = np.zeros(size, dtype=np.float64)
+    for k, v in raw.items():
+        i = int(k)
+        if i < size:
+            out[i] = -math.log(max(float(v), floor))
+    return np.maximum(out, 0.0)
 
 def column_weights(col, metric, corpus, eps):
     sae = col["sae"]
@@ -91,6 +117,8 @@ def column_weights(col, metric, corpus, eps):
         return idx, mean
     if metric == "sae_idf":
         return idx, mean * np.maximum(corpus["idf"][idx], 0.0)
+    if metric == "sae_idf_universal":
+        return idx, mean * corpus["idf_universal"][idx]
 
     p_col = sae["count"].numpy().astype(np.float64) / n
     if metric.startswith("sae_stable_"):

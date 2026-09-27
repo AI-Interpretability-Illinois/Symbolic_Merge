@@ -39,7 +39,23 @@ import numpy as np
 import torch
 
 METHODS = ["dense_mean", "dense_centered", "dense_pc1", "sae_mean", "sae_stable_0.80",
-           "sae_info", "sae_info_reliability", "sae_logodds", "sae_idf"]
+           "sae_info", "sae_info_reliability", "sae_logodds", "sae_idf",
+           "sae_idf_universal"]
+
+UNIVERSAL_DENSITY_FILE = "/projects/biro/xiaocong/pile_density_l0_114.json"
+
+
+def load_universal_idf(size, path=None, floor=1e-6):
+    """idf_universal(f) = -log(Pile density of f), a fixed property of the
+    feature rather than of the candidate pool, so signatures are comparable
+    across symbol systems that never co-occur."""
+    raw = json.load(open(path or UNIVERSAL_DENSITY_FILE, encoding="utf-8"))
+    out = np.zeros(size, dtype=np.float64)
+    for k, v in raw.items():
+        i = int(k)
+        if i < size:
+            out[i] = max(-math.log(max(float(v), floor)), 0.0)
+    return out
 
 
 def load_pt(p):
@@ -171,7 +187,7 @@ def build_background(reps):
     return counts, total, doc_freq, len(reps)
 
 
-def build_signature(rep, bg, bg_total, doc_freq, n_docs, eps=1e-6):
+def build_signature(rep, bg, bg_total, doc_freq, n_docs, uidf=None, eps=1e-6):
     n = len(rep["contexts"])
     size = int(rep["contexts"][0]["sae"]["size"])
     vals = defaultdict(lambda: [0.0] * n)
@@ -180,7 +196,7 @@ def build_signature(rep, bg, bg_total, doc_freq, n_docs, eps=1e-6):
                         c["sae"]["val"].detach().cpu().float().tolist()):
             vals[int(i)][ci] = float(v)
     buckets = {k: ([], []) for k in ("sae_info", "sae_info_reliability",
-                                     "sae_logodds", "sae_idf")}
+                                     "sae_logodds", "sae_idf", "sae_idf_universal")}
     for j, xs in vals.items():
         x = torch.tensor(xs, dtype=torch.float32)
         pe = float((x > 0).sum()) / n
@@ -198,6 +214,7 @@ def build_signature(rep, bg, bg_total, doc_freq, n_docs, eps=1e-6):
             "sae_info_reliability": mean * pe * info / (1 + cv),
             "sae_logodds": mean * lod,
             "sae_idf": mean * idf,
+            "sae_idf_universal": mean * (float(uidf[j]) if uidf is not None else 0.0),
         }
         for k, w in weights.items():
             if w > 0:
@@ -229,7 +246,12 @@ def main():
                          "'target' = target only (the _target_bg variant)")
     ap.add_argument("--reference", type=Path, default=None,
                     help="published ranking_summary.csv to validate against")
+    ap.add_argument("--universal_density", default=UNIVERSAL_DENSITY_FILE,
+                    help="Pile density json for sae_idf_universal; only valid for the "
+                         "SAE it was dumped from (l0_114). 'none' drops the method")
     args = ap.parse_args()
+    methods = [m for m in METHODS
+               if not (m == "sae_idf_universal" and args.universal_density == "none")]
 
     sae_dirs = [Path(x).expanduser().resolve() for x in args.sae_run_dirs.split(",") if x.strip()]
     ctx_dirs = [Path(x).expanduser().resolve() for x in args.context_run_dirs.split(",") if x.strip()]
@@ -255,8 +277,14 @@ def main():
                                 .astype(np.float64), mu) for r in bg_reps[:500]]))))
 
     print("building signatures...", flush=True)
-    ssig = {i: build_signature(r, bg, bg_total, doc_freq, n_docs) for i, r in src.items()}
-    tsig = {i: build_signature(r, bg, bg_total, doc_freq, n_docs) for i, r in tgt.items()}
+    size = int(next(iter(tgt.values()))["contexts"][0]["sae"]["size"])
+    uidf = None
+    if args.universal_density != "none":
+        uidf = load_universal_idf(size, args.universal_density)
+        print(f"universal idf loaded for {size} features "
+              f"(median {float(np.median(uidf[uidf > 0])):.2f} nats)")
+    ssig = {i: build_signature(r, bg, bg_total, doc_freq, n_docs, uidf) for i, r in src.items()}
+    tsig = {i: build_signature(r, bg, bg_total, doc_freq, n_docs, uidf) for i, r in tgt.items()}
 
     ranks = defaultdict(list)
     rows = []
@@ -266,7 +294,7 @@ def main():
         if s not in src or g not in cands:
             raise RuntimeError(f"missing representation for qid={q['qid']}")
         row = {"qid": q["qid"], "source_label": src[s]["label"], "gold_label": tgt[g]["label"]}
-        for m in METHODS:
+        for m in methods:
             scored = []
             for c in cands:
                 if m.startswith("dense"):
@@ -284,7 +312,7 @@ def main():
         rows.append(row)
 
     write_csv(out / "per_query_ranks.csv", rows)
-    summary = [{"method": m, **metrics(ranks[m])} for m in METHODS]
+    summary = [{"method": m, **metrics(ranks[m])} for m in methods]
     write_csv(out / "ranking_summary.csv", summary)
     (out / "analysis.json").write_text(json.dumps(
         {"n_queries": len(qs), "background_contexts": bg_total,
