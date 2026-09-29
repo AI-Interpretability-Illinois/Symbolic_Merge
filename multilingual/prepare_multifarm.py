@@ -1,0 +1,213 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+prepare_multifarm.py
+
+OAEI MultiFarm (2015 open release): the OntoFarm conference ontologies (cmt,
+conference, confOf, iasted, sigkdd) translated into other languages, matched
+across BOTH ontology and language, e.g. cmt in Chinese -> conference in English.
+Entity IRIs are opaque ids (c-6306630-6583290), so a term is known only by its
+label in its own language and script ("撰写论文", "закончил рецензию").
+
+Only the cross-ontology test cases are used (the harder MultiFarm setting; same
+ontology in two languages is plain translation). Each gold correspondence becomes
+a query from the non-English term to its English counterpart, ranked against every
+labelled entity (classes and properties) of that test case's English ontology.
+
+Each term gets Claude-generated contexts written in the term's own language, from
+its kind (class, relation, attribute), its parent classes and, for properties,
+domain and range, all as labelled in that language. The term's label is inserted
+verbatim, as in Bio-ML.
+
+One store holds every entity (an English term is generated once and shared by all
+language pairs); views/<pair>/ is the context_run_dir of each language pair.
+
+Example:
+    python multilingual/prepare_multifarm.py \
+        --data_dir <multifarm>/dataset-2015-testing --pairs cn-en,en-ru,ar-en \
+        --output_dir <out> --workers 16
+"""
+
+import argparse
+import hashlib
+import json
+import random
+import re
+import sys
+import xml.etree.ElementTree as ET
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "bioml"))
+import generate_bioml_contexts_claude as G  # noqa: E402
+from generate_bioml_contexts_bio8b_maxdiverse import (  # noqa: E402
+    POSITION_PLANS, SYNTAX_STYLES, atomic_json_dump, complete_cache, entity_output_path)
+
+RDF = "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}"
+RDFS = "{http://www.w3.org/2000/01/rdf-schema#}"
+OWL = "{http://www.w3.org/2002/07/owl#}"
+ALIGN = "{http://knowledgeweb.semanticweb.org/heterogeneity/alignment}"
+LANGUAGE = {"en": "English", "cn": "Chinese", "ru": "Russian", "ar": "Arabic", "cz": "Czech",
+            "de": "German", "es": "Spanish", "fr": "French", "nl": "Dutch", "pt": "Portuguese"}
+KIND = {"Class": "class (a kind of thing)", "ObjectProperty": "relation between two classes",
+        "DatatypeProperty": "attribute with a data value"}
+DOMAIN = {"cmt": "conference management software", "conference": "conference organisation",
+          "confOf": "conference organisation", "iasted": "IASTED conferences",
+          "sigkdd": "SIGKDD conferences"}
+
+SYSTEM_PROMPT = """You are an expert on academic conferences and on writing natural text in many languages.
+
+Create highly diverse sentence contexts for one term from an ontology of conference
+organisation. The SAME term will appear in all contexts, so vary everything else:
+content, vocabulary, grammar, clause structure, sentence rhythm and where the term
+appears in the sentence. Write every fragment in the language you are told, as a
+native speaker would, never mixing in another language.
+
+You will NOT write the term itself. Generate LEFT and RIGHT text fragments; Python
+will insert the exact term between them.
+
+Return only valid JSON with no commentary."""
+
+AXES = [
+    "what the term means in running a conference",
+    "who is involved with it and in what role",
+    "when in the conference timeline it matters",
+    "what it is related to or depends on",
+    "a concrete situation at a specific conference",
+    "how it is recorded or managed in conference software",
+    "how it differs from a similar term",
+    "a problem or exception involving it",
+]
+
+
+def plans_for(meta, n):
+    rng = random.Random(int(hashlib.sha1(meta["entity_iri"].encode()).hexdigest()[:8], 16))
+    axes, styles = AXES[:], SYNTAX_STYLES[:]
+    rng.shuffle(axes)
+    rng.shuffle(styles)
+    return [{"slot": i + 1, "semantic_focus": axes[i % len(axes)],
+             "syntax_style": styles[i % len(styles)],
+             "position_instruction": POSITION_PLANS[i % 5][2]} for i in range(n)]
+
+
+def build_prompt(meta, n):
+    shown = {k: meta[k] for k in ("language", "ontology_domain", "term", "kind",
+                                  "parent_classes", "domain", "range") if meta.get(k)}
+    return f"""TERM METADATA:
+{json.dumps(shown, ensure_ascii=False, indent=2)}
+
+Write in {meta['language']} only. The term is written exactly as "{meta['term']}".
+
+Generate exactly {n} MAXIMALLY DIVERSE contexts for this SAME term.
+
+For each context, write:
+- "left": text BEFORE the term
+- "right": text AFTER the term
+
+Python will construct LEFT + [EXACT TERM] + RIGHT. Do NOT include the term itself in
+either fragment, and do not translate it into another language.
+
+Follow these DIFFERENT plans independently:
+{json.dumps(plans_for(meta, n), ensure_ascii=False, indent=2)}
+
+Put some meaningful material before the term in every context.
+
+Return ONLY JSON in this exact form:
+{{
+  "contexts": [
+    {{"left": "text before term", "right": "text after term"}}
+  ]
+}}
+
+The contexts array must contain exactly {n} objects.
+"""
+
+
+def parse_ontology(path, onto, lang):
+    root = ET.parse(path).getroot()
+    labels, ents = {}, {}
+    for el in root:
+        about = el.attrib.get(RDF + "about")
+        lab = el.find(RDFS + "label")
+        if about and lab is not None and lab.text and lab.text.strip():
+            labels[about] = lab.text.strip()
+    ref = lambda el, tag: [labels[e.attrib[RDF + "resource"]] for e in el.findall(tag)
+                           if e.attrib.get(RDF + "resource") in labels]
+    for el in root:
+        kind = el.tag.split("}")[-1]
+        about = el.attrib.get(RDF + "about")
+        if kind not in KIND or about not in labels:
+            continue
+        ents[about] = {"entity_iri": about, "preferred_label": labels[about],
+                       "term": labels[about], "language": LANGUAGE[lang],
+                       "ontology_domain": DOMAIN.get(onto, "conference organisation"),
+                       "kind": KIND[kind], "parent_classes": ref(el, RDFS + "subClassOf"),
+                       "domain": ref(el, RDFS + "domain"), "range": ref(el, RDFS + "range")}
+    return ents
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--data_dir", type=Path, required=True, help="dataset-2015-testing")
+    ap.add_argument("--pairs", default="cn-en,en-ru,ar-en")
+    ap.add_argument("--output_dir", type=Path, required=True)
+    G.add_api_args(ap)
+    args = ap.parse_args()
+    d, out = args.data_dir, args.output_dir.expanduser().resolve()
+
+    onto_cache, needed_src, needed_tgt = {}, {}, {}
+
+    def ontology(onto, lang):
+        if (onto, lang) not in onto_cache:
+            onto_cache[onto, lang] = parse_ontology(d / "ont" / lang / f"{onto}-{lang}.owl",
+                                                    onto, lang)
+        return onto_cache[onto, lang]
+
+    for pair in [p for p in args.pairs.split(",") if p]:
+        queries = []
+        for f in sorted((d / "ref" / pair).glob("*.rdf")):
+            o1, o2 = f.stem.split("-")[:2]
+            if o1 == o2:  # same ontology in two languages: translation, not matching
+                continue
+            for cell in ET.parse(f).getroot().iter(ALIGN + "Cell"):
+                if (cell.findtext(ALIGN + "relation") or "=").strip() != "=":
+                    continue
+                ends = []
+                for tag in ("entity1", "entity2"):
+                    iri = cell.find(ALIGN + tag).attrib[RDF + "resource"]
+                    onto, lang = re.match(r"https?://(\w+?)_(\w+)#", iri).groups()
+                    ends.append((iri, onto, lang))
+                (s, so, sl), (t, to, tl) = sorted(ends, key=lambda e: e[2] == "en")
+                if tl != "en" or sl == "en":
+                    continue
+                src_ents, tgt_ents = ontology(so, sl), ontology(to, tl)
+                if s not in src_ents or t not in tgt_ents:
+                    continue
+                needed_src[s] = src_ents[s]
+                needed_tgt.update(tgt_ents)
+                queries.append({"query_id": len(queries), "src": s, "gold": t,
+                                "candidates": sorted(tgt_ents), "test_case": f.stem})
+        G.write_view(out, pair, queries)
+        print(f"{pair}: {len(queries)} cross-ontology queries", flush=True)
+
+    jobs = ([{"side": "src", "iri": i, "meta": m} for i, m in sorted(needed_src.items())]
+            + [{"side": "tgt", "iri": i, "meta": m} for i, m in sorted(needed_tgt.items())])
+    for j in jobs:
+        j["path"] = entity_output_path(out, j["side"], j["iri"])
+    pending = [j for j in jobs if not complete_cache(j["path"], j["iri"], args.contexts)]
+    print(f"entities={len(jobs)} (non-English {len(needed_src)}, English {len(needed_tgt)}) "
+          f"pending={len(pending)}", flush=True)
+
+    tot, failures = G.generate_all(G.make_client(args), args, pending, system=SYSTEM_PROMPT,
+                                   prompt_fn=build_prompt, plans_fn=plans_for)
+    summary = {"entities": len(jobs), **tot, "model": args.model, "effort": args.effort,
+               "failures": failures}
+    atomic_json_dump(summary, out / "generation_summary.json")
+    print(json.dumps({k: v for k, v in summary.items() if k != "failures"}, indent=2))
+    if failures:
+        raise SystemExit(f"{len(failures)} entities failed; rerun to retry them")
+
+
+if __name__ == "__main__":
+    main()
