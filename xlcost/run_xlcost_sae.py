@@ -47,6 +47,7 @@ Example:
 """
 
 import argparse
+import sys
 import json
 import os
 import time
@@ -54,7 +55,10 @@ from pathlib import Path
 
 import numpy as np
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoTokenizer
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+from lm_device import load_causal_lm  # noqa: E402
 
 # Gemma Scope layer_20/width_131k/average_l0_114: the canonical release, and the
 # only layer-20 residual 131k variant with full Neuronpedia auto-interp coverage
@@ -132,9 +136,8 @@ class Encoder:
         print(f"[gemma] {model_path}", flush=True)
         self.tok = AutoTokenizer.from_pretrained(model_path, use_fast=True,
                                                  local_files_only=args.local_files_only)
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_path, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True,
-            local_files_only=args.local_files_only).to(args.device).eval()
+        self.model, args.device = load_causal_lm(
+            model_path, args.device, args.max_gpu_memory, local_files_only=args.local_files_only)
         self.sae = JumpReluSAE(Path(args.sae_path).expanduser(), args.device)
         hidden = int(self.model.config.hidden_size)
         if hidden != self.sae.d_in:
@@ -154,7 +157,7 @@ class Encoder:
         inputs = {k: v.to(args.device) for k, v in enc.items()}
         out = self.model(**inputs, output_hidden_states=True, use_cache=False, return_dict=True)
         # hidden_states[0] is the embedding output, so layer L is at L+1.
-        h = out.hidden_states[args.layer + 1][0][keep]
+        h = out.hidden_states[args.layer + 1][0][keep].to(args.device)
         n_tokens = int(h.shape[0])
 
         dense = h.float().mean(0)
@@ -211,7 +214,10 @@ def main():
     ap.add_argument("--sae_path", default=DEFAULT_SAE_PATH,
                     help="defaults to average_l0_114 (Neuronpedia-interpretable)")
     ap.add_argument("--layer", type=int, default=20)
-    ap.add_argument("--device", default="cuda")
+    ap.add_argument("--device", default="cuda",
+                    help="cuda, cuda:N, or 'split' to spread the model over all visible GPUs")
+    ap.add_argument("--max_gpu_memory", default="7GiB,12GiB",
+                    help="per-GPU weight caps for --device split (last value repeats)")
     ap.add_argument("--max_length", type=int, default=1024,
                     help="512 matches the official block_size; programs need more")
     ap.add_argument("--token_chunk", type=int, default=64,

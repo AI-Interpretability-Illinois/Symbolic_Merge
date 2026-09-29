@@ -33,6 +33,7 @@ Example:
 import argparse
 import csv
 import json
+import os
 import math
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -84,7 +85,9 @@ def corpus_stats(columns, size):
 
 
 
-UNIVERSAL_DENSITY_FILE = "/projects/biro/xiaocong/pile_density_l0_114.json"
+# Neuronpedia Pile densities for layer-20 average_l0_114; override per machine.
+UNIVERSAL_DENSITY_FILE = os.environ.get("SYMBOLIC_MERGE_PILE_DENSITY",
+                                        "/projects/biro/xiaocong/pile_density_l0_114.json")
 
 
 def load_universal_idf(size, path=None, floor=1e-6):

@@ -26,24 +26,31 @@ Example (one process per GPU):
 """
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoTokenizer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+from lm_device import load_causal_lm  # noqa: E402
 from run_bioml_sae_from_bio8b_contexts import (  # noqa: E402
     atomic_torch_save, load_all_contexts, symbol_token_indices)
 
 
-def collect_entities(context_dirs, n_contexts):
+def collect_entities(context_dirs, n_contexts, only_query_entities=False):
     seen, out = set(), []
     for d in context_dirs:
         src, tgt = load_all_contexts(d, n_contexts)
+        keep = None
+        if only_query_entities:
+            qs = json.loads((d / "selected_queries.json").read_text(encoding="utf-8"))
+            keep = {("src", q["src"]) for q in qs} | {("tgt", c) for q in qs for c in q["candidates"]}
         for side, store in (("src", src), ("tgt", tgt)):
             for iri, ent in store.items():
-                if (side, iri) in seen:
+                if (side, iri) in seen or (keep is not None and (side, iri) not in keep):
                     continue
                 seen.add((side, iri))
                 out.append((side, ent))
@@ -62,14 +69,20 @@ def main():
     ap.add_argument("--shard_size", type=int, default=256)
     ap.add_argument("--num_workers", type=int, default=1)
     ap.add_argument("--worker", type=int, default=0)
-    ap.add_argument("--device", default="cuda")
+    ap.add_argument("--only_query_entities", action="store_true",
+                    help="cache only entities named in the context dir's selected_queries.json "
+                         "(e.g. one split's view of a multi-split store)")
+    ap.add_argument("--device", default="cuda",
+                    help="cuda, cuda:N, or 'split' to spread the model over all visible GPUs")
+    ap.add_argument("--max_gpu_memory", default="7GiB,12GiB",
+                    help="per-GPU weight caps for --device split (last value repeats)")
     args = ap.parse_args()
 
     layers = [int(x) for x in args.layers.split(",") if x.strip()]
     ctx_dirs = [Path(x).expanduser().resolve() for x in args.context_run_dirs.split(",") if x.strip()]
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    entities = collect_entities(ctx_dirs, args.contexts)
+    entities = collect_entities(ctx_dirs, args.contexts, args.only_query_entities)
     shards = [(k, entities[k:k + args.shard_size])
               for k in range(0, len(entities), args.shard_size)]
     mine = [s for i, s in enumerate(shards) if i % args.num_workers == args.worker]
@@ -81,9 +94,7 @@ def main():
         return
 
     tok = AutoTokenizer.from_pretrained(args.model_path, use_fast=True)
-    model = AutoModelForCausalLM.from_pretrained(
-        args.model_path, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True).to(args.device)
-    model.eval()
+    model, args.device = load_causal_lm(args.model_path, args.device, args.max_gpu_memory)
     model.config.use_cache = False
 
     for n, (k, ents) in enumerate(todo, 1):
@@ -97,7 +108,7 @@ def main():
                     out = model(**{k_: v.to(args.device) for k_, v in enc.items()},
                                 output_hidden_states=True, use_cache=False, return_dict=True)
                 idx = torch.tensor(token_indices, device=args.device, dtype=torch.long)
-                hid = torch.stack([out.hidden_states[l + 1][0].index_select(0, idx)
+                hid = torch.stack([out.hidden_states[l + 1][0].to(args.device).index_select(0, idx)
                                    for l in layers]).to(torch.bfloat16).cpu()
                 ctxs.append({"text": text, "token_indices": token_indices, "hidden": hid})
             rows.append({"side": side, "entity_iri": ent["entity_iri"],

@@ -31,6 +31,7 @@ Example:
 import argparse
 import csv
 import json
+import os
 import math
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -42,7 +43,9 @@ METHODS = ["dense_mean", "dense_centered", "dense_pc1", "sae_mean", "sae_stable_
            "sae_info", "sae_info_reliability", "sae_logodds", "sae_idf",
            "sae_idf_universal"]
 
-UNIVERSAL_DENSITY_FILE = "/projects/biro/xiaocong/pile_density_l0_114.json"
+# Neuronpedia Pile densities for layer-20 average_l0_114; override per machine.
+UNIVERSAL_DENSITY_FILE = os.environ.get("SYMBOLIC_MERGE_PILE_DENSITY",
+                                        "/projects/biro/xiaocong/pile_density_l0_114.json")
 
 
 def load_universal_idf(size, path=None, floor=1e-6):
@@ -225,6 +228,65 @@ def build_signature(rep, bg, bg_total, doc_freq, n_docs, uidf=None, eps=1e-6):
             for k, (i, v) in buckets.items()}
 
 
+def method_vector(rep, sig, m, mu, pc):
+    """(dense ndarray) or (idx, val) sparse view of one entity under one method."""
+    if m.startswith("dense"):
+        return dense_vec(rep, m, mu, pc)
+    x = existing(rep, m) if m in ("sae_mean", "sae_stable_0.80") else sig[m]
+    return x["idx"].numpy(), x["val"].double().numpy()
+
+
+def score_matrix(ents, reps, sigs, m, mu, pc):
+    """Row-normalised matrix over ents: dense ndarray or scipy CSR."""
+    import scipy.sparse as sp
+    vecs = [method_vector(reps[e], sigs[e], m, mu, pc) for e in ents]
+    if m.startswith("dense"):
+        X = np.stack(vecs)
+        n = np.linalg.norm(X, axis=1, keepdims=True)
+        return np.divide(X, n, out=np.zeros_like(X), where=n > 0)
+    size = int(next(iter(reps.values()))["contexts"][0]["sae"]["size"])
+    rows = np.concatenate([np.full(len(i), k) for k, (i, _) in enumerate(vecs)])
+    cols = np.concatenate([i for i, _ in vecs]).astype(np.int64)
+    vals = np.concatenate([v for _, v in vecs])
+    X = sp.csr_matrix((vals, (rows, cols)), shape=(len(ents), size))
+    n = np.sqrt(np.asarray(X.multiply(X).sum(1)).ravel())
+    return sp.diags(np.divide(1.0, n, out=np.zeros_like(n), where=n > 0)) @ X
+
+
+def fast_scores(qs, src, tgt, ssig, tsig, methods, mu, pc):
+    """All src x candidate cosines per method as one matrix product: the same
+    quantities as the per-pair loop, for pools too large to loop over."""
+    s_ids = sorted({q["src"] for q in qs})
+    t_ids = sorted({c for q in qs for c in q["candidates"] if c in tgt})
+    out = {}
+    for m in methods:
+        A = score_matrix(s_ids, src, ssig, m, mu, pc)
+        B = score_matrix(t_ids, tgt, tsig, m, mu, pc)
+        S = A @ B.T
+        out[m] = np.asarray(S.todense() if hasattr(S, "todense") else S)
+    return {e: i for i, e in enumerate(s_ids)}, {e: i for i, e in enumerate(t_ids)}, out
+
+
+def lexical_scores(qs, src, tgt):
+    """Surface-string controls: TF-IDF over character 3-5-grams of the label, and over
+    words of the entity's contexts (the same text the model reads)."""
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    s_ids = sorted({q["src"] for q in qs})
+    t_ids = sorted({c for q in qs for c in q["candidates"] if c in tgt})
+    label = lambda r: r["label"]
+    ctx = lambda r: " ".join(c["text"] for c in r["contexts"])
+    out = {}
+    for m, text, vec in [
+            ("lex_label", label, TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5),
+                                                  sublinear_tf=True)),
+            ("lex_context", ctx, TfidfVectorizer(sublinear_tf=True))]:
+        vec.fit([text(src[e]) for e in s_ids] + [text(tgt[e]) for e in t_ids])
+        S = vec.transform([text(src[e]) for e in s_ids]) @ vec.transform(
+            [text(tgt[e]) for e in t_ids]).T
+        out[m] = np.asarray(S.todense())
+    return {e: i for i, e in enumerate(s_ids)}, {e: i for i, e in enumerate(t_ids)}, out
+
+
 def metrics(ranks):
     n = len(ranks)
     return {"n": n, "MRR": sum(1 / r for r in ranks) / n,
@@ -246,6 +308,11 @@ def main():
                          "'target' = target only (the _target_bg variant)")
     ap.add_argument("--reference", type=Path, default=None,
                     help="published ranking_summary.csv to validate against")
+    ap.add_argument("--fast", action="store_true",
+                    help="score by sparse matrix products (needed for full-ontology candidate "
+                         "pools); equal to the default loop up to float summation order")
+    ap.add_argument("--lexical", action="store_true",
+                    help="add lex_label / lex_context TF-IDF string baselines")
     ap.add_argument("--universal_density", default=UNIVERSAL_DENSITY_FILE,
                     help="Pile density json for sae_idf_universal; only valid for the "
                          "SAE it was dumped from (l0_114). 'none' drops the method")
@@ -286,6 +353,11 @@ def main():
     ssig = {i: build_signature(r, bg, bg_total, doc_freq, n_docs, uidf) for i, r in src.items()}
     tsig = {i: build_signature(r, bg, bg_total, doc_freq, n_docs, uidf) for i, r in tgt.items()}
 
+    fast = fast_scores(qs, src, tgt, ssig, tsig, methods, mu, pc) if args.fast else None
+    lex = None
+    if args.lexical:
+        lex = lexical_scores(qs, src, tgt)
+        methods = list(lex[2]) + methods
     ranks = defaultdict(list)
     rows = []
     for q in qs:
@@ -296,7 +368,13 @@ def main():
         row = {"qid": q["qid"], "source_label": src[s]["label"], "gold_label": tgt[g]["label"]}
         for m in methods:
             scored = []
-            for c in cands:
+            if m.startswith("lex_"):
+                si, ti, S = lex
+                scored = [(c, float(S[m][si[s], ti[c]])) for c in cands]
+            elif fast:
+                si, ti, S = fast
+                scored = [(c, float(S[m][si[s], ti[c]])) for c in cands]
+            for c in ([] if (fast or m.startswith("lex_")) else cands):
                 if m.startswith("dense"):
                     score = np_cos(dense_vec(src[s], m, mu, pc),
                                    dense_vec(tgt[c], m, mu, pc))
