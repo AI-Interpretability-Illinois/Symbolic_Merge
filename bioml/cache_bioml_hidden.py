@@ -64,7 +64,10 @@ def main():
     ap.add_argument("--output_dir", type=Path, required=True)
     ap.add_argument("--model_path", default="/projects/biro/shared/models/gemma-2-9b")
     ap.add_argument("--layers", default="5,9,10,15,20,25,30,31,35,40")
-    ap.add_argument("--contexts", type=int, default=5)
+    ap.add_argument("--contexts", type=int, default=5,
+                    help="contexts per entity; 0 = all it has (native-context views vary)")
+    ap.add_argument("--label_last", action="store_true",
+                    help="pool the label's last occurrence (native views end with the symbol)")
     ap.add_argument("--max_length", type=int, default=512)
     ap.add_argument("--shard_size", type=int, default=256)
     ap.add_argument("--num_workers", type=int, default=1)
@@ -103,7 +106,7 @@ def main():
             ctxs = []
             for text in ent["contexts"]:
                 enc, token_indices, _, _ = symbol_token_indices(
-                    tok, text, ent["label"], args.max_length)
+                    tok, text, ent["label"], args.max_length, last=args.label_last)
                 with torch.inference_mode():
                     out = model(**{k_: v.to(args.device) for k_, v in enc.items()},
                                 output_hidden_states=True, use_cache=False, return_dict=True)

@@ -148,3 +148,39 @@ python bioml/encode_bioml_cached.py --cache_dir <cache> --layer 20 \
 python bioml/analyze_bioml_idf.py --sae_run_dirs <run> --context_run_dirs <slices> \
     --universal_density none --output_dir <run>/analysis
 ```
+
+---
+
+## Native-context matching (main method)
+
+Every task takes each symbol's contexts from its own system's data; nothing is
+generated. Programs, formal statements and table cells are used directly (XLCoST,
+miniF2F, Valentine). For KG classes and ontology terms,
+`native/build_native_views.py` builds one view per piece of system-internal
+evidence, evidence first and symbol last (the model reads left to right, so the
+symbol's tokens then carry the evidence):
+
+    Instance: Edward Thomas (poet). Class: Writer       # Common-KG: the class's instances
+    domain 作者. Term: 撰写论文                           # MultiFarm: the term's own axioms
+    Parent: Intestinal Atresia. Class: Duodenal Atresia  # Bio-ML / Anatomy: definitions, parents
+
+Synonyms are never used (across systems a synonym is often the other side's label).
+The views are scored with the same cache / encode / analyze pipeline:
+
+```bash
+python native/build_native_views.py commonkg --data_dir <commonkg> --output_dir <views>
+python bioml/cache_bioml_hidden.py --context_run_dirs <views>/nell_dbpedia --output_dir <hidden> \
+    --layers 20 --contexts 0 --label_last
+python bioml/encode_bioml_cached.py --cache_dir <hidden> --layer 20 --sae_path <sae> --output_dir <run>
+python bioml/analyze_bioml_idf.py --sae_run_dirs <run> --context_run_dirs <views>/nell_dbpedia \
+    --background all --fast --lexical --output_dir <run>/analysis
+```
+
+`--contexts 0` keeps every view (their number varies per symbol) and `--label_last`
+pools the symbol's final occurrence. `tools/lexical_baseline.py --xlcost_official`
+scores string baselines with XLCoST's own MRR and Precision@6.
+
+LLM-generated contexts (`bioml/generate_bioml_contexts_claude.py`, with Claude,
+GPT-5.6 via `--backend openai`, or a local model via `--backend local`, one side
+of each pair per run via `--sides`) are kept for the secondary analysis: with
+them, dense vectors with their first principal component removed match sae_idf.

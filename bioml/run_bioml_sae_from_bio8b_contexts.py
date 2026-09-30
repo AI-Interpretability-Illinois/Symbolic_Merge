@@ -246,12 +246,14 @@ def load_context_file(path: Path, expected_contexts: int) -> Dict[str, Any]:
         if text:
             texts.append(re.sub(r"\s+", " ", str(text).strip()))
 
-    if len(texts) < expected_contexts:
+    if len(texts) < max(1, expected_contexts):
         raise RuntimeError(
             f"{iri_tail(iri)} has only {len(texts)} contexts; expected {expected_contexts}"
         )
 
-    texts = texts[:expected_contexts]
+    # expected_contexts <= 0: keep every context (native views vary in number).
+    if expected_contexts > 0:
+        texts = texts[:expected_contexts]
 
     return {
         "entity_iri": iri,
@@ -282,14 +284,19 @@ def load_all_contexts(context_run_dir: Path, expected_contexts: int):
 # Symbol span -> token indices
 # =============================================================================
 
-def symbol_token_indices(tokenizer, text: str, label: str, max_length: int):
-    start = text.find(label)
+def symbol_token_indices(tokenizer, text: str, label: str, max_length: int,
+                         last: bool = False):
+    """Token indices of the label span. last=True takes the label's final occurrence:
+    native-context views put the symbol after its evidence, and the evidence may
+    itself contain the label ("Chicago Airport" as an instance of "Airport")."""
+    find = str.rfind if last else str.find
+    start = find(text, label)
 
     if start < 0:
         # Fallback only for capitalization differences.
         low_text = text.casefold()
         low_label = label.casefold()
-        start = low_text.find(low_label)
+        start = find(low_text, low_label)
 
         if start < 0:
             raise RuntimeError(
