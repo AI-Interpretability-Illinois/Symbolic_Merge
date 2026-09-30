@@ -38,9 +38,6 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-import anthropic
-from anthropic import AnthropicFoundry
-
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from generate_bioml_contexts_bio8b_maxdiverse import (  # noqa: E402
     SYSTEM_PROMPT, atomic_json_dump, build_prompt, complete_cache, deterministic_plans,
@@ -51,11 +48,93 @@ DEFAULT_ENDPOINT = "https://xiaocong-resource.services.ai.azure.com/anthropic"
 DEFAULT_KEY_FILE = "~/.config/symbolic_merge/azure_anthropic_key"
 
 
+class LocalClient:
+    """A local Hugging Face chat model behind the one call this module makes
+    (client.messages.create), so every task script can generate one side of its
+    pairs with a different model than the other. Concurrent calls from the worker
+    threads are gathered into batches for model.generate."""
+
+    def __init__(self, model_path, device="cuda", batch_size=16, max_new_tokens=1500):
+        import queue
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        self.torch, self.queue = torch, queue
+        self.tok = AutoTokenizer.from_pretrained(model_path)
+        self.tok.padding_side = "left"
+        if self.tok.pad_token is None:
+            self.tok.pad_token = self.tok.eos_token
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_path, torch_dtype=torch.bfloat16, low_cpu_mem_usage=True).to(device).eval()
+        self.device, self.batch_size, self.max_new_tokens = device, batch_size, max_new_tokens
+        self.requests = queue.Queue()
+        self.messages = self
+        threading.Thread(target=self._serve, daemon=True).start()
+
+    def create(self, model, max_tokens, system, messages, **_):
+        from concurrent.futures import Future
+        done = Future()
+        self.requests.put((system, messages[0]["content"], done))
+        return done.result()
+
+    def _serve(self):
+        from types import SimpleNamespace as NS
+        while True:
+            batch = [self.requests.get()]
+            try:
+                while len(batch) < self.batch_size:
+                    batch.append(self.requests.get(timeout=0.5))
+            except self.queue.Empty:
+                pass
+            try:
+                texts = [self.tok.apply_chat_template(
+                    [{"role": "system", "content": s}, {"role": "user", "content": u}],
+                    tokenize=False, add_generation_prompt=True) for s, u, _ in batch]
+                enc = self.tok(texts, return_tensors="pt", padding=True).to(self.device)
+                with self.torch.inference_mode():
+                    out = self.model.generate(**enc, max_new_tokens=self.max_new_tokens,
+                                              do_sample=True, temperature=0.8, top_p=0.95,
+                                              pad_token_id=self.tok.pad_token_id)
+                width = enc["input_ids"].shape[1]
+                for i, (_, _, done) in enumerate(batch):
+                    gen = out[i, width:]
+                    n_out = int((gen != self.tok.pad_token_id).sum())
+                    stop = "max_tokens" if n_out >= self.max_new_tokens else "end_turn"
+                    done.set_result(NS(
+                        content=[NS(type="text", text=self.tok.decode(gen, skip_special_tokens=True))],
+                        stop_reason=stop,
+                        usage=NS(input_tokens=int(enc["attention_mask"][i].sum()), output_tokens=n_out)))
+            except Exception as e:  # hand the failure to every waiting caller
+                for _, _, done in batch:
+                    if not done.done():
+                        done.set_exception(RuntimeError(f"local generation failed: {e}"))
+
+
+class OpenAIClient:
+    """An OpenAI Responses-API model (e.g. gpt-5.6-sol) behind the one call this module
+    makes, so a pair's two sides can come from different model families."""
+
+    def __init__(self, key_file, base_url=None, effort="low"):
+        from openai import OpenAI
+        key = Path(os.path.expanduser(key_file)).read_text().strip()
+        self.client = OpenAI(api_key=key, base_url=base_url, max_retries=8, timeout=300)
+        self.effort = effort
+        self.messages = self
+
+    def create(self, model, max_tokens, system, messages, **_):
+        from types import SimpleNamespace as NS
+        r = self.client.responses.create(
+            model=model, instructions=system, input=messages[0]["content"],
+            max_output_tokens=max_tokens, reasoning={"effort": self.effort}, store=False)
+        stop = "end_turn" if r.status == "completed" else "max_tokens"
+        return NS(content=[NS(type="text", text=r.output_text or "")], stop_reason=stop,
+                  usage=NS(input_tokens=r.usage.input_tokens, output_tokens=r.usage.output_tokens))
+
+
 def call(client, args, prompt, system=SYSTEM_PROMPT):
+    extra = {"output_config": {"effort": args.effort}} if args.backend == "claude" else {}
     msg = client.messages.create(
         model=args.model, max_tokens=args.max_tokens, system=system,
-        output_config={"effort": args.effort},
-        messages=[{"role": "user", "content": prompt}])
+        messages=[{"role": "user", "content": prompt}], **extra)
     if msg.stop_reason == "refusal":
         raise RuntimeError("refusal")
     text = "".join(b.text for b in msg.content if b.type == "text")
@@ -104,6 +183,19 @@ def generate_entity(client, args, job, system=SYSTEM_PROMPT, prompt_fn=build_pro
 
 def add_api_args(ap):
     ap.add_argument("--contexts", type=int, default=5)
+    ap.add_argument("--backend", choices=("claude", "openai", "local"), default="claude",
+                    help="claude: Azure Foundry; openai: OpenAI Responses API (--openai_model); "
+                         "local: a Hugging Face chat model on this machine")
+    ap.add_argument("--openai_model", default="gpt-5.6-sol")
+    ap.add_argument("--openai_key_file", default="~/.config/symbolic_merge/openai_key")
+    ap.add_argument("--openai_base_url", default="https://xiaocong-resource.services.ai.azure.com/openai/v1",
+                    help="OpenAI-compatible endpoint; the Azure Foundry resource by default")
+    ap.add_argument("--local_model", default=None, help="path or HF id for --backend local")
+    ap.add_argument("--local_device", default="cuda")
+    ap.add_argument("--local_batch", type=int, default=16)
+    ap.add_argument("--sides", default="src,tgt",
+                    help="which sides to generate here; the two sides of a pair can come "
+                         "from different backends, run separately into the same store")
     ap.add_argument("--model", default="claude-opus-5")
     ap.add_argument("--effort", default="low", choices=("low", "medium", "high", "xhigh", "max"))
     ap.add_argument("--max_tokens", type=int, default=4000)
@@ -114,6 +206,15 @@ def add_api_args(ap):
 
 
 def make_client(args):
+    if args.backend == "openai":
+        args.model = args.openai_model
+        client = OpenAIClient(args.openai_key_file, args.openai_base_url, args.effort)
+        return client
+    if args.backend == "local":
+        args.model = args.local_model  # recorded in each entity's generator field
+        args.effort = None
+        return LocalClient(args.local_model, args.local_device, args.local_batch)
+    from anthropic import AnthropicFoundry
     key = Path(os.path.expanduser(args.key_file)).read_text().strip()
     return AnthropicFoundry(api_key=key, base_url=args.endpoint, max_retries=8, timeout=300)
 
@@ -124,6 +225,9 @@ def generate_all(client, args, pending, **gen_kwargs):
     tot = {"done": 0, "failed": 0, "input_tokens": 0, "output_tokens": 0, "retried": 0}
     failures = []
     t0 = time.time()
+
+    sides = set(args.sides.split(","))
+    pending = [j for j in pending if j["side"] in sides]
 
     def work(job):
         rec = generate_entity(client, args, job, **gen_kwargs)
@@ -141,7 +245,7 @@ def generate_all(client, args, pending, **gen_kwargs):
                     tot["input_tokens"] += g["usage"]["input_tokens"]
                     tot["output_tokens"] += g["usage"]["output_tokens"]
                     tot["retried"] += g["attempts"] > 1
-                except (anthropic.APIError, RuntimeError) as e:
+                except Exception as e:  # API errors, refusals, unparseable replies
                     tot["failed"] += 1
                     failures.append({"iri": j["iri"], "side": j["side"], "error": str(e)[:300]})
                 n = tot["done"] + tot["failed"]

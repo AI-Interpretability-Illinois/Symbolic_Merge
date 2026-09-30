@@ -14,8 +14,13 @@ contains the other, and that are one-to-one in both directions across the whole
 directory. --n of them are sampled with a fixed seed; every sampled brand is
 ranked against all sampled generic names.
 
-Each name gets Claude-generated contexts through the Bio-ML max-diverse prompt,
-given its naming system and the product's pharmacologic class. One rule is added
+The two sides are described independently, from their own system's evidence:
+a brand name with its NDC product record (dosage form, route, labeler, year first
+marketed), a generic name with nothing but itself. The pharmacologic class is
+withheld by default: it is identical for both names of a pair and would be echoed
+into both sides' contexts as a shared surface cue. Run the two sides with
+different generators (--sides src with Claude, --sides tgt with --backend local)
+so the pair shares neither evidence nor phrasing. One rule is added
 and enforced: a context may not name the drug any other way. A reply containing
 the counterpart name (or any of its words of 4+ letters) is rejected and
 regenerated, so the answer cannot leak through the text.
@@ -57,7 +62,7 @@ def words(s):
 
 
 def load_pairs(path):
-    b2g, g2b, brand_case, pharm = defaultdict(set), defaultdict(set), {}, {}
+    b2g, g2b, brand_case, pharm, record = defaultdict(set), defaultdict(set), {}, {}, {}
     for r in csv.DictReader(open(path, encoding="latin-1"), delimiter="\t"):
         if (r["PRODUCTTYPENAME"] != "HUMAN PRESCRIPTION DRUG"
                 or r["MARKETINGCATEGORYNAME"] not in ("NDA", "BLA")):
@@ -71,6 +76,11 @@ def load_pairs(path):
         b2g[b.lower()].add(g)
         g2b[g].add(b.lower())
         brand_case.setdefault(b.lower(), b)
+        record.setdefault(b.lower(), {
+            "dosage_form": r["DOSAGEFORMNAME"].strip().lower(),
+            "route": r["ROUTENAME"].strip().lower(),
+            "labeler": r["LABELERNAME"].strip(),
+            "first_marketed": r["STARTMARKETINGDATE"][:4]})
         if r["PHARM_CLASSES"]:
             pharm.setdefault(g, r["PHARM_CLASSES"])
     pairs = []
@@ -78,7 +88,7 @@ def load_pairs(path):
         g = next(iter(gs))
         if len(gs) == 1 and len(g2b[g]) == 1:
             pairs.append((brand_case[b], g))
-    return sorted(pairs), pharm
+    return sorted(pairs), pharm, record
 
 
 def main():
@@ -88,6 +98,9 @@ def main():
     ap.add_argument("--output_dir", type=Path, required=True)
     ap.add_argument("--n", type=int, default=500)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--pharm_class", action="store_true",
+                    help="give the generator the FDA pharmacologic class of each product; "
+                         "off by default because it is shared by both names of a pair")
     ap.add_argument("--drop_unguardable", action="store_true",
                     help="after generation, exclude (and list) pairs where either name still "
                          "has no contexts free of its counterpart")
@@ -95,16 +108,24 @@ def main():
     args = ap.parse_args()
     out = args.output_dir.expanduser().resolve()
 
-    pairs, pharm = load_pairs(args.product_file)
+    pairs, pharm, record = load_pairs(args.product_file)
     sample = sorted(random.Random(args.seed).sample(pairs, min(args.n, len(pairs))))
     print(f"one-to-one brand/generic pairs: {len(pairs)}; sampled {len(sample)}")
 
     def meta(name, side, generic):
-        classes = [c.strip() for c in pharm.get(generic, "").split(",") if c.strip()]
+        # Off by default: both names of a pair would get the same class text, which the
+        # generator echoes into both sides' contexts and so leaks a surface match.
+        classes = ([c.strip() for c in pharm.get(generic, "").split(",") if c.strip()]
+                   if args.pharm_class else [])
         slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
-        return {"entity_iri": f"urn:fda-ndc/{side}/{slug}", "ontology": NAMING[side],
-                "preferred_label": name, "synonyms": [], "definitions": [],
-                "parent_labels": classes}
+        m = {"entity_iri": f"urn:fda-ndc/{side}/{slug}", "ontology": NAMING[side],
+             "preferred_label": name, "synonyms": [], "definitions": [],
+             "parent_labels": classes}
+        if side == "src":
+            # Only the brand's own system knows its product record; the generic
+            # name's system (INN/USAN) contributes nothing but the name itself.
+            m["product_record"] = record[name.lower()]
+        return m
 
     src = [meta(b, "src", g) for b, g in sample]
     tgt = [meta(g, "tgt", g) for _, g in sample]
