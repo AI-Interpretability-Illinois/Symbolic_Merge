@@ -125,6 +125,17 @@ class JumpReluSAE:
         return torch.where(pre > self.th, pre, torch.zeros_like(pre))
 
 
+def load_sae(path, device):
+    """Gemma Scope params.npz, or a Llama Scope checkpoints/final.safetensors."""
+    if str(path).endswith(".safetensors"):
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "bioml"))
+        from encode_bioml_cached import LlamaScopeSAE
+        sae = LlamaScopeSAE(path, device)
+        sae.d_in, sae.width = sae.d_model, sae.n_features
+        return sae
+    return JumpReluSAE(path, device)
+
+
 # =============================================================================
 # Representation for one text
 # =============================================================================
@@ -133,12 +144,12 @@ class Encoder:
     def __init__(self, args):
         self.args = args
         model_path = str(Path(args.model_path).expanduser())
-        print(f"[gemma] {model_path}", flush=True)
+        print(f"[model] {model_path}", flush=True)
         self.tok = AutoTokenizer.from_pretrained(model_path, use_fast=True,
                                                  local_files_only=args.local_files_only)
         self.model, args.device = load_causal_lm(
             model_path, args.device, args.max_gpu_memory, local_files_only=args.local_files_only)
-        self.sae = JumpReluSAE(Path(args.sae_path).expanduser(), args.device)
+        self.sae = load_sae(Path(args.sae_path).expanduser(), args.device)
         hidden = int(self.model.config.hidden_size)
         if hidden != self.sae.d_in:
             raise RuntimeError(f"hidden size {hidden} != SAE d_in {self.sae.d_in}")

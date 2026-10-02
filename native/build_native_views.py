@@ -58,10 +58,14 @@ RDFS = "{http://www.w3.org/2000/01/rdf-schema#}"
 OWL = "{http://www.w3.org/2002/07/owl#}"
 
 
+SAMPLE_SALT = ""   # set from --seed; salts every per-entity sampling key
+
+
 def seeded_sample(items, k, key):
     items = sorted(dict.fromkeys(i for i in items if i))
     if len(items) <= k:
         return items
+    key = key + SAMPLE_SALT
     return sorted(random.Random(int(hashlib.sha1(key.encode()).hexdigest()[:8], 16)).sample(items, k))
 
 
@@ -223,8 +227,13 @@ def main():
     ap.add_argument("--max_views", type=int, default=16)
     ap.add_argument("--pairs", default="cn-en,en-ru,ar-en", help="multifarm")
     ap.add_argument("--splits", default="valid,train", help="bioml")
+    ap.add_argument("--seed", type=int, default=0,
+                    help="0 = the default sample; any other value draws a different sample of "
+                         "views per entity (for a seed study)")
     args = ap.parse_args()
     args.output_dir = args.output_dir.expanduser().resolve()
+    global SAMPLE_SALT
+    SAMPLE_SALT = f"#seed{args.seed}" if args.seed else ""
     {"commonkg": commonkg, "multifarm": multifarm, "bioml": bioml, "anatomy": anatomy}[args.task](args)
 
 

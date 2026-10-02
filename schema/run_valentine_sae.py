@@ -34,6 +34,11 @@ Presets for the view text (--preset):
                   is named {column}."
                  span = the column name, with the value as left context, the
                  closest mirror of Bio-ML's label-in-a-sentence structure
+    cell         "{column}\n{value}"
+                 span = the whole text: name and value together are the symbol
+    column       "{column}\n{value 1}\n...\n{value k}", ONE view per column
+                 span = the whole text, the table analogue of a program in
+                 XLCoST, whose symbol is its full text (use --max_length 1024)
 
 Example:
     python schema/run_valentine_sae.py \
@@ -72,7 +77,11 @@ PRESETS = {
     "value_only": ("Example value: ", "{value}", ""),
     "name": ("A data table column contains the value {value}. This column is named ",
              "{column}", "."),
+    "cell": ("", "{column}\n{value}", ""),
 }
+# "column" has no per-value template: the whole column is one view,
+# "<name>\n<value 1>\n...\n<value k>", pooled over every token.
+WHOLE_COLUMN = "column"
 
 
 # =============================================================================
@@ -180,6 +189,17 @@ class JumpReluSAE:
         return torch.where(pre > self.th, pre, torch.zeros_like(pre))
 
 
+def load_sae(path, device):
+    """Gemma Scope params.npz, or a Llama Scope checkpoints/final.safetensors."""
+    if str(path).endswith(".safetensors"):
+        sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "bioml"))
+        from encode_bioml_cached import LlamaScopeSAE
+        sae = LlamaScopeSAE(path, device)
+        sae.d_in, sae.width = sae.d_model, sae.n_features
+        return sae
+    return JumpReluSAE(path, device)
+
+
 # =============================================================================
 # Encoder
 # =============================================================================
@@ -188,12 +208,12 @@ class Encoder:
     def __init__(self, args):
         self.args = args
         model_path = str(Path(args.model_path).expanduser())
-        print(f"[gemma] {model_path}", flush=True)
+        print(f"[model] {model_path}", flush=True)
         self.tok = AutoTokenizer.from_pretrained(model_path, use_fast=True,
                                                  local_files_only=True)
         self.model, args.device = load_causal_lm(
             model_path, args.device, args.max_gpu_memory, local_files_only=True)
-        self.sae = JumpReluSAE(Path(args.sae_path).expanduser(), args.device)
+        self.sae = load_sae(Path(args.sae_path).expanduser(), args.device)
         if int(self.model.config.hidden_size) != self.sae.d_in:
             raise RuntimeError(f"hidden {self.model.config.hidden_size} != d_in {self.sae.d_in}")
         print(f"[sae] width={self.sae.width} d_in={self.sae.d_in} layer={args.layer}", flush=True)
@@ -234,8 +254,12 @@ class Encoder:
         totalsq = torch.zeros(width, dtype=torch.float32, device=self.args.device)
         count = torch.zeros(width, dtype=torch.int32, device=self.args.device)
         dense_rows, used = [], []
-        for v in values:
-            text, span = self.render(table, column, v)
+        if self.args.preset == WHOLE_COLUMN:
+            text = "\n".join([column, *values])
+            views = [(text, (0, len(text)), list(values))]
+        else:
+            views = [(*self.render(table, column, v), [v]) for v in values]
+        for text, span, vs in views:
             dense, code = self.view(text, span)
             if code is None:
                 continue
@@ -243,7 +267,7 @@ class Encoder:
             totalsq += code * code
             count += (code > 0).to(torch.int32)
             dense_rows.append(dense)
-            used.append(v)
+            used.extend(vs)
         if not dense_rows:
             return None
         idx = torch.nonzero(count, as_tuple=False).flatten()
@@ -277,7 +301,7 @@ def main():
                     help="cuda, cuda:N, or 'split' to spread the model over all visible GPUs")
     ap.add_argument("--max_gpu_memory", default="7GiB,12GiB",
                     help="per-GPU weight caps for --device split (last value repeats)")
-    ap.add_argument("--preset", default="value", choices=tuple(PRESETS))
+    ap.add_argument("--preset", default="value", choices=(*PRESETS, WHOLE_COLUMN))
     ap.add_argument("--views", type=int, default=16, help="cell values sampled per column")
     ap.add_argument("--max_rows", type=int, default=2000, help="rows read per csv")
     ap.add_argument("--max_value_chars", type=int, default=120)
@@ -358,7 +382,8 @@ def main():
               "preset": args.preset, "views": args.views, "max_rows": args.max_rows,
               "keep_top_features": args.keep_top_features,
               "pooling": "per_token_sae_encode_then_mean_over_symbol_span",
-              "view_unit": "sampled_cell_value"}
+              "max_length": args.max_length,
+              "view_unit": "whole_column" if args.preset == WHOLE_COLUMN else "sampled_cell_value"}
     with open(out / "run_config.json", "w", encoding="utf-8") as f:
         json.dump(config, f, indent=2)
     print(f"\nDONE in {time.time() - t0:.0f}s -> {out}")
