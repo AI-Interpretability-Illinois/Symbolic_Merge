@@ -1,0 +1,10 @@
+preview/
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.xdv
+figures/*.png
+compile.log
+main.pdf

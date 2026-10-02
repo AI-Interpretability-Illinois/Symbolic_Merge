@@ -1,0 +1,29 @@
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Task & Contexts & Strings & Dense & $-$PC1 & SAE unw. & \textbf{SAE-IDF} \\
+\midrule
+NELL $\to$ DBpedia & two LLMs & 0.936 & 0.964 & 0.966 & 0.916 & \textbf{0.969} \\
+ & one LLM & 0.936 & 0.927 & \textbf{0.972} & 0.904 & 0.972 \\
+ & native & 0.936 & 0.931 & 0.957 & 0.938 & \textbf{0.976} \\
+\addlinespace[2pt]
+YAGO $\to$ Wikidata & two LLMs & 0.899 & 0.908 & \textbf{0.977} & 0.915 & 0.973 \\
+ & one LLM & 0.899 & 0.917 & \textbf{0.968} & 0.920 & 0.968 \\
+ & native & 0.899 & 0.860 & 0.932 & 0.872 & \textbf{0.962} \\
+\addlinespace[2pt]
+MultiFarm zh $\to$ en & two LLMs & 0.067 & 0.780 & \textbf{0.825} & 0.492 & 0.819 \\
+ & one LLM & 0.067 & 0.753 & \textbf{0.787} & 0.478 & 0.786 \\
+ & native & 0.230 & 0.650 & \textbf{0.760} & 0.404 & 0.754 \\
+\addlinespace[2pt]
+MultiFarm ru $\to$ en & two LLMs & 0.067 & 0.703 & \textbf{0.840} & 0.270 & 0.811 \\
+ & one LLM & 0.073 & 0.680 & \textbf{0.847} & 0.248 & 0.807 \\
+ & native & 0.234 & 0.644 & 0.751 & 0.252 & \textbf{0.765} \\
+\addlinespace[2pt]
+MultiFarm ar $\to$ en & two LLMs & 0.066 & 0.588 & \textbf{0.773} & 0.195 & 0.753 \\
+ & one LLM & 0.066 & 0.595 & \textbf{0.794} & 0.163 & 0.724 \\
+ & native & 0.238 & 0.595 & 0.702 & 0.225 & \textbf{0.722} \\
+\addlinespace[2pt]
+Drug brand $\to$ generic & two LLMs & \textbf{0.762} & 0.401 & 0.464 & 0.276 & 0.448 \\
+ & one LLM, shared metadata & \textbf{0.828} & 0.384 & 0.456 & 0.277 & 0.441 \\
+\addlinespace[2pt]
+\bottomrule
+\end{tabular}

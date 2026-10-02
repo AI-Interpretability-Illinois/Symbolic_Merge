@@ -1,0 +1,1242 @@
+{
+  "symbols": 4829,
+  "languages": {
+    "Java": 911,
+    "C++": 901,
+    "C#": 898,
+    "Python": 882,
+    "Javascript": 881,
+    "PHP": 307,
+    "C": 49
+  },
+  "metrics": {
+    "dense": {
+      "pairwise": {
+        "Java->C++": {
+          "shared": 901,
+          "matched": 873,
+          "correct": 872,
+          "precision": 0.9988545246277205,
+          "coverage": 0.9689234184239733
+        },
+        "Java->C#": {
+          "shared": 898,
+          "matched": 883,
+          "correct": 883,
+          "precision": 1.0,
+          "coverage": 0.9832962138084632
+        },
+        "Java->Python": {
+          "shared": 882,
+          "matched": 783,
+          "correct": 773,
+          "precision": 0.9872286079182631,
+          "coverage": 0.8877551020408163
+        },
+        "Java->Javascript": {
+          "shared": 881,
+          "matched": 854,
+          "correct": 852,
+          "precision": 0.9976580796252927,
+          "coverage": 0.9693530079455165
+        },
+        "Java->PHP": {
+          "shared": 307,
+          "matched": 295,
+          "correct": 295,
+          "precision": 1.0,
+          "coverage": 0.9609120521172638
+        },
+        "Java->C": {
+          "shared": 49,
+          "matched": 47,
+          "correct": 46,
+          "precision": 0.9787234042553191,
+          "coverage": 0.9591836734693877
+        },
+        "C++->Java": {
+          "shared": 901,
+          "matched": 873,
+          "correct": 872,
+          "precision": 0.9988545246277205,
+          "coverage": 0.9689234184239733
+        },
+        "C++->C#": {
+          "shared": 889,
+          "matched": 865,
+          "correct": 862,
+          "precision": 0.9965317919075144,
+          "coverage": 0.9730033745781778
+        },
+        "C++->Python": {
+          "shared": 873,
+          "matched": 801,
+          "correct": 796,
+          "precision": 0.9937578027465668,
+          "coverage": 0.9175257731958762
+        },
+        "C++->Javascript": {
+          "shared": 873,
+          "matched": 846,
+          "correct": 843,
+          "precision": 0.9964539007092199,
+          "coverage": 0.9690721649484536
+        },
+        "C++->PHP": {
+          "shared": 302,
+          "matched": 289,
+          "correct": 289,
+          "precision": 1.0,
+          "coverage": 0.956953642384106
+        },
+        "C++->C": {
+          "shared": 43,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 1.0
+        },
+        "C#->Java": {
+          "shared": 898,
+          "matched": 883,
+          "correct": 883,
+          "precision": 1.0,
+          "coverage": 0.9832962138084632
+        },
+        "C#->C++": {
+          "shared": 889,
+          "matched": 865,
+          "correct": 862,
+          "precision": 0.9965317919075144,
+          "coverage": 0.9730033745781778
+        },
+        "C#->Python": {
+          "shared": 876,
+          "matched": 789,
+          "correct": 783,
+          "precision": 0.9923954372623575,
+          "coverage": 0.9006849315068494
+        },
+        "C#->Javascript": {
+          "shared": 876,
+          "matched": 858,
+          "correct": 857,
+          "precision": 0.9988344988344988,
+          "coverage": 0.9794520547945206
+        },
+        "C#->PHP": {
+          "shared": 306,
+          "matched": 296,
+          "correct": 296,
+          "precision": 1.0,
+          "coverage": 0.9673202614379085
+        },
+        "C#->C": {
+          "shared": 49,
+          "matched": 48,
+          "correct": 48,
+          "precision": 1.0,
+          "coverage": 0.9795918367346939
+        },
+        "Python->Java": {
+          "shared": 882,
+          "matched": 783,
+          "correct": 773,
+          "precision": 0.9872286079182631,
+          "coverage": 0.8877551020408163
+        },
+        "Python->C++": {
+          "shared": 873,
+          "matched": 801,
+          "correct": 796,
+          "precision": 0.9937578027465668,
+          "coverage": 0.9175257731958762
+        },
+        "Python->C#": {
+          "shared": 876,
+          "matched": 789,
+          "correct": 783,
+          "precision": 0.9923954372623575,
+          "coverage": 0.9006849315068494
+        },
+        "Python->Javascript": {
+          "shared": 862,
+          "matched": 795,
+          "correct": 791,
+          "precision": 0.9949685534591195,
+          "coverage": 0.9222737819025522
+        },
+        "Python->PHP": {
+          "shared": 303,
+          "matched": 275,
+          "correct": 273,
+          "precision": 0.9927272727272727,
+          "coverage": 0.9075907590759076
+        },
+        "Python->C": {
+          "shared": 48,
+          "matched": 41,
+          "correct": 41,
+          "precision": 1.0,
+          "coverage": 0.8541666666666666
+        },
+        "Javascript->Java": {
+          "shared": 881,
+          "matched": 854,
+          "correct": 852,
+          "precision": 0.9976580796252927,
+          "coverage": 0.9693530079455165
+        },
+        "Javascript->C++": {
+          "shared": 873,
+          "matched": 846,
+          "correct": 843,
+          "precision": 0.9964539007092199,
+          "coverage": 0.9690721649484536
+        },
+        "Javascript->C#": {
+          "shared": 876,
+          "matched": 858,
+          "correct": 857,
+          "precision": 0.9988344988344988,
+          "coverage": 0.9794520547945206
+        },
+        "Javascript->Python": {
+          "shared": 862,
+          "matched": 795,
+          "correct": 791,
+          "precision": 0.9949685534591195,
+          "coverage": 0.9222737819025522
+        },
+        "Javascript->PHP": {
+          "shared": 301,
+          "matched": 295,
+          "correct": 294,
+          "precision": 0.9966101694915255,
+          "coverage": 0.9800664451827242
+        },
+        "Javascript->C": {
+          "shared": 47,
+          "matched": 46,
+          "correct": 46,
+          "precision": 1.0,
+          "coverage": 0.9787234042553191
+        },
+        "PHP->Java": {
+          "shared": 307,
+          "matched": 295,
+          "correct": 295,
+          "precision": 1.0,
+          "coverage": 0.9609120521172638
+        },
+        "PHP->C++": {
+          "shared": 302,
+          "matched": 289,
+          "correct": 289,
+          "precision": 1.0,
+          "coverage": 0.956953642384106
+        },
+        "PHP->C#": {
+          "shared": 306,
+          "matched": 296,
+          "correct": 296,
+          "precision": 1.0,
+          "coverage": 0.9673202614379085
+        },
+        "PHP->Python": {
+          "shared": 303,
+          "matched": 275,
+          "correct": 273,
+          "precision": 0.9927272727272727,
+          "coverage": 0.9075907590759076
+        },
+        "PHP->Javascript": {
+          "shared": 301,
+          "matched": 295,
+          "correct": 294,
+          "precision": 0.9966101694915255,
+          "coverage": 0.9800664451827242
+        },
+        "PHP->C": {
+          "shared": 43,
+          "matched": 42,
+          "correct": 42,
+          "precision": 1.0,
+          "coverage": 0.9767441860465116
+        },
+        "C->Java": {
+          "shared": 49,
+          "matched": 47,
+          "correct": 46,
+          "precision": 0.9787234042553191,
+          "coverage": 0.9591836734693877
+        },
+        "C->C++": {
+          "shared": 43,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 1.0
+        },
+        "C->C#": {
+          "shared": 49,
+          "matched": 48,
+          "correct": 48,
+          "precision": 1.0,
+          "coverage": 0.9795918367346939
+        },
+        "C->Python": {
+          "shared": 48,
+          "matched": 41,
+          "correct": 41,
+          "precision": 1.0,
+          "coverage": 0.8541666666666666
+        },
+        "C->Javascript": {
+          "shared": 47,
+          "matched": 46,
+          "correct": 46,
+          "precision": 1.0,
+          "coverage": 0.9787234042553191
+        },
+        "C->PHP": {
+          "shared": 43,
+          "matched": 42,
+          "correct": 42,
+          "precision": 1.0,
+          "coverage": 0.9767441860465116
+        }
+      },
+      "mean_pair_precision": 0.9964163830268892,
+      "mean_pair_coverage": 0.9520282262150327,
+      "transitivity": 0.9966777408637874,
+      "transitivity_triples": 66822,
+      "merge_purity": 0.9842617519155105,
+      "merge_ari": 0.9622476381904115,
+      "merge_components": 954,
+      "true_symbols": 911,
+      "component_ratio": 1.0472008781558726
+    },
+    "dense_pc1": {
+      "pairwise": {
+        "Java->C++": {
+          "shared": 901,
+          "matched": 873,
+          "correct": 872,
+          "precision": 0.9988545246277205,
+          "coverage": 0.9689234184239733
+        },
+        "Java->C#": {
+          "shared": 898,
+          "matched": 883,
+          "correct": 883,
+          "precision": 1.0,
+          "coverage": 0.9832962138084632
+        },
+        "Java->Python": {
+          "shared": 882,
+          "matched": 783,
+          "correct": 773,
+          "precision": 0.9872286079182631,
+          "coverage": 0.8877551020408163
+        },
+        "Java->Javascript": {
+          "shared": 881,
+          "matched": 854,
+          "correct": 852,
+          "precision": 0.9976580796252927,
+          "coverage": 0.9693530079455165
+        },
+        "Java->PHP": {
+          "shared": 307,
+          "matched": 295,
+          "correct": 295,
+          "precision": 1.0,
+          "coverage": 0.9609120521172638
+        },
+        "Java->C": {
+          "shared": 49,
+          "matched": 47,
+          "correct": 46,
+          "precision": 0.9787234042553191,
+          "coverage": 0.9591836734693877
+        },
+        "C++->Java": {
+          "shared": 901,
+          "matched": 873,
+          "correct": 872,
+          "precision": 0.9988545246277205,
+          "coverage": 0.9689234184239733
+        },
+        "C++->C#": {
+          "shared": 889,
+          "matched": 865,
+          "correct": 862,
+          "precision": 0.9965317919075144,
+          "coverage": 0.9730033745781778
+        },
+        "C++->Python": {
+          "shared": 873,
+          "matched": 801,
+          "correct": 796,
+          "precision": 0.9937578027465668,
+          "coverage": 0.9175257731958762
+        },
+        "C++->Javascript": {
+          "shared": 873,
+          "matched": 846,
+          "correct": 843,
+          "precision": 0.9964539007092199,
+          "coverage": 0.9690721649484536
+        },
+        "C++->PHP": {
+          "shared": 302,
+          "matched": 289,
+          "correct": 289,
+          "precision": 1.0,
+          "coverage": 0.956953642384106
+        },
+        "C++->C": {
+          "shared": 43,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 1.0
+        },
+        "C#->Java": {
+          "shared": 898,
+          "matched": 883,
+          "correct": 883,
+          "precision": 1.0,
+          "coverage": 0.9832962138084632
+        },
+        "C#->C++": {
+          "shared": 889,
+          "matched": 865,
+          "correct": 862,
+          "precision": 0.9965317919075144,
+          "coverage": 0.9730033745781778
+        },
+        "C#->Python": {
+          "shared": 876,
+          "matched": 789,
+          "correct": 783,
+          "precision": 0.9923954372623575,
+          "coverage": 0.9006849315068494
+        },
+        "C#->Javascript": {
+          "shared": 876,
+          "matched": 858,
+          "correct": 857,
+          "precision": 0.9988344988344988,
+          "coverage": 0.9794520547945206
+        },
+        "C#->PHP": {
+          "shared": 306,
+          "matched": 296,
+          "correct": 296,
+          "precision": 1.0,
+          "coverage": 0.9673202614379085
+        },
+        "C#->C": {
+          "shared": 49,
+          "matched": 48,
+          "correct": 48,
+          "precision": 1.0,
+          "coverage": 0.9795918367346939
+        },
+        "Python->Java": {
+          "shared": 882,
+          "matched": 783,
+          "correct": 773,
+          "precision": 0.9872286079182631,
+          "coverage": 0.8877551020408163
+        },
+        "Python->C++": {
+          "shared": 873,
+          "matched": 801,
+          "correct": 796,
+          "precision": 0.9937578027465668,
+          "coverage": 0.9175257731958762
+        },
+        "Python->C#": {
+          "shared": 876,
+          "matched": 789,
+          "correct": 783,
+          "precision": 0.9923954372623575,
+          "coverage": 0.9006849315068494
+        },
+        "Python->Javascript": {
+          "shared": 862,
+          "matched": 795,
+          "correct": 791,
+          "precision": 0.9949685534591195,
+          "coverage": 0.9222737819025522
+        },
+        "Python->PHP": {
+          "shared": 303,
+          "matched": 275,
+          "correct": 273,
+          "precision": 0.9927272727272727,
+          "coverage": 0.9075907590759076
+        },
+        "Python->C": {
+          "shared": 48,
+          "matched": 41,
+          "correct": 41,
+          "precision": 1.0,
+          "coverage": 0.8541666666666666
+        },
+        "Javascript->Java": {
+          "shared": 881,
+          "matched": 854,
+          "correct": 852,
+          "precision": 0.9976580796252927,
+          "coverage": 0.9693530079455165
+        },
+        "Javascript->C++": {
+          "shared": 873,
+          "matched": 846,
+          "correct": 843,
+          "precision": 0.9964539007092199,
+          "coverage": 0.9690721649484536
+        },
+        "Javascript->C#": {
+          "shared": 876,
+          "matched": 858,
+          "correct": 857,
+          "precision": 0.9988344988344988,
+          "coverage": 0.9794520547945206
+        },
+        "Javascript->Python": {
+          "shared": 862,
+          "matched": 795,
+          "correct": 791,
+          "precision": 0.9949685534591195,
+          "coverage": 0.9222737819025522
+        },
+        "Javascript->PHP": {
+          "shared": 301,
+          "matched": 295,
+          "correct": 294,
+          "precision": 0.9966101694915255,
+          "coverage": 0.9800664451827242
+        },
+        "Javascript->C": {
+          "shared": 47,
+          "matched": 46,
+          "correct": 46,
+          "precision": 1.0,
+          "coverage": 0.9787234042553191
+        },
+        "PHP->Java": {
+          "shared": 307,
+          "matched": 295,
+          "correct": 295,
+          "precision": 1.0,
+          "coverage": 0.9609120521172638
+        },
+        "PHP->C++": {
+          "shared": 302,
+          "matched": 289,
+          "correct": 289,
+          "precision": 1.0,
+          "coverage": 0.956953642384106
+        },
+        "PHP->C#": {
+          "shared": 306,
+          "matched": 296,
+          "correct": 296,
+          "precision": 1.0,
+          "coverage": 0.9673202614379085
+        },
+        "PHP->Python": {
+          "shared": 303,
+          "matched": 275,
+          "correct": 273,
+          "precision": 0.9927272727272727,
+          "coverage": 0.9075907590759076
+        },
+        "PHP->Javascript": {
+          "shared": 301,
+          "matched": 295,
+          "correct": 294,
+          "precision": 0.9966101694915255,
+          "coverage": 0.9800664451827242
+        },
+        "PHP->C": {
+          "shared": 43,
+          "matched": 42,
+          "correct": 42,
+          "precision": 1.0,
+          "coverage": 0.9767441860465116
+        },
+        "C->Java": {
+          "shared": 49,
+          "matched": 47,
+          "correct": 46,
+          "precision": 0.9787234042553191,
+          "coverage": 0.9591836734693877
+        },
+        "C->C++": {
+          "shared": 43,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 1.0
+        },
+        "C->C#": {
+          "shared": 49,
+          "matched": 48,
+          "correct": 48,
+          "precision": 1.0,
+          "coverage": 0.9795918367346939
+        },
+        "C->Python": {
+          "shared": 48,
+          "matched": 41,
+          "correct": 41,
+          "precision": 1.0,
+          "coverage": 0.8541666666666666
+        },
+        "C->Javascript": {
+          "shared": 47,
+          "matched": 46,
+          "correct": 46,
+          "precision": 1.0,
+          "coverage": 0.9787234042553191
+        },
+        "C->PHP": {
+          "shared": 43,
+          "matched": 42,
+          "correct": 42,
+          "precision": 1.0,
+          "coverage": 0.9767441860465116
+        }
+      },
+      "mean_pair_precision": 0.9964163830268892,
+      "mean_pair_coverage": 0.9520282262150327,
+      "transitivity": 0.9966777408637874,
+      "transitivity_triples": 66822,
+      "merge_purity": 0.9842617519155105,
+      "merge_ari": 0.9622476381904115,
+      "merge_components": 954,
+      "true_symbols": 911,
+      "component_ratio": 1.0472008781558726
+    },
+    "sae_mean": {
+      "pairwise": {
+        "Java->C++": {
+          "shared": 901,
+          "matched": 855,
+          "correct": 853,
+          "precision": 0.9976608187134502,
+          "coverage": 0.9489456159822419
+        },
+        "Java->C#": {
+          "shared": 898,
+          "matched": 881,
+          "correct": 881,
+          "precision": 1.0,
+          "coverage": 0.9810690423162584
+        },
+        "Java->Python": {
+          "shared": 882,
+          "matched": 730,
+          "correct": 717,
+          "precision": 0.9821917808219178,
+          "coverage": 0.8276643990929705
+        },
+        "Java->Javascript": {
+          "shared": 881,
+          "matched": 771,
+          "correct": 764,
+          "precision": 0.9909208819714657,
+          "coverage": 0.8751418842224744
+        },
+        "Java->PHP": {
+          "shared": 307,
+          "matched": 281,
+          "correct": 281,
+          "precision": 1.0,
+          "coverage": 0.9153094462540716
+        },
+        "Java->C": {
+          "shared": 49,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 0.8775510204081632
+        },
+        "C++->Java": {
+          "shared": 901,
+          "matched": 855,
+          "correct": 853,
+          "precision": 0.9976608187134502,
+          "coverage": 0.9489456159822419
+        },
+        "C++->C#": {
+          "shared": 889,
+          "matched": 855,
+          "correct": 853,
+          "precision": 0.9976608187134502,
+          "coverage": 0.9617547806524185
+        },
+        "C++->Python": {
+          "shared": 873,
+          "matched": 791,
+          "correct": 790,
+          "precision": 0.9987357774968394,
+          "coverage": 0.9060710194730813
+        },
+        "C++->Javascript": {
+          "shared": 873,
+          "matched": 810,
+          "correct": 805,
+          "precision": 0.9938271604938271,
+          "coverage": 0.9278350515463918
+        },
+        "C++->PHP": {
+          "shared": 302,
+          "matched": 284,
+          "correct": 284,
+          "precision": 1.0,
+          "coverage": 0.9403973509933775
+        },
+        "C++->C": {
+          "shared": 43,
+          "matched": 41,
+          "correct": 41,
+          "precision": 1.0,
+          "coverage": 0.9534883720930233
+        },
+        "C#->Java": {
+          "shared": 898,
+          "matched": 881,
+          "correct": 881,
+          "precision": 1.0,
+          "coverage": 0.9810690423162584
+        },
+        "C#->C++": {
+          "shared": 889,
+          "matched": 855,
+          "correct": 853,
+          "precision": 0.9976608187134502,
+          "coverage": 0.9617547806524185
+        },
+        "C#->Python": {
+          "shared": 876,
+          "matched": 770,
+          "correct": 763,
+          "precision": 0.990909090909091,
+          "coverage": 0.8789954337899544
+        },
+        "C#->Javascript": {
+          "shared": 876,
+          "matched": 812,
+          "correct": 807,
+          "precision": 0.9938423645320197,
+          "coverage": 0.9269406392694064
+        },
+        "C#->PHP": {
+          "shared": 306,
+          "matched": 291,
+          "correct": 291,
+          "precision": 1.0,
+          "coverage": 0.9509803921568627
+        },
+        "C#->C": {
+          "shared": 49,
+          "matched": 46,
+          "correct": 46,
+          "precision": 1.0,
+          "coverage": 0.9387755102040817
+        },
+        "Python->Java": {
+          "shared": 882,
+          "matched": 730,
+          "correct": 717,
+          "precision": 0.9821917808219178,
+          "coverage": 0.8276643990929705
+        },
+        "Python->C++": {
+          "shared": 873,
+          "matched": 791,
+          "correct": 790,
+          "precision": 0.9987357774968394,
+          "coverage": 0.9060710194730813
+        },
+        "Python->C#": {
+          "shared": 876,
+          "matched": 770,
+          "correct": 763,
+          "precision": 0.990909090909091,
+          "coverage": 0.8789954337899544
+        },
+        "Python->Javascript": {
+          "shared": 862,
+          "matched": 766,
+          "correct": 759,
+          "precision": 0.9908616187989556,
+          "coverage": 0.888631090487239
+        },
+        "Python->PHP": {
+          "shared": 303,
+          "matched": 267,
+          "correct": 266,
+          "precision": 0.9962546816479401,
+          "coverage": 0.8811881188118812
+        },
+        "Python->C": {
+          "shared": 48,
+          "matched": 41,
+          "correct": 41,
+          "precision": 1.0,
+          "coverage": 0.8541666666666666
+        },
+        "Javascript->Java": {
+          "shared": 881,
+          "matched": 771,
+          "correct": 764,
+          "precision": 0.9909208819714657,
+          "coverage": 0.8751418842224744
+        },
+        "Javascript->C++": {
+          "shared": 873,
+          "matched": 810,
+          "correct": 805,
+          "precision": 0.9938271604938271,
+          "coverage": 0.9278350515463918
+        },
+        "Javascript->C#": {
+          "shared": 876,
+          "matched": 812,
+          "correct": 807,
+          "precision": 0.9938423645320197,
+          "coverage": 0.9269406392694064
+        },
+        "Javascript->Python": {
+          "shared": 862,
+          "matched": 766,
+          "correct": 759,
+          "precision": 0.9908616187989556,
+          "coverage": 0.888631090487239
+        },
+        "Javascript->PHP": {
+          "shared": 301,
+          "matched": 285,
+          "correct": 284,
+          "precision": 0.9964912280701754,
+          "coverage": 0.946843853820598
+        },
+        "Javascript->C": {
+          "shared": 47,
+          "matched": 44,
+          "correct": 44,
+          "precision": 1.0,
+          "coverage": 0.9361702127659575
+        },
+        "PHP->Java": {
+          "shared": 307,
+          "matched": 281,
+          "correct": 281,
+          "precision": 1.0,
+          "coverage": 0.9153094462540716
+        },
+        "PHP->C++": {
+          "shared": 302,
+          "matched": 284,
+          "correct": 284,
+          "precision": 1.0,
+          "coverage": 0.9403973509933775
+        },
+        "PHP->C#": {
+          "shared": 306,
+          "matched": 291,
+          "correct": 291,
+          "precision": 1.0,
+          "coverage": 0.9509803921568627
+        },
+        "PHP->Python": {
+          "shared": 303,
+          "matched": 267,
+          "correct": 266,
+          "precision": 0.9962546816479401,
+          "coverage": 0.8811881188118812
+        },
+        "PHP->Javascript": {
+          "shared": 301,
+          "matched": 285,
+          "correct": 284,
+          "precision": 0.9964912280701754,
+          "coverage": 0.946843853820598
+        },
+        "PHP->C": {
+          "shared": 43,
+          "matched": 40,
+          "correct": 40,
+          "precision": 1.0,
+          "coverage": 0.9302325581395349
+        },
+        "C->Java": {
+          "shared": 49,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 0.8775510204081632
+        },
+        "C->C++": {
+          "shared": 43,
+          "matched": 41,
+          "correct": 41,
+          "precision": 1.0,
+          "coverage": 0.9534883720930233
+        },
+        "C->C#": {
+          "shared": 49,
+          "matched": 46,
+          "correct": 46,
+          "precision": 1.0,
+          "coverage": 0.9387755102040817
+        },
+        "C->Python": {
+          "shared": 48,
+          "matched": 41,
+          "correct": 41,
+          "precision": 1.0,
+          "coverage": 0.8541666666666666
+        },
+        "C->Javascript": {
+          "shared": 47,
+          "matched": 44,
+          "correct": 44,
+          "precision": 1.0,
+          "coverage": 0.9361702127659575
+        },
+        "C->PHP": {
+          "shared": 43,
+          "matched": 40,
+          "correct": 40,
+          "precision": 1.0,
+          "coverage": 0.9302325581395349
+        }
+      },
+      "mean_pair_precision": 0.9966360105794825,
+      "mean_pair_coverage": 0.9165786885307932,
+      "transitivity": 0.9953079178885631,
+      "transitivity_triples": 61380,
+      "merge_purity": 0.979705943259474,
+      "merge_ari": 0.95724702745521,
+      "merge_components": 966,
+      "true_symbols": 911,
+      "component_ratio": 1.0603732162458837
+    },
+    "sae_idf": {
+      "pairwise": {
+        "Java->C++": {
+          "shared": 901,
+          "matched": 880,
+          "correct": 879,
+          "precision": 0.9988636363636364,
+          "coverage": 0.97669256381798
+        },
+        "Java->C#": {
+          "shared": 898,
+          "matched": 884,
+          "correct": 884,
+          "precision": 1.0,
+          "coverage": 0.9844097995545658
+        },
+        "Java->Python": {
+          "shared": 882,
+          "matched": 843,
+          "correct": 840,
+          "precision": 0.99644128113879,
+          "coverage": 0.95578231292517
+        },
+        "Java->Javascript": {
+          "shared": 881,
+          "matched": 861,
+          "correct": 860,
+          "precision": 0.9988385598141696,
+          "coverage": 0.9772985244040863
+        },
+        "Java->PHP": {
+          "shared": 307,
+          "matched": 298,
+          "correct": 298,
+          "precision": 1.0,
+          "coverage": 0.9706840390879479
+        },
+        "Java->C": {
+          "shared": 49,
+          "matched": 48,
+          "correct": 48,
+          "precision": 1.0,
+          "coverage": 0.9795918367346939
+        },
+        "C++->Java": {
+          "shared": 901,
+          "matched": 880,
+          "correct": 879,
+          "precision": 0.9988636363636364,
+          "coverage": 0.97669256381798
+        },
+        "C++->C#": {
+          "shared": 889,
+          "matched": 866,
+          "correct": 864,
+          "precision": 0.9976905311778291,
+          "coverage": 0.9741282339707537
+        },
+        "C++->Python": {
+          "shared": 873,
+          "matched": 839,
+          "correct": 839,
+          "precision": 1.0,
+          "coverage": 0.9610538373424972
+        },
+        "C++->Javascript": {
+          "shared": 873,
+          "matched": 846,
+          "correct": 844,
+          "precision": 0.9976359338061466,
+          "coverage": 0.9690721649484536
+        },
+        "C++->PHP": {
+          "shared": 302,
+          "matched": 295,
+          "correct": 294,
+          "precision": 0.9966101694915255,
+          "coverage": 0.9768211920529801
+        },
+        "C++->C": {
+          "shared": 43,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 1.0
+        },
+        "C#->Java": {
+          "shared": 898,
+          "matched": 884,
+          "correct": 884,
+          "precision": 1.0,
+          "coverage": 0.9844097995545658
+        },
+        "C#->C++": {
+          "shared": 889,
+          "matched": 866,
+          "correct": 864,
+          "precision": 0.9976905311778291,
+          "coverage": 0.9741282339707537
+        },
+        "C#->Python": {
+          "shared": 876,
+          "matched": 838,
+          "correct": 835,
+          "precision": 0.9964200477326969,
+          "coverage": 0.95662100456621
+        },
+        "C#->Javascript": {
+          "shared": 876,
+          "matched": 860,
+          "correct": 859,
+          "precision": 0.9988372093023256,
+          "coverage": 0.9817351598173516
+        },
+        "C#->PHP": {
+          "shared": 306,
+          "matched": 299,
+          "correct": 299,
+          "precision": 1.0,
+          "coverage": 0.9771241830065359
+        },
+        "C#->C": {
+          "shared": 49,
+          "matched": 47,
+          "correct": 47,
+          "precision": 1.0,
+          "coverage": 0.9591836734693877
+        },
+        "Python->Java": {
+          "shared": 882,
+          "matched": 843,
+          "correct": 840,
+          "precision": 0.99644128113879,
+          "coverage": 0.95578231292517
+        },
+        "Python->C++": {
+          "shared": 873,
+          "matched": 839,
+          "correct": 839,
+          "precision": 1.0,
+          "coverage": 0.9610538373424972
+        },
+        "Python->C#": {
+          "shared": 876,
+          "matched": 838,
+          "correct": 835,
+          "precision": 0.9964200477326969,
+          "coverage": 0.95662100456621
+        },
+        "Python->Javascript": {
+          "shared": 862,
+          "matched": 822,
+          "correct": 819,
+          "precision": 0.9963503649635036,
+          "coverage": 0.9535962877030162
+        },
+        "Python->PHP": {
+          "shared": 303,
+          "matched": 289,
+          "correct": 288,
+          "precision": 0.9965397923875432,
+          "coverage": 0.9537953795379538
+        },
+        "Python->C": {
+          "shared": 48,
+          "matched": 44,
+          "correct": 44,
+          "precision": 1.0,
+          "coverage": 0.9166666666666666
+        },
+        "Javascript->Java": {
+          "shared": 881,
+          "matched": 861,
+          "correct": 860,
+          "precision": 0.9988385598141696,
+          "coverage": 0.9772985244040863
+        },
+        "Javascript->C++": {
+          "shared": 873,
+          "matched": 846,
+          "correct": 844,
+          "precision": 0.9976359338061466,
+          "coverage": 0.9690721649484536
+        },
+        "Javascript->C#": {
+          "shared": 876,
+          "matched": 860,
+          "correct": 859,
+          "precision": 0.9988372093023256,
+          "coverage": 0.9817351598173516
+        },
+        "Javascript->Python": {
+          "shared": 862,
+          "matched": 822,
+          "correct": 819,
+          "precision": 0.9963503649635036,
+          "coverage": 0.9535962877030162
+        },
+        "Javascript->PHP": {
+          "shared": 301,
+          "matched": 292,
+          "correct": 291,
+          "precision": 0.9965753424657534,
+          "coverage": 0.9700996677740864
+        },
+        "Javascript->C": {
+          "shared": 47,
+          "matched": 44,
+          "correct": 44,
+          "precision": 1.0,
+          "coverage": 0.9361702127659575
+        },
+        "PHP->Java": {
+          "shared": 307,
+          "matched": 298,
+          "correct": 298,
+          "precision": 1.0,
+          "coverage": 0.9706840390879479
+        },
+        "PHP->C++": {
+          "shared": 302,
+          "matched": 295,
+          "correct": 294,
+          "precision": 0.9966101694915255,
+          "coverage": 0.9768211920529801
+        },
+        "PHP->C#": {
+          "shared": 306,
+          "matched": 299,
+          "correct": 299,
+          "precision": 1.0,
+          "coverage": 0.9771241830065359
+        },
+        "PHP->Python": {
+          "shared": 303,
+          "matched": 289,
+          "correct": 288,
+          "precision": 0.9965397923875432,
+          "coverage": 0.9537953795379538
+        },
+        "PHP->Javascript": {
+          "shared": 301,
+          "matched": 292,
+          "correct": 291,
+          "precision": 0.9965753424657534,
+          "coverage": 0.9700996677740864
+        },
+        "PHP->C": {
+          "shared": 43,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 1.0
+        },
+        "C->Java": {
+          "shared": 49,
+          "matched": 48,
+          "correct": 48,
+          "precision": 1.0,
+          "coverage": 0.9795918367346939
+        },
+        "C->C++": {
+          "shared": 43,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 1.0
+        },
+        "C->C#": {
+          "shared": 49,
+          "matched": 47,
+          "correct": 47,
+          "precision": 1.0,
+          "coverage": 0.9591836734693877
+        },
+        "C->Python": {
+          "shared": 48,
+          "matched": 44,
+          "correct": 44,
+          "precision": 1.0,
+          "coverage": 0.9166666666666666
+        },
+        "C->Javascript": {
+          "shared": 47,
+          "matched": 44,
+          "correct": 44,
+          "precision": 1.0,
+          "coverage": 0.9361702127659575
+        },
+        "C->PHP": {
+          "shared": 43,
+          "matched": 43,
+          "correct": 43,
+          "precision": 1.0,
+          "coverage": 1.0
+        }
+      },
+      "mean_pair_precision": 0.9986096604116151,
+      "mean_pair_coverage": 0.9681203209593473,
+      "transitivity": 0.9987454379562044,
+      "transitivity_triples": 70144,
+      "merge_purity": 0.9942016980741354,
+      "merge_ari": 0.9826851634880741,
+      "merge_components": 954,
+      "true_symbols": 911,
+      "component_ratio": 1.0472008781558726
+    }
+  }
+}

@@ -1,0 +1,21 @@
+\begin{tabular}{@{}p{0.34\linewidth}p{0.3\linewidth}p{0.3\linewidth}@{}}
+\toprule
+Setting (Gemma-2-9B, layer 20, unless noted) & HOL Light & Metamath \\
+\midrule
+Dense baseline & 0.541 & 0.207 \\
+\addlinespace[2pt]
+\multicolumn{3}{@{}p{\linewidth}@{}}{\textit{SAE width} 16k / 32k / 65k / 131k / 262k / 524k / 1M, each at its canonical $L_0$ (68 / 57 / 55 / 114 / 50 / 48 / 101)} \\
+\quad SAE-IDF & 0.82 / 0.86 / 0.89 / 0.90 / 0.91 / 0.93 / 0.93 & 0.62 / 0.61 / 0.71 / 0.67 / 0.68 / 0.70 / 0.66 \\
+\addlinespace[2pt]
+\multicolumn{3}{@{}p{\linewidth}@{}}{\textit{Sparsity}, average $L_0$ 11 / 19 / 34 / 53 / 62 / 114 / 221 / 276 (131k features)} \\
+\quad SAE-IDF & 0.89 / 0.89 / 0.90 / 0.91 / 0.90 / 0.90 / 0.90 / 0.90 & 0.68 / 0.67 / 0.70 / 0.71 / 0.72 / 0.67 / 0.62 / 0.64 \\
+\addlinespace[2pt]
+\multicolumn{3}{@{}p{\linewidth}@{}}{\textit{Smaller model}: Gemma-2-2B, layer 12, width 16k / 65k / 262k} \\
+\quad Dense & 0.462 & 0.257 \\
+\quad SAE-IDF & 0.80 / 0.86 / 0.87 & 0.65 / 0.52 / 0.45 \\
+\addlinespace[2pt]
+\multicolumn{3}{@{}p{\linewidth}@{}}{\textit{Larger model}: Gemma-2-27B, layer 10 / 22 / 34 (131k, canonical $L_0$ 106 / 82 / 72)} \\
+\quad Dense & 0.32 / 0.41 / 0.41 & 0.08 / 0.20 / 0.15 \\
+\quad SAE-IDF & 0.84 / 0.94 / 0.58 & 0.41 / 0.74 / 0.60 \\
+\bottomrule
+\end{tabular}
