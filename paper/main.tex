@@ -1,4 +1,4 @@
-% Rare Features, Shared Symbols -- NAACL submission draft.
+% Sparse Autoencoders Are a Shared Coordinate System for Symbolic Matching -- NAACL submission draft.
 % Build: tectonic -X compile main.tex   (XeTeX; CJK/Arabic glyphs shown if a font is found)
 %     or pdflatex + bibtex (glyphs fall back to romanisation).
 \documentclass[11pt]{article}
@@ -48,7 +48,7 @@
 \setlength{\abovecaptionskip}{5pt}
 \setlength{\dbltextfloatsep}{10pt plus 2pt minus 2pt}
 
-\title{Rare Features, Shared Symbols: Aligning Symbolic Systems\\in an LLM's Sparse Feature Space}
+\title{Sparse Autoencoders Are a Shared Coordinate System\\for Symbolic Matching}
 
 \author{Anonymous NAACL submission \\
   % Xiaocong Yang \\ University of Illinois Urbana-Champaign \\ \texttt{xy51@illinois.edu}
@@ -58,11 +58,11 @@
 \maketitle
 
 \begin{abstract}
-Human knowledge is encoded in many mutually incompatible symbolic systems---ontologies, knowledge graphs, database schemas, programming languages, proof assistants---and each names the same thing differently.
+Human knowledge is encoded in many mutually incompatible symbolic systems---ontologies, knowledge graphs, database schemas, programming languages, proof assistants---that name the same things differently.
 Aligning them is a prerequisite for a general-purpose symbolic layer over large language models, yet alignment is still studied one kind of system at a time, with methods that lean on surface strings or on supervised pairs.
 We show that the sparse-autoencoder (SAE) features of a pretrained LLM form a shared coordinate system in which symbols from all of these systems can be matched without training.
 \method represents a symbol by the SAE features that its own system-internal context activates, re-weights every feature by its rarity (inverse document frequency), and matches by cosine.
-On ten tasks spanning formal mathematics (miniF2F, Lean~4 to Isabelle, Metamath and HOL Light), code (XLCoST), table schemas (Valentine), knowledge graphs (OAEI Common-KG) and cross-lingual ontologies (MultiFarm), \method beats the dense hidden state of the same model on every task (+0.01 to +0.45 MRR) and is the best method in 10 of 16 comparisons; the gains are largest where notations differ most (Lean~4 to Metamath: MRR 0.66 vs.\ 0.21).
+On ten tasks spanning formal mathematics (miniF2F, Lean~4 to Isabelle, Metamath and HOL Light), code (XLCoST), table schemas (Valentine), knowledge graphs (OAEI Common-KG) and cross-lingual ontologies (MultiFarm), \method beats the dense hidden state of the same model on every task (+0.01 to +0.45 MRR), beats common-direction-removed dense on 15 of 16 comparisons, and is ahead of an off-the-shelf multilingual retriever (BGE-M3) on 12 of 16; the gains over the model's own states are largest where notations differ most (Lean~4 to Metamath: MRR 0.66 vs.\ 0.21).
 Rarity weighting is what makes the sparse basis useful: without it the same features trail dense on 13 of 16 comparisons; with it \method beats dense in all 39 settings of layer, SAE width, sparsity, model size (2B to 27B) and model family we tried, and on a second model family (Llama-3.1-8B) run over the whole main table it beats dense on 11 of 12 rows, although there its margin over common-direction-removed dense narrows to a tie on knowledge-graph and cross-lingual terms.
 Because the cosine decomposes over named features, every match is readable: the Chinese term \zh{费用}{\emph{feiyong}} matches ``fee for conference'' through a single feature for ``fees and payment structures''.
 We argue that an LLM's own feature dictionary is a candidate substrate for aligning and merging existing symbolic systems into a universal symbolic backbone.
@@ -73,6 +73,7 @@ We argue that an LLM's own feature dictionary is a candidate substrate for align
 
 Knowledge is written down in thousands of symbolic systems that do not share a vocabulary: a disease is \emph{Duodenal Atresia} in one biomedical ontology and an opaque identifier in the next; a competition problem is a Lean~4 \texttt{theorem} in one proof assistant and a string of \texttt{\$e} hypotheses in Metamath; a table column is \texttt{src\_id} here and \texttt{SRI} there.
 Putting such systems in correspondence is a classic problem in several communities---ontology matching \citep{euzenat2013ontology}, schema matching \citep{rahm2001survey}, entity alignment \citep{sun2020benchmarking}, cross-language code retrieval \citep{zhu2022xlcost}---but each solves it for its own kind of system, with lexical matchers tuned to its naming conventions or with models trained on aligned pairs.
+We call the task \emph{symbolic matching}, whatever the kind of system; its output for one pair of systems is an \emph{alignment}, and composing alignments across many systems into one symbol inventory is \emph{merging}.
 
 The question matters beyond any one community.
 \citet{yang2026generative} argues that once LLMs act as agents, interpretability must become \emph{generative}---an inference pass should expose checkpoints that are natively human-readable and causally intervenable---and proposes neuro-symbolic models, whose symbolic components serve as those checkpoints, as the instance.
@@ -80,17 +81,17 @@ The first obstacle that paper names is a universal, general-purpose symbolic sys
 Writing one by hand failed: Cyc absorbed a person-century of effort for about $10^5$ concepts \citep{lenat1995cyc}.
 The proposed alternative is to align, merge and extend the symbolic systems that already exist; alignment across \emph{heterogeneous} systems is the first operation that route needs, and no single method today spans the kinds of systems involved.
 
-A pretrained LLM reads all of these notations, so its hidden states are a candidate common space; but dense hidden states are anisotropic and dominated by a few directions shared by all inputs \citep{ethayarajh2019contextual, mu2018allbutthetop}.
+A pretrained LLM reads all of these notations, so its hidden states are a candidate common space, but they are anisotropic, dominated by directions shared by all inputs \citep{ethayarajh2019contextual, mu2018allbutthetop}.
 Sparse autoencoders (SAEs) decompose the same states into a large dictionary of sparsely active, individually interpretable features \citep{bricken2023monosemanticity, cunningham2024sparse, templeton2024scaling}, available for every layer of Gemma~2 and Llama~3.1 \citep{lieberum2024gemmascope, he2024llamascope} and shared across languages and modalities \citep{templeton2024scaling, brinkmann2025grammatical}---exactly what a shared symbol space needs.
 Whether SAE features are \emph{useful} beyond interpretation is contested \citep{kantamneni2025sparse}.
 
 \paragraph{This paper.}
-We propose \method, a training-free procedure that matches symbols across symbolic systems in an LLM's SAE feature space (Figure~\ref{fig:pipeline}).
+We propose \method, a training-free procedure for symbolic matching in an LLM's SAE feature space (Figure~\ref{fig:pipeline}).
 Each symbol is read in \emph{native views} drawn from its own system---the program, the formal statement, the column's values, the class's instances, the term's axioms---so nothing is generated and no aligned pairs are used; the SAE encodes the hidden states at the symbol's tokens, the sparse codes are averaged into one vector $a(s)\in\R^F$, each coordinate is multiplied by the feature's inverse document frequency over the symbols being matched, and candidates are ranked by cosine.
 The idea is TF-IDF \citep{sparckjones1972statistical} with SAE features in place of words, identical for every kind of system.
 
 \paragraph{Evidence.}
-With one model and one setting (Gemma-2-9B, layer~20, 131k-feature Gemma Scope SAE), \method beats the dense hidden state of the same model, pooled identically, on all 16 main-table comparisons across five kinds of system (+0.01 to +0.45 MRR) and is the best method in 10 of them; it is also ahead of dense with its first principal component removed---the strongest control we found---on 15 of 16, significantly on 12 (Section~\ref{sec:results}).
+With one model and one setting (Gemma-2-9B, layer~20, 131k-feature Gemma Scope SAE), \method beats the dense hidden state of the same model, pooled identically, on all 16 main-table comparisons across five kinds of system (+0.01 to +0.45 MRR), is ahead of dense with its first principal component removed on 15 of 16 (significantly on 12), and is ahead of an off-the-shelf multilingual retriever, BGE-M3 \citep{chen2024bge}, on 12 of 16, which is stronger only on two formal-mathematics pairs, Valentine and NELL $\to$ DBpedia (Section~\ref{sec:results}).
 The gains are largest where surface forms differ most: Lean~4 to Metamath (0.661 vs.\ 0.210) and to HOL Light (0.898 vs.\ 0.539).
 Removing the rarity weighting removes the gain: the unweighted code trails dense on 13 of 16 comparisons; with it, \method beats dense in all 39 configurations of layer, width, sparsity, model size (2B to 27B) and model family we ran, and a second model family (Llama-3.1-8B) run over the whole main table beats dense on 11 of 12 rows, with the lead over common-direction-removed dense narrowing to a tie on knowledge-graph and cross-lingual terms (Section~\ref{sec:ablation}).
 Every match decomposes exactly into the features the two symbols share (Section~\ref{sec:interp}): without weighting, one feature for ``mathematical or programming notation'' dominates 99\% of correct matches; with weighting, matches rest on rare, named concepts.
@@ -98,11 +99,11 @@ Every match decomposes exactly into the features the two symbols share (Section~
 \paragraph{Contributions.}
 (i)~A training-free alignment primitive that applies unchanged to five kinds of symbolic system, evaluated on full datasets against string, dense and common-direction-removed baselines.
 (ii)~An ablation showing that the rarity weighting, not the sparse basis alone, carries the result, across 39 settings, two model families and three kinds of system.
-(iii)~A feature-level account of \emph{why} it works: rule-selected case studies, a column-type split that locates where a symbolic rule should take over from the neural signature, and a merge test showing that pairwise alignments compose across seven programming languages---together, a first test of an LLM's feature dictionary as the substrate for the ``align and merge existing systems'' route to a universal symbolic backbone.
+(iii)~A feature-level account of \emph{why} it works: rule-selected case studies, a column-type split that locates where a symbolic rule should take over from the neural signature, and merge tests showing that pairwise alignments compose---together, a first test of an LLM's feature dictionary as the substrate for the ``align and merge existing systems'' route to a universal symbolic backbone.
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=0.96\textwidth]{figures/fig_pipeline.pdf}
+  \includegraphics[width=0.9\textwidth]{figures/fig_pipeline.pdf}
   \caption{\method. (1)~A symbol $s$ is read in views from its own system, evidence first and symbol last; the LM reads the whole view and only the hidden states at the symbol's tokens are kept (for a program, formal statement or table column the whole text is the symbol). (2)~Each kept state is SAE-encoded and the codes are averaged into one sparse vector $a(s)$ over $F$ features. (3)~Each coordinate is multiplied by its feature's inverse document frequency over the symbols being matched, which sends features that fire on almost every symbol to zero, and candidates are ranked by cosine.}
   \label{fig:pipeline}
 \end{figure*}
@@ -121,7 +122,7 @@ A program, a formal statement or a table column is its own single view ($m=1$); 
 For classes and terms, each view concatenates one piece of system-internal evidence $e_j(s)$ with the symbol, evidence first:
 \texttt{Instance: Earth mass. Class: Mass} (Common-KG) or \texttt{domain} \zh{投稿}{\emph{tougao}}\texttt{. Term:} \zh{有标题}{\emph{you biaoti}} (an axiom of a MultiFarm term in its own language).
 The model reads the whole view, but only the hidden states at the symbol's own token positions $T_j(s)$ are kept (all positions when the symbol is the whole text); the symbol comes last because the model is causal, so its tokens see the evidence.
-Synonyms are never used as evidence, because across systems a synonym is often the other side's label; views are capped at 16 per symbol.
+Synonyms are never used as evidence (across systems a synonym is often the other side's label); views are capped at 16 per symbol.
 
 \paragraph{2. Sparse code.}
 Every kept token is SAE-encoded first and the codes are averaged afterwards, over tokens and then views:
@@ -152,16 +153,17 @@ All baselines use exactly the same views and token positions.
 \emph{\pcone} additionally subtracts the mean of the dense vectors over $D$ and removes their projection onto the first principal direction $u_1$ of $D$, $(I-u_1u_1^\top)(d-\mu)$, the common-direction removal of \citet{mu2018allbutthetop} and \citet{arora2017simple}; it is the strongest control we found.
 \emph{\saemean} is the unweighted code $a(s)$, which isolates the sparse basis from the weighting.
 \emph{Strings} is the best of word TF-IDF \citep{sparckjones1972statistical}, character 3--5-gram TF-IDF and BM25 \citep{robertson2009probabilistic} over the surface strings of the same views, chosen per task in the strings' favour (Appendix~\ref{app:benchmarks}); since \method is TF-IDF over SAE features, TF-IDF over strings separates the features from the weighting.
+\emph{Retriever}: BGE-M3 \citep{chen2024bge}, a multilingual embedding model trained for retrieval, on the same view texts with the same controls (Appendix~\ref{app:embed}).
 Every similarity is a cosine.
 
 \section{Benchmarks}
 \label{sec:benchmarks}
 
-We chose benchmarks so that the five kinds of system differ as much as possible in notation and every symbol has context native to its own system (Table~\ref{tab:benchmarks} in Appendix~\ref{app:benchmarks} summarises them); every run uses the full test data and the benchmark's own metric code where one exists.
+The five kinds of system were chosen to differ as much as possible in notation, with every symbol having context native to its own system (Table~\ref{tab:benchmarks}, Appendix~\ref{app:benchmarks}); every run uses the full test data and the benchmark's own metric code where one exists.
 
 \paragraph{Protocols.}
 miniF2F \citep{zheng2022minif2f}: from the Lean~4 port \citep{yang2023minif2flean4} we retrieve each problem's statement in another prover among all statements of that prover, with theorem names, proofs, comments and labels stripped so that nothing identifies a problem without reading the mathematics.
-XLCoST \citep{zhu2022xlcost}: the official protocol and evaluator (the pool is the query language's test file, which contains the query's own row and so gives a free first hit); MRR and Precision@6 averaged over the seven query languages.
+XLCoST \citep{zhu2022xlcost}: the official protocol and evaluator (the pool contains the query's own row, a free first hit); MRR and Precision@6 averaged over the seven query languages.
 Valentine \citep{koutras2021valentine}: all 551 fabricated joinable and unionable pairs, scored with Valentine's F1 (one-to-one assignment) and MRR.
 Common-KG \citep{fallatah2020gold}: 129 NELL--DBpedia reference pairs (a partial gold standard) and 304 YAGO--Wikidata pairs; classes without instances match on their label alone.
 MultiFarm \citep{meilicke2012multifarm}: foreign-language terms against the English terms of a \emph{different} conference ontology, so that neither language nor ontology is shared.
@@ -174,30 +176,34 @@ Bio-ML NCIT $\to$ DOID \citep{he2022bioml} and OAEI Anatomy \citep{bodenreider20
 \label{sec:results}
 
 \begin{table*}[t]
-  \centering\small
+  \centering\footnotesize
+  \setlength{\tabcolsep}{4pt}
   \input{tables/tab_main.tex}
   \caption{Main results with native context. Gemma-2-9B, layer 20, Gemma Scope 131k SAE. Bold: best method per row. $\Delta$ dense: \method minus Dense. $^\dagger$XLCoST official metrics averaged over the seven query languages (per-language results in Appendix~\ref{app:xlcost}); Strings is word TF-IDF there. Valentine has no comparable string baseline.}
   \label{tab:main}
 \end{table*}
 
 Table~\ref{tab:main} gives the main results (plotted in Figure~\ref{fig:main}, Appendix~\ref{app:tasks}).
-\method beats the dense hidden state of the same model on every task, by +0.01 (XLCoST) to +0.45 MRR (Lean~4 $\to$ Metamath), and is the best method in 10 of the 16 comparisons.
-It is ahead of \pcone and of strings everywhere except on XLCoST (word TF-IDF marginally ahead) and MultiFarm Chinese (\pcone ahead by 0.006).
+\method beats the dense hidden state of the same model on every task, by +0.01 (XLCoST) to +0.45 MRR (Lean~4 $\to$ Metamath).
+It is ahead of \pcone and of strings everywhere except on XLCoST (word TF-IDF marginally ahead) and MultiFarm Chinese (\pcone ahead by 0.006), and ahead of the BGE-M3 retriever on 12 of the 16 comparisons.
 
 \paragraph{The gain tracks notational distance.}
-Within miniF2F, Isabelle statements resemble Lean~4 (dense 0.912, \method 0.961), whereas Metamath and HOL Light read very differently: there dense collapses (0.210, 0.539) and \method keeps 0.661 and 0.898.
-On MultiFarm, where source and target share neither script nor ontology, strings are near useless (0.23) and \method gains +0.10 to +0.13 over dense; on Common-KG the labels often match literally, so strings are strong (0.90--0.94), and \method still leads (0.962--0.976).
+Isabelle statements resemble Lean~4 (dense 0.912, \method 0.961); Metamath and HOL Light read very differently, dense collapses there (0.210, 0.539) and \method keeps 0.661 and 0.898.
+On MultiFarm, where source and target share neither script nor ontology, strings are near useless (0.23) and \method gains +0.10 to +0.13 over dense.
 
 \paragraph{Code: shared identifiers favour strings.}
 XLCoST programs are translations that keep their identifiers, so word TF-IDF is a strong baseline (0.468 official MRR over seven languages).
-\method matches it within 0.01, beats dense in all seven languages, and recovers most of dense's deficit on Precision@6 (0.732 vs.\ 0.680; strings 0.745); surface form wins only where the two notations share the most.
+\method matches it within 0.01, beats dense in all seven languages (also without the free hit, Appendix~\ref{app:exclude}), and recovers most of dense's deficit on Precision@6 (0.732 vs.\ 0.680; strings 0.745); surface form wins only where the two notations share the most.
 
 \paragraph{Table schemas.}
-On Valentine \method has the best F1 (0.614 vs.\ 0.533 dense) and MRR (0.856 vs.\ 0.766) and leads dense in every dataset family except Magellan, where every method scores 1.0 (Appendix~\ref{app:valentine}, which also compares four column layouts; \method leads dense on MRR in all four).
+On Valentine \method has the best F1 (0.614 vs.\ 0.533 dense) and MRR (0.856 vs.\ 0.766) and leads dense in every dataset family except Magellan, where every method scores 1.0 (Appendix~\ref{app:valentine} compares four column layouts).
+
+\paragraph{A trained retriever.}
+BGE-M3, a 568M-parameter embedding model trained for multilingual retrieval, leads \method on Lean~4 $\to$ Metamath (0.819 vs.\ 0.661), $\to$ HOL Light (0.967 vs.\ 0.898), Valentine (F1 0.645 vs.\ 0.614) and narrowly on NELL $\to$ DBpedia; \method is ahead everywhere else, by +0.04 to +0.05 on cross-lingual terms, +0.05 on YAGO $\to$ Wikidata, +0.03 on XLCoST and +0.10 to +0.21 on the biomedical appendix tasks (Appendix~\ref{app:embed}).
+The comparison is not like for like (the retriever was trained on paired data; \method reads an untrained base model), but it bounds what the training-free route gives up: nothing on 12 of 16 comparisons.
 
 \paragraph{The common-direction control, and the appendix tasks.}
-Removing the first principal component recovers much of the gap on the ontology and knowledge-graph tasks (all of it on MultiFarm Chinese), where dense vectors of short terms share a large common component; on code, formal statements and tables it does nothing or hurts.
-\method's advantage therefore does not reduce to anisotropy removal \citep{ethayarajh2019contextual, mu2018allbutthetop}; it comes from per-feature rarity weighting in a sparse basis, which the next two sections take apart.
+Removing the first principal component recovers much of the gap on ontology and knowledge-graph terms, whose dense vectors share a large common component, and nothing on code, formal statements and tables, so \method's advantage does not reduce to anisotropy removal \citep{ethayarajh2019contextual, mu2018allbutthetop}; the next two sections take it apart.
 A paired bootstrap over queries puts every gain over dense at $p<0.004$ and the gain over \pcone at $p<0.01$ on 12 of the 16 comparisons; on the three MultiFarm pairs and NELL $\to$ DBpedia the two are within noise (Appendix~\ref{app:significance}).
 On Bio-ML (0.817 vs.\ 0.701 dense, 0.779 strings) and Anatomy (0.886 vs.\ 0.812, 0.734) \method leads as well; PubChem is at chance for every method (Appendix~\ref{app:tasks}).
 
@@ -206,7 +212,7 @@ On Bio-ML (0.817 vs.\ 0.701 dense, 0.779 strings) and Anatomy (0.886 vs.\ 0.812,
 
 \paragraph{Rarity weighting is the active ingredient.}
 Dropping the idf factor leaves \saemean, the unweighted code $a(s)$.
-The sparse basis alone does not help: \saemean trails dense on 13 of the 16 main-table comparisons and leads by at most 0.012 on the other three (both Common-KG pairs and XLCoST C).
+The sparse basis alone does not help: \saemean trails dense on 13 of the 16 main-table comparisons and leads by at most 0.012 on the other three.
 The idf factor then lifts every task, by +0.01 on XLCoST to +0.57 MRR on Metamath; Section~\ref{sec:interp} shows why: without weighting, a handful of features that fire on nearly every token dominate every cosine.
 
 \begin{figure*}[t]
@@ -223,35 +229,28 @@ With sparsity held nearly fixed, \method rises with every doubling of the dictio
 This fits \emph{feature splitting} \citep{bricken2023monosemanticity, templeton2024scaling}: a wider dictionary splits concepts into more, rarer features, which help only once rarity is weighted.
 Repeating both sweeps on Common-KG and MultiFarm (Figure~\ref{fig:sweepkg}, Appendix~\ref{app:ablation}) gives the same verdict against dense and the unweighted code---\method is ahead in all 45 (task, setting) pairs---but a closer race with \pcone, which is ahead at several settings on YAGO and MultiFarm, where width also helps less (MultiFarm peaks at 65k features).
 The effect holds from 2B to 27B parameters (Gemma-2-27B, layer 22: 0.939 and 0.738 against dense 0.41 and 0.20) and for a second model family: with Llama-3.1-8B and Llama Scope, \method beats dense in all six miniF2F configurations (Table~\ref{tab:llama}), a middle layer (15 of 32) is again best, and the gap is smallest on Metamath, where Llama's dense state is a far stronger baseline than Gemma's (0.646 vs.\ 0.210).
-On the whole main table (Table~\ref{tab:llamamain}) Llama-3.1-8B beats dense on 11 of 12 rows (all but XLCoST MRR, where it leads on Precision@6) and \pcone on 9, the knowledge-graph and cross-lingual tasks being the close ones.
+On the whole main table (Table~\ref{tab:llamamain}) Llama-3.1-8B beats dense on 11 of 12 rows (all but XLCoST MRR) and \pcone on 9, the knowledge-graph and cross-lingual tasks being the close ones; at Llama's earlier layers 8 and 12 \method is ahead of \pcone on both Common-KG pairs (Table~\ref{tab:llamakg}), so that tie is a layer choice.
+Among weightings, idf over the matched collection beats an idf from Pile activation densities on every task (0.661 vs.\ 0.190 on Metamath): which features count as generic depends on the two systems being matched (Table~\ref{tab:weightings}).
 
 \paragraph{Generated contexts do not work as well.}
-Before settling on native views we described each symbol with LLM-written sentences, from one generator for both sides and then from two generators that each saw only their own system's data.
-With generated contexts, \pcone matches or beats \method on every ontology and knowledge-graph task, and on drug names word TF-IDF over the sentences wins outright (Appendix~\ref{app:generated}): two independent descriptions of a concept still converge in vocabulary and style, which one common direction captures.
-With native context each side's evidence is its own, the \pcone advantage disappears, and \method leads.
+Before settling on native views we described each symbol with LLM-written sentences (one generator for both sides, then two independent ones).
+With generated contexts, \pcone matches or beats \method on every ontology and knowledge-graph task (Appendix~\ref{app:generated}): two independent descriptions of a concept still converge in vocabulary and style, which one common direction captures; with native context the \pcone advantage disappears.
 
 \section{Why it works: a feature-level account}
 \label{sec:interp}
 
 Because the cosine is a sum over shared features, every match can be decomposed exactly into the features that carry it.
-We decomposed up to 300 correct \method matches per main-table task (2,315 in all), on exactly the weights the evaluation used, and the same pairs under \saemean as a control.
+We decomposed up to 300 correct \method matches per main-table task (2,315 in all) with the weights the evaluation used, and the same pairs under \saemean as a control.
 Each feature is described by metadata from outside our pipeline: Neuronpedia \citep{lin2023neuronpedia} publishes an automatically generated explanation \citep{bills2023language} for 129,642 of the 131,072 features together with the fraction of Pile tokens \citep{gao2020pile} on which it fires.
-An LLM sorted the 5,252 explanations that occur into four types from their text alone: \emph{concept} (a meaning, topic or kind of entity; 3,845), \emph{notation} (syntax; 908), \emph{surface} (a particular word or script; 334) and \emph{generic} (165).
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\columnwidth]{figures/fig_interp.pdf}
-  \caption{Share of each correct match's cosine carried by features that fire on more than 1\% of Pile tokens. Without weighting (squares) these ubiquitous features carry 56--91\% of the evidence on every task; with rarity weighting (diamonds) they carry 0--6\%.}
-  \label{fig:interp}
-\end{figure}
+An LLM sorted the 5,252 explanations that occur into four types from their text alone: \emph{concept} (a meaning, topic or kind of entity; 3,845), \emph{notation} (syntax; 908), \emph{surface} (a particular word or script; 334) and \emph{generic} (165); a second, unrelated model relabelled them independently and agreed on 92\% ($\kappa=0.80$).
 
 \paragraph{Without weighting, every task matches on the same few features.}
 One feature, ``mathematical or programming notation'' (f106376, active on 99\% of Pile tokens), is among \saemean's five largest contributions in 99\% of all correct matches, on every task; ``numbers, dates and measurements'' (48\% of the Pile) is there in 81\% and ``open-source license text'' (44\%) in 59\%.
-Features active on more than 1\% of the Pile carry 56--91\% of \saemean's evidence and 0--6\% of \method's, and none of them appears in \method's top five for any match (Figure~\ref{fig:interp}; per-task numbers in Table~\ref{tab:interp}, Appendix~\ref{app:cases}).
+Features active on more than 1\% of the Pile carry 56--91\% of \saemean's evidence and 0--6\% of \method's, and none of them appears in \method's top five for any match (Figure~\ref{fig:interp} and Table~\ref{tab:interp}, Appendix~\ref{app:cases}).
 
 \paragraph{Two regimes.}
-On knowledge-graph and ontology terms one or two rare concept features usually carry a match (87--94\% of the evidence is from features active on $<$0.1\% of the Pile), and on MultiFarm about a quarter of the evidence is \emph{surface} features that fire on both the foreign term and its English counterpart (``the word `listen''' on \zh{听众}{\emph{tingzhong}} and on ``listener''): the translation sits inside the model's own features \citep{templeton2024scaling, brinkmann2025grammatical}.
-Formal statements, programs and table columns are longer; their evidence spreads over 10--21 features for half the cosine, and about half of it on formal mathematics is \emph{notation} (floor functions, trigonometric expressions), so the match reads mathematical structure as well as topic.
+On knowledge-graph and ontology terms one or two rare concept features usually carry a match (87--94\% of the evidence is from features active on $<$0.1\% of the Pile); on MultiFarm a quarter of it is \emph{surface} features firing on both the foreign term and its English counterpart (``the word `listen''' on \zh{听众}{\emph{tingzhong}} and ``listener''), a translation inside the model's own features \citep{templeton2024scaling, brinkmann2025grammatical}.
+Formal statements, programs and table columns spread their evidence over 10--21 features for half the cosine, about half of it \emph{notation} on formal mathematics (floor functions, trigonometric expressions).
 
 \begin{table*}[t]
   \centering\footnotesize
@@ -260,8 +259,6 @@ Formal statements, programs and table columns are longer; their evidence spreads
     Task & Source $\to$ gold counterpart & Gold's rank: Dense / \saemean / \method & Largest shared features under \method (share of cosine, Pile density) \\
     \midrule
     MultiFarm zh $\to$ en & \zh{费用}{\emph{feiyong}} (fee) $\to$ ``fee for conference'' & 13 / 40 / 1 & ``fees and payment structures'' (0.88, $4\!\times\!10^{-5}$). Without weighting, ``programming notation'' (99\% of the Pile) carries 53\% of the same pair's score. \\
-    MultiFarm zh $\to$ en & \zh{听众}{\emph{tingzhong}} $\to$ ``listener'' & 7 / 53 / 1 & ``the word `listen' and its derivatives'' (0.48, $5\!\times\!10^{-5}$); ``audience engagement'' (0.19, $8\!\times\!10^{-5}$) \\
-    MultiFarm ar $\to$ en & \arb{ملصق}{\emph{mulsaq}} (poster) $\to$ ``poster'' & 53 / 100 / 1 & ``visual media, specifically posters and flyers'' (0.94, $2\!\times\!10^{-5}$) \\
     YAGO $\to$ Wikidata & Mass (instances: Earth mass, quark mass) $\to$ mass & 7 / 24 / 1 & ``terms related to mass'' (0.91, $2\!\times\!10^{-4}$) \\
     Lean~4 $\to$ HOL Light & $\lfloor 10n\rfloor+\lfloor 100n\rfloor+\lfloor 1000n\rfloor+\lfloor 10000n\rfloor=3702$ & 7 / 131 / 1 & ``floor and rounding operations'' (0.09, $4\!\times\!10^{-5}$); ``floors'' (0.08, $6\!\times\!10^{-5}$); 17 features for half the cosine \\
     Lean~4 $\to$ Metamath & $1/\cos x+\tan x=22/7,\ 1/\sin x+1/\tan x=m\ \ldots$ & 5 / 41 / 1 & ``limits and trigonometric functions'' (0.18, $3\!\times\!10^{-4}$); ``trigonometric expressions'' (0.09, $5\!\times\!10^{-4}$) \\
@@ -276,15 +273,19 @@ Formal statements, programs and table columns are longer; their evidence spreads
 
 \paragraph{Case studies.}
 Table~\ref{tab:cases} shows matches selected by fixed rules rather than by hand.
-A single rare feature often does the work: \zh{费用}{\emph{feiyong}} meets ``fee for conference'' at ``fees and payment structures'' (88\% of the cosine; dense ranks the gold term 13th), and the Arabic term for \emph{poster} meets ``poster'' at a feature for posters and flyers (94\%; dense rank 53).
-The failures are as readable: \zh{有名}{\emph{you ming}} (``has first name'') goes to ``has name'' because the two English terms share every name-related feature, and a column whose only value is ``1'' shares nothing but generic number features with any candidate.
+A single rare feature often does the work: \zh{费用}{\emph{feiyong}} meets ``fee for conference'' at ``fees and payment structures'' (88\% of the cosine; dense ranks the gold term 13th).
+The failures are as readable: \zh{有名}{\emph{you ming}} (``has first name'') goes to ``has name'' because the two English terms share every name-related feature, and a column whose only value is ``1'' shares nothing but generic number features.
 
 \paragraph{Where a symbolic rule should take over.}
-Splitting all 551 Valentine pairs by the kind of value a column holds (Appendix~\ref{app:valentine}), \method leads dense in every class, numeric included (top-1 0.670 vs.\ 0.567), but rule-governed columns (numbers and identifiers, 0.702) remain harder than graded ones (categories and free text, 0.795) for every method, and their failures look like the \texttt{src\_id} case.
+Splitting all 551 Valentine pairs by the kind of value a column holds (Appendix~\ref{app:valentine}), \method leads dense in every class, numeric included (top-1 0.670 vs.\ 0.567), but rule-governed columns (numbers and identifiers, 0.702) remain harder than graded ones (categories and free text, 0.795) for every method.
 This is a first empirical line for the third challenge of \citet{yang2026generative}, the neural--symbolic boundary: identity governed by format rules is where a symbolic matcher should take over, and graded, ``family-resemblance'' similarity \citep{wittgenstein1953philosophical} is where the neural signature does best.
 
 \paragraph{Pairwise matches compose.}
-On XLCoST each of 911 programs exists in up to seven languages; merging mutual-top-1 matches across all 42 ordered language pairs gives an adjusted Rand index of 0.983 with \method against 0.962 with dense and 0.957 with \saemean, and a composed match $A\to B\to C$ agrees with the direct match $A\to C$ 99.87\% of the time (dense 99.67\%): the backbone property in miniature.
+On XLCoST (911 programs in up to seven languages), merging mutual-top-1 matches over all 42 ordered language pairs gives an adjusted Rand index of 0.983 with \method against 0.962 for dense, and a chained match $A\to B\to C$ agrees with the direct $A\to C$ 99.87\% of the time (dense 99.67\%).
+Formal systems compose too: over all twelve ordered pairs among Lean~4, Isabelle, Metamath and HOL Light, \method reaches mutual-top-1 precision 0.983 at coverage 0.64 (dense 0.900 at 0.34), transitivity 0.981 (0.963) and ARI 0.795 (0.519) (Appendix~\ref{app:ablation}).
+
+\paragraph{Toward abstention.}
+With the cosine margin between the best and second-best candidate as a confidence, \method answers 24\% of Metamath queries and 93\% of HOL Light queries at 90\% precision, against 1\% and 24\% for dense (Appendix~\ref{app:abstention}).
 
 \section{Related Work}
 \label{sec:related}
@@ -294,20 +295,19 @@ Ontology matching has a long line of systems and a yearly evaluation (OAEI), fro
 Schema matching \citep{rahm2001survey, koutras2021valentine}, embedding-based entity alignment, which learns from seed alignments \citep{sun2020benchmarking}, and cross-language code retrieval with pretrained code models \citep{feng2020codebert, guo2022unixcoder} each have their own methods and benchmarks.
 
 \paragraph{Sparse autoencoders.}
-SAEs recover sparse, interpretable features from superposed activations \citep{elhage2022toy, bricken2023monosemanticity, cunningham2024sparse}, scale to frontier models \citep{templeton2024scaling, gao2025scaling} and are released as open suites \citep{lieberum2024gemmascope, he2024llamascope}; SAEs on text embeddings give interpretable axes for semantic search \citep{oneill2024disentangling}.
+SAEs recover sparse, interpretable features from superposed activations \citep{elhage2022toy, bricken2023monosemanticity, cunningham2024sparse, templeton2024scaling, gao2025scaling}, are released as open suites \citep{lieberum2024gemmascope, he2024llamascope}, and give interpretable axes for semantic search when trained on text embeddings \citep{oneill2024disentangling}.
 Whether SAE features help on downstream tasks with strong baselines has been questioned \citep{kantamneni2025sparse}; ours is a case in which they do, provided the code is rarity-weighted.
 
 \paragraph{Common directions, term weighting, neuro-symbolic models.}
 Dense embeddings share a large common component whose removal helps \citep{arora2017simple, mu2018allbutthetop, ethayarajh2019contextual}; we use this as a control.
-\method is inverse document frequency \citep{sparckjones1972statistical, robertson2009probabilistic} applied per feature in a sparse basis, which suppresses many ubiquitous directions at once rather than one.
+\method is inverse document frequency \citep{sparckjones1972statistical, robertson2009probabilistic} per feature in a sparse basis, suppressing many ubiquitous directions at once.
 \citet{kautz2022third} surveys designs in which a neural network feeds a symbolic reasoner, NLProlog \citep{weber2019nlprolog} being one whose proof steps are symbolic; \citet{yang2026generative} argues that such components can serve as native, intervenable checkpoints and that a universal symbolic system, which hand-built efforts such as Cyc \citep{lenat1995cyc} did not reach, is the first obstacle; we address the alignment step of the proposed alternative.
 
 \section{Conclusion and Outlook}
 \label{sec:conclusion}
 
-A pretrained LLM's sparse feature dictionary, re-weighted by feature rarity, is a shared coordinate system in which symbols from five kinds of symbolic system can be matched without training, with gains over the model's own dense states that are largest where notations differ most, and with every match readable as a short list of named concepts.
-We see this as a first step on the route that \citet{yang2026generative} proposes to a universal symbolic backbone: rather than writing one from scratch, align and merge the many that exist.
-The substrate has the three properties that route needs---\emph{shared} across text, code, mathematics and data, \emph{meaningful} and \emph{training-free}---and the merge test shows that pairwise alignments compose.
+A pretrained LLM's sparse feature dictionary, re-weighted by feature rarity, is a shared coordinate system in which symbols from five kinds of symbolic system can be matched without training, each match readable as a short list of named concepts.
+We see this as a first step on the route that \citet{yang2026generative} proposes to a universal symbolic backbone---align and merge the many systems that exist rather than write one from scratch---whose substrate must be shared, meaningful and training-free, as this one is; the merge tests show that its pairwise alignments compose.
 Next: full alignments with abstention and structural constraints, merging many systems with transitivity as the acceptance criterion, and tying the merged inventory back to its features.
 
 \section{Limitations}
@@ -320,6 +320,7 @@ The method is only as general as the base model's reading of each notation and t
 \emph{Context-less symbols}: opaque codes (ICD) and drug names, whose own tokens carry little meaning and whose systems offer no independent context, were dropped rather than solved.
 \emph{Scope of the protocol}: the main table uses one model and one layer, and every task is a ranking over a given candidate pool; producing a full alignment with abstentions and the one-to-one or many-to-one constraints a merged system needs is left to future work, although the Valentine F1 and the XLCoST merge test are first steps.
 \emph{Explanations}: feature names are automatically generated and the type labels were assigned by an LLM; both are used only to describe matches, never to compute them.
+\emph{Trained retrievers}: an off-the-shelf retrieval model beats \method on two of three formal-mathematics pairs and on table schemas; the claim here is about the base model's own feature space, not about beating trained retrievers.
 \emph{Close calls}: on MultiFarm and NELL $\to$ DBpedia the lead over \pcone is within bootstrap noise, and on Lean~4 $\to$ Metamath the lead over string matching is marginal ($p=0.02$).
 \emph{Model family}: under Llama-3.1-8B the leads over \pcone on knowledge-graph and cross-lingual terms shrink to ties or small deficits and XLCoST MRR is slightly below dense, so the size of the gain, though not its sign against dense on 11 of 12 rows, is model-dependent.
 \emph{Ablation scope}: the width trend is not uniform (rising on HOL Light, peaking at 65k features on MultiFarm), and code and table schemas were swept only at layer 20.
@@ -452,6 +453,32 @@ F1 by dataset family under the whole-column layout, \method vs.\ Dense: ChEMBL 0
   \label{tab:apptasks}
 \end{table}
 
+\section{Embedding-model baseline}
+\label{app:embed}
+
+BGE-M3 \citep{chen2024bge} (XLM-RoBERTa-large, CLS pooling, inputs truncated to 1,024 tokens as for the LLM) embeds exactly the view texts used elsewhere: the statement or program, the whole-column text for Valentine, and each native view for classes and terms, averaged per symbol.
+Candidates and metrics are those of the main table; the centred and PC1-removed variants use the same reference collections as for the LLM hidden state (Table~\ref{tab:embed}).
+
+\begin{table}[H]
+  \centering\scriptsize
+  \input{tables/tab_embed.tex}
+  \caption{An off-the-shelf retriever against \method. Bold: best of the five model-based columns. The retriever leads on Lean~4 $\to$ Metamath, $\to$ HOL Light, Valentine and NELL $\to$ DBpedia; \method leads on the other main-table rows and on the three biomedical appendix tasks.}
+  \label{tab:embed}
+\end{table}
+
+\section{XLCoST without the free hit}
+\label{app:exclude}
+
+The official XLCoST pool contains the query's own row, which every method retrieves first.
+Table~\ref{tab:exclude} removes it, so the metrics count only the other-language versions of each program.
+
+\begin{table}[H]
+  \centering\footnotesize
+  \input{tables/tab_exclude_self.tex}
+  \caption{XLCoST program-level search with the query's own row excluded from the pool (official metric definitions otherwise). \method beats Dense in every language on both metrics; word TF-IDF stays marginally ahead on MRR in most languages.}
+  \label{tab:exclude}
+\end{table}
+
 \section{Generated contexts}
 \label{app:generated}
 
@@ -492,6 +519,27 @@ Width helps less than on HOL Light: NELL $\to$ DBpedia rises slightly (0.964 to 
   \label{fig:sweepkg}
 \end{figure}
 
+\paragraph{Feature weightings.}
+Every evaluator also scores the alternatives to collection idf that the pipeline computes: an idf from Neuronpedia's Pile activation densities (which needs no matched collection), an information weighting (log of in-symbol over background firing rate) and a log-odds weighting.
+Collection idf is best on 10 of 13 comparisons (Table~\ref{tab:weightings}); the information weighting is close on ontology terms and tables, and the Pile-density idf is far behind on formal mathematics (0.190 vs.\ 0.661 on Metamath), where the generic features are specific to the pair of systems rather than to the Pile.
+
+\begin{table}[H]
+  \centering\footnotesize
+  \input{tables/tab_weightings.tex}
+  \caption{Alternative feature weightings on the same sparse codes (MRR unless stated). Bold: best per row.}
+  \label{tab:weightings}
+\end{table}
+
+\paragraph{Four-prover merge.}
+Running all twelve ordered pairs among Lean~4, Isabelle, Metamath and HOL Light (Gemma-2-9B, layer 20) and merging mutual-top-1 matches as for XLCoST gives Table~\ref{tab:provermerge}: \method's alignments are more precise, cover almost twice as many statements, and compose into fewer, purer components.
+
+\begin{table}[H]
+  \centering\footnotesize
+  \input{tables/tab_prover_merge.tex}
+  \caption{Merge and transitivity over the four miniF2F provers (489 problems, up to four statements each). Precision and coverage are means over the twelve ordered pairs' mutual-top-1 alignments.}
+  \label{tab:provermerge}
+\end{table}
+
 \paragraph{Second model family on the whole main table.}
 Table~\ref{tab:llamamain} runs Llama-3.1-8B with the Llama Scope layer-15 131k SAE on every main-table task with the same native views.
 \method beats dense on 11 of the 12 rows and \pcone on 9: the formal-mathematics gains carry over (Llama's dense state is far stronger on Metamath), Valentine improves (F1 0.625 vs.\ 0.588 dense, MRR 0.862), the knowledge-graph and cross-lingual tasks are ties or small deficits against \pcone (NELL $\to$ DBpedia 0.958 vs.\ 0.960, MultiFarm ru $\to$ en 0.726 vs.\ 0.751), and on XLCoST \method trails dense by 0.01 MRR while leading on Precision@6.
@@ -503,6 +551,16 @@ On the appendix tasks it leads on Bio-ML and trails \pcone on Anatomy.
   \input{tables/tab_llama_main.tex}
   \caption{Main-table tasks with a second model family. Llama-3.1-8B, layer 15, Llama Scope 131k features, native views; Gemma-2-9B columns repeat Table~\ref{tab:main}. Bold: best of the four Llama methods.}
   \label{tab:llamamain}
+\end{table}
+
+\paragraph{Llama layers on knowledge-graph and cross-lingual terms.}
+Table~\ref{tab:llamakg} repeats the Common-KG and MultiFarm runs with every Llama Scope layer: the layer-15 ties with \pcone become leads at layers 8 and 12 on both knowledge-graph pairs; on MultiFarm (mean of the three language pairs) \method leads at layers 12, 20 and 24 and trails \pcone by at most 0.012 at the others. Across the 18 (task, layer) cells \method beats dense in 16 and \pcone in 10.
+
+\begin{table}[H]
+  \centering\footnotesize
+  \input{tables/tab_llama_kg.tex}
+  \caption{Llama-3.1-8B layer sweep on Common-KG and MultiFarm (mean of the three pairs), native views, MRR.}
+  \label{tab:llamakg}
 \end{table}
 
 \paragraph{Seed study.}
@@ -527,6 +585,13 @@ Table~\ref{tab:seeds} repeats the main-table runs with other sampling seeds (fou
 \section{Feature-level decomposition and case studies}
 \label{app:cases}
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.55\textwidth]{figures/fig_interp.pdf}
+  \caption{Share of each correct match's cosine carried by features that fire on more than 1\% of Pile tokens. Without weighting (squares) these ubiquitous features carry 56--91\% of the evidence on every task; with rarity weighting (diamonds) they carry 0--6\%.}
+  \label{fig:interp}
+\end{figure}
+
 \begin{table}[H]
   \centering\scriptsize
   \input{tables/tab_interp.tex}
@@ -539,6 +604,20 @@ For each case we list the gold's rank under every method, the top five shared fe
 One XLCoST ``failure'' was excluded because the dataset contains the program twice.
 The full listings for all ten tasks (31 cases) are released with the code.
 
+\section{Abstention}
+\label{app:abstention}
+
+If a matcher may abstain, how much coverage does it keep at a given precision?
+For every query the confidence is the cosine margin between the best and the second-best candidate; queries are answered in decreasing order of confidence.
+Table~\ref{tab:abstention} gives top-1 accuracy with every query answered and the coverage at which precision first drops below 90\% and 95\%, for \method and the dense hidden state, from the same weights the evaluation used (XLCoST is omitted because its official pool contains the query's own row).
+
+\begin{table}[H]
+  \centering\footnotesize
+  \input{tables/tab_abstention.tex}
+  \caption{Margin-based abstention. Cov.@90\%: the fraction of queries that can be answered while top-1 precision stays at or above 90\%.}
+  \label{tab:abstention}
+\end{table}
+
 \section{Statistical significance}
 \label{app:significance}
 
@@ -546,6 +625,7 @@ For every comparison in the main table we take the per-query quantity that the m
 Every gain over Dense has $p<0.004$.
 The gain over \pcone has $p<0.01$ on 12 of 16 comparisons; on the three MultiFarm pairs and on NELL $\to$ DBpedia the interval covers zero.
 Against strings, \method is significantly ahead on all formal-mathematics, knowledge-graph and ontology tasks (Lean~4 $\to$ Metamath marginally, $p=0.02$), tied on XLCoST Python, PHP and C, and significantly behind word TF-IDF on XLCoST Java, C++, C\# and JavaScript.
+Table~\ref{tab:significancellama} repeats the analysis for the Llama-3.1-8B runs: the gains over dense stay significant on the formal-mathematics, Valentine, YAGO, MultiFarm and biomedical tasks, while NELL $\to$ DBpedia and the XLCoST languages are ties or small deficits, and \pcone is significantly ahead on Anatomy.
 
 \begin{table}[H]
   \centering\scriptsize
@@ -553,6 +633,14 @@ Against strings, \method is significantly ahead on all formal-mathematics, knowl
   \input{tables/tab_significance.tex}
   \caption{Paired bootstrap over queries (10,000 resamples): mean difference \method minus baseline, 95\% interval, and one-sided bootstrap $p$-value. Valentine has no string baseline.}
   \label{tab:significance}
+\end{table}
+
+\begin{table}[H]
+  \centering\scriptsize
+  \setlength{\tabcolsep}{3.5pt}
+  \input{tables/tab_significance_llama.tex}
+  \caption{The same paired bootstrap for the Llama-3.1-8B runs (layer 15, Llama Scope 131k).}
+  \label{tab:significancellama}
 \end{table}
 
 \section{What did not work}

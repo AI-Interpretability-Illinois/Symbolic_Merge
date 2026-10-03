@@ -1,0 +1,24 @@
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Task & Llama Scope SAE & Dense & $-$PC1 & SAE unw. & \textbf{SAE-IDF} \\
+\midrule
+NELL $\to$ DBpedia & layer 8, 131k & 0.953 & 0.960 & 0.945 & \textbf{0.970} \\
+ & layer 12, 131k & 0.939 & 0.950 & 0.937 & \textbf{0.973} \\
+ & layer 15, 131k & 0.949 & \textbf{0.960} & 0.930 & 0.958 \\
+ & layer 15, 32k & 0.949 & 0.960 & 0.942 & \textbf{0.961} \\
+ & layer 20, 131k & 0.947 & \textbf{0.958} & 0.904 & 0.947 \\
+ & layer 24, 131k & 0.938 & \textbf{0.951} & 0.908 & 0.936 \\
+YAGO $\to$ Wikidata & layer 8, 131k & 0.889 & 0.937 & 0.885 & \textbf{0.949} \\
+ & layer 12, 131k & 0.806 & 0.922 & 0.861 & \textbf{0.955} \\
+ & layer 15, 131k & 0.889 & 0.944 & 0.915 & \textbf{0.944} \\
+ & layer 15, 32k & 0.889 & 0.944 & 0.920 & \textbf{0.955} \\
+ & layer 20, 131k & 0.912 & \textbf{0.935} & 0.899 & 0.928 \\
+ & layer 24, 131k & 0.915 & \textbf{0.936} & 0.875 & 0.926 \\
+MultiFarm & layer 8, 131k & 0.672 & \textbf{0.751} & 0.575 & 0.739 \\
+ & layer 12, 131k & 0.583 & 0.687 & 0.496 & \textbf{0.758} \\
+ & layer 15, 131k & 0.633 & \textbf{0.733} & 0.556 & 0.728 \\
+ & layer 15, 32k & 0.633 & \textbf{0.733} & 0.528 & 0.726 \\
+ & layer 20, 131k & 0.625 & 0.716 & 0.470 & \textbf{0.722} \\
+ & layer 24, 131k & 0.523 & 0.684 & 0.307 & \textbf{0.704} \\
+\bottomrule
+\end{tabular}

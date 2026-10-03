@@ -15,7 +15,7 @@ widths = [("16k", 16384, "L20_w16k_l0_58"), ("32k", 32768, "L20_w32k"), ("65k", 
 methods = ["dense", "dense_pc1", "sae_mean", "sae_idf"]
 tasks = [("HOLLight", "Lean 4 → HOL Light (317 problems)"), ("Metamath", "Lean 4 → Metamath (482 problems)")]
 
-fig, axes = plt.subplots(2, 2, figsize=(S.TEXT_IN, 2.6), sharey=True)
+fig, axes = plt.subplots(2, 2, figsize=(S.TEXT_IN, 2.45), sharey=True)
 for col, (task, title) in enumerate(tasks):
     ax = axes[0, col]
     for m in methods:

@@ -1,0 +1,17 @@
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+ & & \multicolumn{3}{c}{Dense} & \multicolumn{3}{c}{\textbf{SAE-IDF}} \\
+\cmidrule(lr){3-5}\cmidrule(lr){6-8}
+Task & $n$ & Top-1 & Cov.@90\% & Cov.@95\% & Top-1 & Cov.@90\% & Cov.@95\% \\
+\midrule
+Lean 4 $\to$ Isabelle & 483 & 0.880 & 0.96 & 0.89 & 0.936 & 1.00 & 0.98 \\
+Lean 4 $\to$ Metamath & 482 & 0.127 & 0.01 & 0.01 & 0.537 & 0.24 & 0.21 \\
+Lean 4 $\to$ HOL Light & 317 & 0.454 & 0.24 & 0.20 & 0.855 & 0.93 & 0.85 \\
+Valentine columns & 8,346 & 0.622 & 0.38 & 0.22 & 0.738 & 0.67 & 0.53 \\
+NELL $\to$ DBpedia & 129 & 0.899 & 0.99 & 0.91 & 0.961 & 1.00 & 1.00 \\
+YAGO $\to$ Wikidata & 304 & 0.819 & 0.89 & 0.76 & 0.941 & 1.00 & 0.97 \\
+MultiFarm zh $\to$ en & 246 & 0.549 & 0.42 & 0.32 & 0.659 & 0.41 & 0.30 \\
+MultiFarm ru $\to$ en & 246 & 0.553 & 0.29 & 0.20 & 0.663 & 0.34 & 0.20 \\
+MultiFarm ar $\to$ en & 239 & 0.523 & 0.31 & 0.21 & 0.628 & 0.44 & 0.24 \\
+\bottomrule
+\end{tabular}

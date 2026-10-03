@@ -59,14 +59,25 @@ spec = [
         ("Russian $\\to$ English", "MRR", {m: val(pick("MultiFarm Russian->English"), m) for m in METHODS}),
         ("Arabic $\\to$ English", "MRR", {m: val(pick("MultiFarm Arabic->English"), m) for m in METHODS})]),
 ]
-lines = [r"\begin{tabular}{@{}llrrrrrr@{}}", r"\toprule",
-         r"Task & Metric & Strings & Dense & \makecell{Dense,\\PC1 rm.} & \makecell{SAE\\unweighted} & \textbf{SAE-IDF} & $\Delta$ dense \\",
+E = HERE.parent / "paper" / "data" / "embed_baseline.csv"
+EMB = {}
+if E.exists():
+    for r in csv.DictReader(open(E)):
+        EMB[(r["task"], r["metric"])] = float(r["emb"])
+emb_key = {"Lean 4 $\\to$ Isabelle": "Lean 4 $\\to$ Isabelle", "Lean 4 $\\to$ Metamath": "Lean 4 $\\to$ Metamath", "Lean 4 $\\to$ HOL Light": "Lean 4 $\\to$ HOL Light",
+           "7 languages, mean": "XLCoST, 7 languages", "source $\\to$ target columns": "Valentine columns", "NELL $\\to$ DBpedia": "NELL $\\to$ DBpedia",
+           "YAGO $\\to$ Wikidata": "YAGO $\\to$ Wikidata", "Chinese $\\to$ English": "MultiFarm zh $\\to$ en", "Russian $\\to$ English": "MultiFarm ru $\\to$ en", "Arabic $\\to$ English": "MultiFarm ar $\\to$ en"}
+METHODS_E = ["strings", "dense", "dense_pc1", "sae_mean", "sae_idf", "bge"]
+lines = [r"\begin{tabular}{@{}llrrrrrrr@{}}", r"\toprule",
+         r"Task & Metric & Strings & Dense & \makecell{Dense,\\PC1 rm.} & \makecell{SAE\\unweighted} & \textbf{SAE-IDF} & \makecell{BGE-M3\\retriever} & $\Delta$ dense \\",
          r"\midrule"]
 for group, items in spec:
-    lines.append(r"\multicolumn{8}{@{}l}{\textit{" + group + r"}} \\")
+    lines.append(r"\multicolumn{9}{@{}l}{\textit{" + group + r"}} \\")
     for name, metric, d in items:
         delta = d["sae_idf"] - d["dense"]
-        lines.append(f"\\quad {name} & {metric} & " + " & ".join(cells(d)) + f" & {delta:+.2f} \\\\")
+        mkey = {"MRR": "MRR", "MRR$^\\dagger$": "MRR", "P@6$^\\dagger$": "P@6", "F1": "F1"}[metric]
+        d = dict(d); d["bge"] = EMB.get((emb_key[name], mkey))
+        lines.append(f"\\quad {name} & {metric} & " + " & ".join(cells(d, METHODS_E)) + f" & {delta:+.2f} \\\\")
 lines += [r"\bottomrule", r"\end{tabular}"]
 write("tab_main.tex", "\n".join(lines) + "\n")
 

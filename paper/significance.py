@@ -105,25 +105,52 @@ def valentine(run_dir, metric):
     return {m: [float(r[f"{m}__{metric}"]) for r in rows] for m in ("dense", "dense_pc1", "sae_mean", "sae_idf")}
 
 
-TASKS = [
-    ("Lean 4 $\\to$ Isabelle", "MRR", lambda: xlcost_like(M / "minif2f/lean4_Isabelle", "bm25_word")),
-    ("Lean 4 $\\to$ Metamath", "MRR", lambda: xlcost_like(M / "minif2f/lean4_Metamath", "tfidf_word")),
-    ("Lean 4 $\\to$ HOL Light", "MRR", lambda: xlcost_like(M / "minif2f/lean4_HOLLight", "tfidf_char3-5")),
-] + [
-    (f"XLCoST {name}", "MRR", (lambda L=L: xlcost_like(M / f"xlcost/{L}_program", "tfidf_word")))
-    for L, name in (("Java", "Java"), ("Cpp", "C++"), ("Python", "Python"), ("Csharp", "C\\#"), ("Javascript", "JavaScript"), ("PHP", "PHP"), ("C", "C"))
-] + [
-    ("Valentine (F1)", "F1", lambda: valentine(M / "valentine_column", "F1Score")),
-    ("Valentine (MRR)", "MRR", lambda: valentine(M / "valentine_column", "MeanReciprocalRank")),
-    ("NELL $\\to$ DBpedia", "MRR", lambda: ranks_csv(M / "commonkg/native_scored_nell_dbpedia/L20_w131k_l0_114/analysis/per_query_ranks.csv")),
-    ("YAGO $\\to$ Wikidata", "MRR", lambda: ranks_csv(M / "commonkg/native_scored_yago_wikidata/L20_w131k_l0_114/analysis/per_query_ranks.csv")),
-    ("MultiFarm zh $\\to$ en", "MRR", lambda: ranks_csv(M / "multifarm/native_scored/L20_w131k_l0_114/analysis_views_cn-en/per_query_ranks.csv")),
-    ("MultiFarm ru $\\to$ en", "MRR", lambda: ranks_csv(M / "multifarm/native_scored/L20_w131k_l0_114/analysis_views_en-ru/per_query_ranks.csv")),
-    ("MultiFarm ar $\\to$ en", "MRR", lambda: ranks_csv(M / "multifarm/native_scored/L20_w131k_l0_114/analysis_views_ar-en/per_query_ranks.csv")),
-    ("Bio-ML valid", "MRR", lambda: ranks_csv(M / "bioml/native_scored/L20_w131k_l0_114/analysis_views_valid/per_query_ranks.csv")),
-    ("Bio-ML train", "MRR", lambda: ranks_csv(M / "bioml/native_scored/L20_w131k_l0_114/analysis_views_train/per_query_ranks.csv")),
-    ("Anatomy", "MRR", lambda: ranks_csv(M / "anatomy/native_scored/L20_w131k_l0_114/analysis/per_query_ranks.csv")),
-]
+def tasks_for(runs):
+    if runs == "gemma":
+        return [
+            ("Lean 4 $\\to$ Isabelle", "MRR", lambda: xlcost_like(M / "minif2f/lean4_Isabelle", "bm25_word")),
+            ("Lean 4 $\\to$ Metamath", "MRR", lambda: xlcost_like(M / "minif2f/lean4_Metamath", "tfidf_word")),
+            ("Lean 4 $\\to$ HOL Light", "MRR", lambda: xlcost_like(M / "minif2f/lean4_HOLLight", "tfidf_char3-5")),
+        ] + [
+            (f"XLCoST {name}", "MRR", (lambda L=L: xlcost_like(M / f"xlcost/{L}_program", "tfidf_word")))
+            for L, name in (("Java", "Java"), ("Cpp", "C++"), ("Python", "Python"), ("Csharp", "C\\#"), ("Javascript", "JavaScript"), ("PHP", "PHP"), ("C", "C"))
+        ] + [
+            ("Valentine (F1)", "F1", lambda: valentine(M / "valentine_column", "F1Score")),
+            ("Valentine (MRR)", "MRR", lambda: valentine(M / "valentine_column", "MeanReciprocalRank")),
+            ("NELL $\\to$ DBpedia", "MRR", lambda: ranks_csv(M / "commonkg/native_scored_nell_dbpedia/L20_w131k_l0_114/analysis/per_query_ranks.csv")),
+            ("YAGO $\\to$ Wikidata", "MRR", lambda: ranks_csv(M / "commonkg/native_scored_yago_wikidata/L20_w131k_l0_114/analysis/per_query_ranks.csv")),
+            ("MultiFarm zh $\\to$ en", "MRR", lambda: ranks_csv(M / "multifarm/native_scored/L20_w131k_l0_114/analysis_views_cn-en/per_query_ranks.csv")),
+            ("MultiFarm ru $\\to$ en", "MRR", lambda: ranks_csv(M / "multifarm/native_scored/L20_w131k_l0_114/analysis_views_en-ru/per_query_ranks.csv")),
+            ("MultiFarm ar $\\to$ en", "MRR", lambda: ranks_csv(M / "multifarm/native_scored/L20_w131k_l0_114/analysis_views_ar-en/per_query_ranks.csv")),
+            ("Bio-ML valid", "MRR", lambda: ranks_csv(M / "bioml/native_scored/L20_w131k_l0_114/analysis_views_valid/per_query_ranks.csv")),
+            ("Bio-ML train", "MRR", lambda: ranks_csv(M / "bioml/native_scored/L20_w131k_l0_114/analysis_views_train/per_query_ranks.csv")),
+            ("Anatomy", "MRR", lambda: ranks_csv(M / "anatomy/native_scored/L20_w131k_l0_114/analysis/per_query_ranks.csv")),
+        ]
+    # Llama-3.1-8B, layer 15, Llama Scope 131k
+    return [
+        ("Lean 4 $\\to$ Isabelle", "MRR", lambda: xlcost_like(M / "ablation/Isabelle/llama_L15_w131k", "bm25_word")),
+        ("Lean 4 $\\to$ Metamath", "MRR", lambda: xlcost_like(M / "ablation/Metamath/llama_L15_w131k", "tfidf_word")),
+        ("Lean 4 $\\to$ HOL Light", "MRR", lambda: xlcost_like(M / "ablation/HOLLight/llama_L15_w131k", "tfidf_char3-5")),
+    ] + [
+        (f"XLCoST {name}", "MRR", (lambda L=L: xlcost_like(M / f"xlcost_llama/{L}_program", "tfidf_word")))
+        for L, name in (("Java", "Java"), ("Cpp", "C++"), ("Python", "Python"), ("Csharp", "C\\#"), ("Javascript", "JavaScript"), ("PHP", "PHP"), ("C", "C"))
+    ] + [
+        ("Valentine (F1)", "F1", lambda: valentine(M / "valentine_column_llama", "F1Score")),
+        ("Valentine (MRR)", "MRR", lambda: valentine(M / "valentine_column_llama", "MeanReciprocalRank")),
+        ("NELL $\\to$ DBpedia", "MRR", lambda: ranks_csv(M / "commonkg/native_scored_nell_dbpedia/llama_L15_w131k/analysis_all/per_query_ranks.csv")),
+        ("YAGO $\\to$ Wikidata", "MRR", lambda: ranks_csv(M / "commonkg/native_scored_yago_wikidata/llama_L15_w131k/analysis_all/per_query_ranks.csv")),
+        ("MultiFarm zh $\\to$ en", "MRR", lambda: ranks_csv(M / "multifarm/native_scored/llama_L15_w131k/analysis_views_cn-en/per_query_ranks.csv")),
+        ("MultiFarm ru $\\to$ en", "MRR", lambda: ranks_csv(M / "multifarm/native_scored/llama_L15_w131k/analysis_views_en-ru/per_query_ranks.csv")),
+        ("MultiFarm ar $\\to$ en", "MRR", lambda: ranks_csv(M / "multifarm/native_scored/llama_L15_w131k/analysis_views_ar-en/per_query_ranks.csv")),
+        ("Bio-ML valid", "MRR", lambda: ranks_csv(M / "bioml/native_scored/llama_L15_w131k/analysis_views_valid/per_query_ranks.csv")),
+        ("Bio-ML train", "MRR", lambda: ranks_csv(M / "bioml/native_scored/llama_L15_w131k/analysis_views_train/per_query_ranks.csv")),
+        ("Anatomy", "MRR", lambda: ranks_csv(M / "anatomy/native_scored/llama_L15_w131k/analysis_all/per_query_ranks.csv")),
+    ]
+
+
+RUNS = sys.argv[1] if len(sys.argv) > 1 else "gemma"
+SUFFIX = "" if RUNS == "gemma" else "_" + RUNS
+TASKS = tasks_for(RUNS)
 
 out_rows = []
 for task, metric, load in TASKS:
@@ -137,7 +164,7 @@ for task, metric, load in TASKS:
               f"[{st['ci_lo']:+.3f},{st['ci_hi']:+.3f}] p={st['p_boot']:.4f} W/L/T={st['wins']}/{st['losses']}/{st['ties']}")
 
 (HERE / "data").mkdir(exist_ok=True)
-with open(HERE / "data" / "significance.csv", "w", newline="") as f:
+with open(HERE / "data" / f"significance{SUFFIX}.csv", "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=list(out_rows[0].keys()))
     w.writeheader(); w.writerows(out_rows)
 
@@ -158,5 +185,5 @@ for task, metric, _ in TASKS:
     n = next(r for r in out_rows if r["task"] == task)["n"]
     lines.append(f"{task} & {n:,} & {cell(task, 'dense')} & {cell(task, 'dense_pc1')} & {cell(task, 'strings')} \\\\")
 lines += [r"\bottomrule", r"\end{tabular}"]
-(HERE / "tables" / "tab_significance.tex").write_text("\n".join(lines) + "\n")
-print("wrote", HERE / "tables" / "tab_significance.tex")
+(HERE / "tables" / f"tab_significance{SUFFIX}.tex").write_text("\n".join(lines) + "\n")
+print("wrote", HERE / "tables" / f"tab_significance{SUFFIX}.tex")

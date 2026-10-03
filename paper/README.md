@@ -1,4 +1,4 @@
-# Paper: Rare Features, Shared Symbols (NAACL draft)
+# Paper: Sparse Autoencoders Are a Shared Coordinate System for Symbolic Matching (NAACL draft)
 
 `main.tex` is the ACL-template draft (review mode: anonymous, line numbers).
 

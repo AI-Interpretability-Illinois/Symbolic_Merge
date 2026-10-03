@@ -1,0 +1,14 @@
+task,metric,sae_mean,sae_idf,sae_idf_universal,sae_info,sae_logodds
+Lean 4 $\to$ Isabelle,MRR,0.8824,0.9607,0.9084,0.7402,0.7561
+Lean 4 $\to$ Metamath,MRR,0.0950,0.6612,0.1904,0.1018,0.1896
+Lean 4 $\to$ HOL Light,MRR,0.4933,0.8980,0.5883,0.1943,0.2767
+"XLCoST, 7 languages",MRR,0.4494,0.4644,0.4509,0.4379,0.4705
+Valentine columns,F1,0.4577,0.6141,0.5742,0.6151,0.5920
+Valentine columns,MRR,0.6848,0.8560,0.8077,0.8547,0.7812
+NELL $\to$ DBpedia,MRR,0.9378,0.9756,0.9665,0.9678,0.9340
+YAGO $\to$ Wikidata,MRR,0.8720,0.9618,0.9414,0.9468,0.9137
+MultiFarm zh $\to$ en,MRR,0.4036,0.7535,0.7099,0.7259,0.5092
+MultiFarm ru $\to$ en,MRR,0.2518,0.7647,0.6991,0.7654,0.3193
+MultiFarm ar $\to$ en,MRR,0.2247,0.7219,0.6791,0.7142,0.2964
+Bio-ML valid,MRR,0.6965,0.8172,0.7932,0.8107,0.7602
+Anatomy,MRR,0.8011,0.8857,0.8633,0.8849,0.8457

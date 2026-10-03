@@ -1,0 +1,47 @@
+{
+  "n": 5252,
+  "agreement": 0.9167936024371668,
+  "kappa": 0.8028872410179194,
+  "per_type": {
+    "concept": {
+      "first": 3845,
+      "second": 3885,
+      "agree_given_first": 0.9576072821846554
+    },
+    "surface": {
+      "first": 334,
+      "second": 334,
+      "agree_given_first": 0.8592814371257484
+    },
+    "notation": {
+      "first": 908,
+      "second": 969,
+      "agree_given_first": 0.8843612334801763
+    },
+    "generic": {
+      "first": 165,
+      "second": 64,
+      "agree_given_first": 0.2606060606060606
+    }
+  },
+  "confusion": {
+    "concept->concept": 3682,
+    "concept->generic": 17,
+    "concept->notation": 114,
+    "concept->surface": 32,
+    "generic->concept": 67,
+    "generic->generic": 43,
+    "generic->notation": 44,
+    "generic->surface": 11,
+    "notation->concept": 98,
+    "notation->generic": 3,
+    "notation->notation": 803,
+    "notation->surface": 4,
+    "surface->concept": 38,
+    "surface->generic": 1,
+    "surface->notation": 8,
+    "surface->surface": 287
+  },
+  "first_labeler": "claude-opus-5 (interpret_matches.py)",
+  "second_labeler": "gpt-5.6-sol"
+}
