@@ -1,14 +1,23 @@
-% References for "Rare Features, Shared Symbols".
+% ==== Reference verification, 2026-10-08 ====
+% 59 entries: 59 VERIFIED, 0 NOT VERIFIED, 0 UNCITED.
+% VERIFIED = metadata checked against arXiv / ACL Anthology / Crossref / the publisher, and every sentence of
+% main.tex and tables/*.tex that cites the entry checked against the source's own text (or, for books, the
+% specific passage or a standard secondary statement of it). Per-entry details in the '% checked' lines.
+% The closing '% --- AI-GENERATED REFERENCE (VERIFY) ---' line of each entry only marks its end.
+% =====================================================
+
+% References for "Sparse Autoencoders Are a Shared Coordinate System for Symbolic Matching".
 % Every entry below was written by an AI assistant (Claude) on 2026-10-01 and
 % then checked against the source named in its "checked" comment (arXiv
 % abstract page, publisher page, or the paper itself). The comment also says
 % which claim in the paper the source was checked to support. A human should
 % still verify each entry before submission.
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2609.13529v2) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2609.13529 (v2, comments "ACM AI Summit 2026"); supports: generative
 % interpretability, Type-3 neuro-symbolic models, the three challenges (universal symbolic system,
 % integration, neural/symbolic boundary), and "build on existing symbolic systems by alignment and merging".
+% checked 2026-10-08: Sec. 4.2: Cyc 'paused in recent years of information explosion'; neuro-symbolic models for interpretability; Challenge 1 (align, merge existing symbolic systems) and Challenge 3 (neural/symbolic boundary).
 @misc{yang2026generative,
   title  = {Generative Interpretability via Scalable Neuro-Symbolic Models},
   author = {Yang, Xiaocong},
@@ -18,9 +27,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2408.05147; HF google/gemma-scope-9b-pt-res) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2408.05147 and the HTML version (Table 1): JumpReLU SAEs on all layers of
 % Gemma 2 2B and 9B; residual-stream widths 2^14 to 2^20 at layer 20 of the 9B model; sigma(z)=z*H(z-theta).
+% checked 2026-10-08: JumpReLU SAEs on all layers of Gemma 2 2B/9B (abstract); layer_20/width_131k/average_l0_114 exists. 'released for entire model families' changed to 'for every layer of open models'.
 @misc{lieberum2024gemmascope,
   title  = {Gemma Scope: Open Sparse Autoencoders Everywhere All At Once on Gemma 2},
   author = {Lieberum, Tom and Rajamanoharan, Senthooran and Conmy, Arthur and Smith, Lewis and Sonnerat, Nicolas and Varma, Vikrant and Kram{\'a}r, J{\'a}nos and Dragan, Anca and Shah, Rohin and Nanda, Neel},
@@ -30,8 +40,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2407.14435) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2407.14435; supports: JumpReLU SAEs with a learned per-feature threshold.
+% checked 2026-10-08: JumpReLU zeroes pre-activations below a positive threshold, which is trained (abstract, Sec. 3).
 @misc{rajamanoharan2024jumping,
   title  = {Jumping Ahead: Improving Reconstruction Fidelity with {JumpReLU} Sparse Autoencoders},
   author = {Rajamanoharan, Senthooran and Lieberum, Tom and Sonnerat, Nicolas and Conmy, Arthur and Varma, Vikrant and Kram{\'a}r, J{\'a}nos and Nanda, Neel},
@@ -41,9 +52,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2410.20526) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2410.20526; supports: 256 Top-K SAEs on every layer/sublayer of
 % Llama-3.1-8B-Base at 32K and 128K features.
+% checked 2026-10-08: 256 SAEs on each layer and sublayer of Llama-3.1-8B-Base, 32K and 128K features (abstract); L15R-32x = 131,072 features.
 @misc{he2024llamascope,
   title  = {Llama Scope: Extracting Millions of Features from {Llama-3.1-8B} with Sparse Autoencoders},
   author = {He, Zhengfu and Shu, Wentao and Ge, Xuyang and Chen, Lingjie and Wang, Junxuan and Zhou, Yunhua and Liu, Frances and Guo, Qipeng and Huang, Xuanjing and Wu, Zuxuan and Jiang, Yu-Gang and Qiu, Xipeng},
@@ -53,9 +65,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (transformer-circuits.pub page) and every citing sentence checked against the source. ---
 % checked: https://transformer-circuits.pub/2023/monosemantic-features (title confirmed; author list from
 % memory, verify); supports: SAEs decompose activations into interpretable features; "feature splitting".
+% checked 2026-10-08: Title and author list from the page; 'Using a sparse autoencoder, we extract a large number of interpretable features'.
 @misc{bricken2023monosemanticity,
   title  = {Towards Monosemanticity: Decomposing Language Models With Dictionary Learning},
   author = {Bricken, Trenton and Templeton, Adly and Batson, Joshua and Chen, Brian and Jermyn, Adam and Conerly, Tom and Turner, Nick and Anil, Cem and Denison, Carson and Askell, Amanda and Lasenby, Robert and Wu, Yifan and Kravec, Shauna and Schiefer, Nicholas and Maxwell, Tim and Joseph, Nicholas and Hatfield-Dodds, Zac and Tamkin, Alex and Nguyen, Karina and McLean, Brayden and Burke, Josiah E. and Hume, Tristan and Carter, Shan and Henighan, Tom and Olah, Christopher},
@@ -65,9 +78,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (transformer-circuits.pub page) and every citing sentence checked against the source. ---
 % checked: https://transformer-circuits.pub/2024/scaling-monosemanticity (title confirmed; author list from
 % memory, verify); supports: features are multilingual and multimodal; feature splitting in wider SAEs.
+% checked 2026-10-08: SAEs of ~1M, ~4M and ~34M features on Claude 3 Sonnet; 'Many features are multilingual'.
 @misc{templeton2024scaling,
   title  = {Scaling Monosemanticity: Extracting Interpretable Features from {Claude 3 Sonnet}},
   author = {Templeton, Adly and Conerly, Tom and Marcus, Jonathan and Lindsey, Jack and Bricken, Trenton and Chen, Brian and Pearce, Adam and Citro, Craig and Ameisen, Emmanuel and Jones, Andy and Cunningham, Hoagy and Turner, Nicholas L. and McDougall, Callum and MacDiarmid, Monte and Freeman, C. Daniel and Sumers, Theodore R. and Rees, Edward and Batson, Joshua and Jermyn, Adam and Carter, Shan and Olah, Chris and Henighan, Tom},
@@ -77,9 +91,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2309.08600; ICLR 2024 programme) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2309.08600; supports: SAE features more interpretable and monosemantic
 % than directions from alternative methods. Venue ICLR 2024 from memory, verify.
+% checked 2026-10-08: Features 'more interpretable and monosemantic than directions identified by alternative approaches' (abstract).
 @inproceedings{cunningham2024sparse,
   title     = {Sparse Autoencoders Find Highly Interpretable Features in Language Models},
   author    = {Cunningham, Hoagy and Ewart, Aidan and Riggs, Logan and Huben, Robert and Sharkey, Lee},
@@ -89,9 +104,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2209.10652) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2209.10652; supports: models store more sparse features than dimensions
 % in superposition, which makes neurons polysemantic.
+% checked 2026-10-08: Superposition and polysemanticity (abstract).
 @misc{elhage2022toy,
   title  = {Toy Models of Superposition},
   author = {Elhage, Nelson and Hume, Tristan and Olsson, Catherine and Schiefer, Nicholas and Henighan, Tom and Kravec, Shauna and Hatfield-Dodds, Zac and Lasenby, Robert and Drain, Dawn and Chen, Carol and Grosse, Roger and McCandlish, Sam and Kaplan, Jared and Amodei, Dario and Wattenberg, Martin and Olah, Christopher},
@@ -102,9 +118,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2406.04093; ICLR 2025 programme) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2406.04093; supports: k-sparse SAEs, scaling laws, a 16M-latent SAE on GPT-4.
 % Venue ICLR 2025 from memory, verify.
+% checked 2026-10-08: 'we train a 16 million latent autoencoder on GPT-4 activations' (abstract).
 @inproceedings{gao2025scaling,
   title     = {Scaling and Evaluating Sparse Autoencoders},
   author    = {Gao, Leo and Dupr{\'e} la Tour, Tom and Tillman, Henk and Goh, Gabriel and Troll, Rajan and Radford, Alec and Sutskever, Ilya and Leike, Jan and Wu, Jeffrey},
@@ -114,10 +131,11 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2502.16681; PMLR v267 (ICML 2025)) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2502.16681; supports: SAE features did not consistently beat simple dense
 % baselines in sparse probing; "need to rigorously evaluate interpretability methods on downstream tasks
 % with strong baselines". Venue ICML 2025 from memory, verify.
+% checked 2026-10-08: SAEs do not consistently beat baselines in sparse probing (abstract).
 @inproceedings{kantamneni2025sparse,
   title     = {Are Sparse Autoencoders Useful? {A} Case Study in Sparse Probing},
   author    = {Kantamneni, Subhash and Engels, Joshua and Rajamanoharan, Senthooran and Tegmark, Max and Nanda, Neel},
@@ -127,21 +145,25 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.18653/v1/2025.naacl-long.312) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2501.06346; supports: SAE features for grammatical concepts are shared
 % across languages in Llama-3-8B and Aya-23-8B. Venue ACL 2025 from memory, verify.
+% checked 2026-10-08: Venue corrected from ACL to NAACL 2025, pp. 6131-6150; grammatical concepts encoded in feature directions shared across languages (abstract).
 @inproceedings{brinkmann2025grammatical,
   title     = {Large Language Models Share Representations of Latent Grammatical Concepts Across Typologically Diverse Languages},
   author    = {Brinkmann, Jannik and Wendler, Chris and Bartelt, Christian and Mueller, Aaron},
-  booktitle = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (ACL)},
+  booktitle = {Proceedings of the 2025 Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers)},
+  pages     = {6131--6150},
   year      = {2025},
-  url       = {https://arxiv.org/abs/2501.06346}
+  doi       = {10.18653/v1/2025.naacl-long.312},
+  url       = {https://aclanthology.org/2025.naacl-long.312/}
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2408.00657) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2408.00657; supports: SAEs trained on dense text embeddings give
 % interpretable sparse features that can steer semantic search.
+% checked 2026-10-08: SAEs on dense text embeddings; interpretable features 'precisely steer semantic search' (abstract).
 @misc{oneill2024disentangling,
   title  = {Disentangling Dense Embeddings with Sparse Autoencoders},
   author = {O'Neill, Charles and Ye, Christine and Iyer, Kartheik and Wu, John F.},
@@ -151,9 +173,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (OpenAI neuron-explainer page) and every citing sentence checked against the source. ---
 % checked via web search (openaipublic.blob.core.windows.net/neuron-explainer/paper/index.html); supports:
 % automated explanations of units from their top-activating inputs, scored by simulation.
+% checked 2026-10-08: 10 authors in this order, May 9 2023; language models generate explanations of neurons.
 @misc{bills2023language,
   title  = {Language Models Can Explain Neurons in Language Models},
   author = {Bills, Steven and Cammarata, Nick and Mossing, Dan and Tillman, Henk and Gao, Leo and Goh, Gabriel and Sutskever, Ilya and Leike, Jan and Wu, Jeff and Saunders, William},
@@ -163,9 +186,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (neuronpedia.org official BibTeX) and every citing sentence checked against the source. ---
 % checked via web search (official BibTeX from neuronpedia.org); supports: source of feature explanations
 % and Pile activation densities for Gemma Scope features.
+% checked 2026-10-08: Entry matches the site's own citation; the explanations and Pile densities used come from the site.
 @misc{lin2023neuronpedia,
   title  = {Neuronpedia: Interactive Reference and Tooling for Analyzing Neural Networks},
   author = {Lin, Johnny},
@@ -175,8 +199,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2101.00027) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2101.00027; supports: The Pile, 825 GiB, 22 datasets.
+% checked 2026-10-08: The Pile corpus; feature densities are Neuronpedia's, measured on Pile tokens.
 @misc{gao2020pile,
   title  = {The {Pile}: An 800{GB} Dataset of Diverse Text for Language Modeling},
   author = {Gao, Leo and Biderman, Stella and Black, Sid and Golding, Laurence and Hoppe, Travis and Foster, Charles and Phang, Jason and He, Horace and Thite, Anish and Nabeshima, Noa and Presser, Shawn and Leahy, Connor},
@@ -186,8 +211,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2408.00118) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2408.00118; supports: Gemma 2 at 2B, 9B, 27B.
+% checked 2026-10-08: First four authors in order, rest elided; Gemma 2 at 2B/9B/27B.
 @misc{gemmateam2024gemma2,
   title  = {Gemma 2: Improving Open Language Models at a Practical Size},
   author = {{Gemma Team} and Riviere, Morgane and Pathak, Shreya and Sessa, Pier Giuseppe and others},
@@ -197,8 +223,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2407.21783) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2407.21783; supports: the Llama 3 herd (the 8B model used here is Llama-3.1-8B).
+% checked 2026-10-08: First three authors in order, rest elided; Llama 3.1 8B is part of the herd.
 @misc{grattafiori2024llama3,
   title  = {The {Llama 3} Herd of Models},
   author = {Grattafiori, Aaron and Dubey, Abhimanyu and Jauhri, Abhinav and others},
@@ -208,8 +235,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (J. Documentation 28(1):11-21 (2004 reprint)) and every citing sentence checked against the source. ---
 % checked via web search (Journal of Documentation 28(1):11-21, 1972); supports: inverse document frequency.
+% checked 2026-10-08: 'terms should be weighted according to collection frequency, so that matches on less frequent, more specific, terms are of greater value' (abstract).
 @article{sparckjones1972statistical,
   title   = {A Statistical Interpretation of Term Specificity and Its Application in Retrieval},
   author  = {Sp{\"a}rck Jones, Karen},
@@ -221,8 +249,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (FnTIR 3(4):333-389, doi 10.1561/1500000019) and every citing sentence checked against the source. ---
 % checked via web search (FnTIR 3(4):333-389, 2009); supports: BM25 baseline.
+% checked 2026-10-08: Monograph PDF: BM25 and the idf weight (Sec. 3.1, Eq. 3.3).
 @article{robertson2009probabilistic,
   title   = {The Probabilistic Relevance Framework: {BM25} and Beyond},
   author  = {Robertson, Stephen and Zaragoza, Hugo},
@@ -234,9 +263,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (ICLR 2018 paper PDF) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/1702.01417; supports: removing the common mean and top principal directions
 % improves word embeddings. Venue ICLR 2018 from memory, verify.
+% checked 2026-10-08: Published version lists two authors (arXiv v1 lists three); 'eliminate the common mean vector and a few top dominating directions' (abstract).
 @inproceedings{mu2018allbutthetop,
   title     = {All-but-the-Top: Simple and Effective Postprocessing for Word Representations},
   author    = {Mu, Jiaqi and Viswanath, Pramod},
@@ -246,9 +276,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (ICLR 2017 paper PDF) and every citing sentence checked against the source. ---
 % checked via web search (ICLR 2017); supports: weighted average of word vectors with the first principal
 % component removed as a strong sentence-embedding baseline.
+% checked 2026-10-08: 'remove the projections of the average vectors on their first singular vector (common component removal)' (abstract).
 @inproceedings{arora2017simple,
   title     = {A Simple but Tough-to-Beat Baseline for Sentence Embeddings},
   author    = {Arora, Sanjeev and Liang, Yingyu and Ma, Tengyu},
@@ -257,9 +288,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 1909.00512; EMNLP-IJCNLP 2019 pp. 55-65) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/1909.00512 (EMNLP 2019); supports: contextual representations are
 % anisotropic in every layer.
+% checked 2026-10-08: Contextualized representations 'are anisotropic, occupying a narrow cone in the vector space'.
 @inproceedings{ethayarajh2019contextual,
   title     = {How Contextual are Contextualized Word Representations? {C}omparing the Geometry of {BERT}, {ELMo}, and {GPT-2} Embeddings},
   author    = {Ethayarajh, Kawin},
@@ -269,9 +301,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2206.08474) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2206.08474; supports: parallel data in 7 programming languages and English,
 % 10 cross-lingual tasks including code-to-code search (task list from the dataset itself).
+% checked 2026-10-08: Parallel code in 7 languages (C++, Java, Python, C#, JavaScript, PHP, C) at snippet and program level; code search (abstract).
 @misc{zhu2022xlcost,
   title  = {{XLCoST}: A Benchmark Dataset for Cross-lingual Code Intelligence},
   author = {Zhu, Ming and Jain, Aneesh and Suresh, Karthik and Ravindran, Roshan and Tipirneni, Sindhu and Reddy, Chandan K.},
@@ -281,9 +314,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2109.00110; ICLR 2022 paper PDF) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2109.00110 (ICLR 2022); supports: 488 Olympiad-level problems formalised in
 % Metamath, Lean, Isabelle (partially) and HOL Light (partially).
+% checked 2026-10-08: Targets 'Metamath, Lean, Isabelle (partially) and HOL Light (partially)' (abstract); 'public in all four provers since 2021' corrected, Lean 4 port dated 2023.
 @inproceedings{zheng2022minif2f,
   title     = {{miniF2F}: A Cross-System Benchmark for Formal {O}lympiad-Level Mathematics},
   author    = {Zheng, Kunhao and Han, Jesse Michael and Polu, Stanislas},
@@ -293,8 +327,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (GitHub API and README) and every citing sentence checked against the source. ---
 % checked: https://github.com/yangky11/miniF2F-lean4 (README: Lean 4 formalization of miniF2F, MIT licence).
+% checked 2026-10-08: Repository created 2023-08-28; Lean 4 port of miniF2F.
 @misc{yang2023minif2flean4,
   title  = {{miniF2F-lean4}: {Lean 4} Formalization of {miniF2F}},
   author = {Yang, Kaiyu},
@@ -304,9 +339,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2010.07386; ICDE 2021 pp. 468-479) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2010.07386; supports: Valentine, an experiment suite for schema matching
 % in dataset discovery with fabricated joinable/unionable pairs. Venue ICDE 2021 from memory, verify.
+% checked 2026-10-08: Fabricated joinable/unionable scenarios (Sec. 1); the release has 551 pairs including Magellan and Wikidata, so 'fabricated' was dropped; F1 with one-to-one selection is the valentine library's (README).
 @inproceedings{koutras2021valentine,
   title     = {Valentine: Evaluating Matching Techniques for Dataset Discovery},
   author    = {Koutras, Christos and Siachamis, George and Ionescu, Andra and Psarakis, Kyriakos and Brons, Jerry and Fragkoulis, Marios and Lofi, Christoph and Bonifati, Angela and Katsifodimos, Asterios},
@@ -316,9 +352,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2205.03447; LNCS ISWC 2022 pp. 575-591) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2205.03447 (ISWC 2022); supports: Bio-ML track of OAEI 2022, biomedical
 % equivalence and subsumption matching tasks from Mondo and UMLS.
+% checked 2026-10-08: NCIT-DOID pair (Table 1); systems rank 100 negative candidates plus the ground truth (Sec. 4).
 @inproceedings{he2022bioml,
   title     = {Machine Learning-Friendly Biomedical Datasets for Equivalence and Subsumption Ontology Matching},
   author    = {He, Yuan and Chen, Jiaoyan and Dong, Hang and Jim{\'e}nez-Ruiz, Ernesto and Hadian, Ali and Horrocks, Ian},
@@ -328,9 +365,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (PubMed 16779002) and every citing sentence checked against the source. ---
 % checked via web search (AMIA Annu Symp Proc 2005:61-65, PMID 16779002); supports: the mouse/human anatomy
 % alignment behind the OAEI Anatomy track (NCI Thesaurus vs Adult Mouse Anatomical Dictionary).
+% checked 2026-10-08: Aligns the NCI Thesaurus (human anatomy) and the Adult Mouse Anatomical Dictionary, the OAEI Anatomy pair (abstract).
 @inproceedings{bodenreider2005mice,
   title     = {Of Mice and Men: Aligning Mouse and Human Anatomies},
   author    = {Bodenreider, Olivier and Hayamizu, Terry F. and Ringwald, Martin and De Coronado, Sherri and Zhang, Songmao},
@@ -340,9 +378,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1016/j.websem.2012.04.001) and every citing sentence checked against the source. ---
 % checked via web search (Journal of Web Semantics, 2012); supports: MultiFarm = OntoFarm conference
 % ontologies translated into several languages with reference alignments.
+% checked 2026-10-08: 12 authors, JWS 15:62-68; OntoFarm conference ontologies translated, with cross-lingual alignments between them (OAEI MultiFarm page); Arabic was added in 2015.
 @article{meilicke2012multifarm,
   title   = {{MultiFarm}: A Benchmark for Multilingual Ontology Matching},
   author  = {Meilicke, Christian and Garc{\'i}a-Castro, Ra{\'u}l and Freitas, Fred and van Hage, Willem Robert and Montiel-Ponsoda, Elena and Ribeiro de Azevedo, Ryan and Stuckenschmidt, Heiner and {\v{S}}v{\'a}b-Zamazal, Ond{\v{r}}ej and Sv{\'a}tek, Vojt{\v{e}}ch and Tamilin, Andrei and Trojahn, C{\'a}ssia and Wang, Shenghui},
@@ -353,9 +392,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (CEUR Vol-2788 paper PDF) and every citing sentence checked against the source. ---
 % checked: OAEI 2022 Common Knowledge Graphs track page (citation requested there) and CEUR Vol-2788;
 % supports: NELL-DBpedia (129 reference class pairs, partial gold standard) and YAGO-Wikidata (304 classes).
+% checked 2026-10-08: '129 equivalent class pairs' NELL-DBpedia (paper); YAGO-Wikidata 304 classes from the OAEI 2022/2023 Common-KG track page, whose only reference is this paper.
 @inproceedings{fallatah2020gold,
   title     = {A Gold Standard Dataset for Large Knowledge Graphs Matching},
   author    = {Fallatah, Omaima and Zhang, Ziqi and Hopfgartner, Frank},
@@ -365,9 +405,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (link.springer.com; Crossref 10.1007/978-3-642-38721-0) and every citing sentence checked against the source. ---
 % checked via web search (Springer 2013, 2nd ed., ISBN 978-3-642-38720-3); supports: ontology matching as the
 % response to semantic heterogeneity; survey of matching techniques.
+% checked 2026-10-08: Springer page + Crossref doi 10.1007/978-3-642-38721-0 (2nd ed., Springer Berlin Heidelberg 2013); blurb: OM as solution to semantic heterogeneity; >100 systems reviewed.
 @book{euzenat2013ontology,
   title     = {Ontology Matching},
   author    = {Euzenat, J{\'e}r{\^o}me and Shvaiko, Pavel},
@@ -378,9 +419,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1007/s007780100057; link.springer.com) and every citing sentence checked against the source. ---
 % checked via web search (VLDB Journal 10:334-350, 2001); supports: schema matching survey; schema- vs
 % instance-level and language- vs constraint-based matchers.
+% checked 2026-10-08: Crossref doi 10.1007/s007780100057 + Springer abstract (VLDB J. 10(4):334-350, 2001); supports: schema matching as a basic DB problem; taxonomy of matchers.
 @article{rahm2001survey,
   title   = {A Survey of Approaches to Automatic Schema Matching},
   author  = {Rahm, Erhard and Bernstein, Philip A.},
@@ -392,8 +434,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1007/978-3-642-25073-6_18; link.springer.com; oaei.ontologymatching.org) and every citing sentence checked against the source. ---
 % checked via web search (ISWC 2011, LNCS 7031); supports: LogMap, scalable logic-based ontology matching.
+% checked 2026-10-08: Crossref doi 10.1007/978-3-642-25073-6_18 + Springer page (ISWC 2011, LNCS 7031:273-288) + PDF; supports: logic-based matcher with lexical anchors.
 @inproceedings{jimenezruiz2011logmap,
   title     = {{LogMap}: Logic-Based and Scalable Ontology Matching},
   author    = {Jim{\'e}nez-Ruiz, Ernesto and Cuenca Grau, Bernardo},
@@ -405,9 +448,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2112.02682; Crossref 10.1609/aaai.v36i5.20510) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2112.02682 (AAAI 2022); supports: BERTMap fine-tunes BERT on text extracted
 % from the ontologies, then refines mappings with structure and logic.
+% checked 2026-10-08: arXiv 2112.02682 + Crossref doi 10.1609/aaai.v36i5.20510 (AAAI 36(5):5684-5691); supports: OM system fine-tuning BERT on ontology text.
 @inproceedings{he2022bertmap,
   title     = {{BERTMap}: A {BERT}-Based Ontology Alignment System},
   author    = {He, Yuan and Chen, Jiaoyan and Antonyrajah, Denvar and Horrocks, Ian},
@@ -417,9 +461,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1145/3587259.3627571; arXiv 2311.03837) and every citing sentence checked against the source. ---
 % checked via web search (K-CAP 2023, doi 10.1145/3587259.3627571); supports: sentence-transformer candidates
 % re-judged by an LLM for ontology matching.
+% checked 2026-10-08: Crossref doi 10.1145/3587259.3627571 (K-CAP 2023, pp.131-139) + arXiv 2311.03837 PDF; supports: zero/few-shot LLM prompting for OM (not an agent). Fixed: cited as 'prompted LLMs', not 'LLM agents'.
 @inproceedings{hertling2023olala,
   title     = {{OLaLa}: Ontology Matching with Large Language Models},
   author    = {Hertling, Sven and Paulheim, Heiko},
@@ -429,20 +474,26 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.14778/3712221.3712222; vldb.org; arXiv 2312.00326) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2312.00326 (VLDB 2025); supports: LLM agents for ontology matching on OAEI tracks.
+% checked 2026-10-08: PVLDB PDF + Crossref doi 10.14778/3712221.3712222: PVLDB 18(3):516-529, 2024; supports: LLM agents for OM on OAEI. Fixed: year 2024 (PVLDB 18(3):516-529), doi added.
 @article{qiang2025agentom,
   title   = {{Agent-OM}: Leveraging {LLM} Agents for Ontology Matching},
   author  = {Qiang, Zhangcheng and Wang, Weiqing and Taylor, Kerry},
   journal = {Proceedings of the VLDB Endowment},
-  year    = {2025},
-  url     = {https://arxiv.org/abs/2312.00326}
+  volume  = {18},
+  number  = {3},
+  pages   = {516--529},
+  year    = {2024},
+  doi     = {10.14778/3712221.3712222},
+  url     = {https://www.vldb.org/pvldb/vol18/p516-qiang.pdf}
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2003.07743; Crossref 10.14778/3407790.3407828; vldb.org) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2003.07743 and its HTML (VLDB 2020); supports: embedding-based entity
 % alignment is trained on seed alignments (20% of the reference alignment in the benchmark).
+% checked 2026-10-08: PVLDB PDF (13(11):2326-2340, 2020) + arXiv 2003.07743 + Crossref doi 10.14778/3407790.3407828; supports: EA defined; seed alignment used as training data.
 @article{sun2020benchmarking,
   title   = {A Benchmarking Study of Embedding-based Entity Alignment for Knowledge Graphs},
   author  = {Sun, Zequn and Zhang, Qingheng and Hu, Wei and Wang, Chengming and Chen, Muhao and Akrami, Farahnaz and Li, Chengkai},
@@ -455,9 +506,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2002.08155; Crossref 10.18653/v1/2020.findings-emnlp.139; aclanthology.org) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2002.08155 (Findings of EMNLP 2020); supports: bimodal pre-trained code model
 % evaluated on code search.
+% checked 2026-10-08: ACL Anthology PDF + Crossref doi 10.18653/v1/2020.findings-emnlp.139 (pp.1536-1547) + arXiv 2002.08155; supports: pretrained NL-PL code model.
 @inproceedings{feng2020codebert,
   title     = {{CodeBERT}: A Pre-Trained Model for Programming and Natural Languages},
   author    = {Feng, Zhangyin and Guo, Daya and Tang, Duyu and Duan, Nan and Feng, Xiaocheng and Gong, Ming and Shou, Linjun and Qin, Bing and Liu, Ting and Jiang, Daxin and Zhou, Ming},
@@ -467,9 +519,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2203.03850; Crossref 10.18653/v1/2022.acl-long.499; aclanthology.org) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2203.03850 (ACL 2022); supports: pre-trained code model with a zero-shot
 % code-to-code search task.
+% checked 2026-10-08: ACL Anthology PDF + Crossref doi 10.18653/v1/2022.acl-long.499 (pp.7212-7225) + arXiv 2203.03850; supports: zero-shot cross-PL code-to-code search.
 @inproceedings{guo2022unixcoder,
   title     = {{UniXcoder}: Unified Cross-Modal Pre-training for Code Representation},
   author    = {Guo, Daya and Lu, Shuai and Duan, Nan and Wang, Yanlin and Zhou, Ming and Yin, Jian},
@@ -479,9 +532,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 1906.06187; Crossref 10.18653/v1/P19-1618; aclanthology.org) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/1906.06187 (ACL 2019); supports: a Prolog prover whose unification uses
 % neural sentence similarity, so proofs are chains of symbolic steps.
+% checked 2026-10-08: ACL Anthology P19-1618 PDF + Crossref (ACL 2019, pp. 6151-6161); supports: Prolog prover with differentiable weak unification over embeddings. Add pages/DOI.
 @inproceedings{weber2019nlprolog,
   title     = {{NLProlog}: Reasoning with Weak Unification for Question Answering in Natural Language},
   author    = {Weber, Leon and Minervini, Pasquale and M{\"u}nchmeyer, Jannes and Leser, Ulf and Rockt{\"a}schel, Tim},
@@ -491,9 +545,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1145/219717.219745; sites.cc.gatech.edu) and every citing sentence checked against the source. ---
 % checked via web search (CACM 38(11):33-38, 1995); supports: Cyc as a hand-built universal schema
 % (~10^5 concepts, ~10^6 axioms, a person-century of effort since 1984).
+% checked 2026-10-08: Crossref doi 10.1145/219717.219745 (CACM 38(11):33-38) + hosted scan: 'person-century' since 1984, ~10^5 concepts, ~10^6 handcrafted axioms (1995 figures). Figures describe Cyc as of 1995; 'paused' is carried by yang2026generative.
 @article{lenat1995cyc,
   title   = {{CYC}: A Large-Scale Investment in Knowledge Infrastructure},
   author  = {Lenat, Douglas B.},
@@ -505,9 +560,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (ojs.aaai.org; Crossref 10.1002/aaai.12036; Crossref 10.1609/aimag.v43i1.19122) and every citing sentence checked against the source. ---
 % checked via web search (AI Magazine 43(1):105-125, 2022); the "Type 1-6" neuro-symbolic taxonomy is
 % attributed to this lecture; verify the exact type definitions in the full text.
+% checked 2026-10-08: OJS full-text PDF (AI Mag 43(1):105-125, DOI 10.1002/aaai.12036); p.118 'combine neural and symbolic approaches'. No 'Type 1-6' in text: six named designs.
 @article{kautz2022third,
   title   = {The Third {AI} Summer: {AAAI} {Robert S. Engelmore} Memorial Lecture},
   author  = {Kautz, Henry},
@@ -519,9 +575,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1093/nar/gkac956) and every citing sentence checked against the source. ---
 % checked via web search (NAR 51(D1):D1373-D1380, 2023); supports: PubChem as the source of the
 % SMILES / IUPAC / InChI appendix task.
+% checked 2026-10-08: 13 authors, NAR 51(D1):D1373-D1380; PubChem as the source of the notation task.
 @article{kim2023pubchem,
   title   = {{PubChem} 2023 Update},
   author  = {Kim, Sunghwan and Chen, Jie and Cheng, Tiejun and Gindulyte, Asta and He, Jia and He, Siqian and Li, Qingliang and Shoemaker, Benjamin A. and Thiessen, Paul A. and Yu, Bo and Zaslavsky, Leonid and Zhang, Jian and Bolton, Evan E.},
@@ -533,8 +590,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (plato.stanford.edu; openlibrary.org; en.wikipedia.org) and every citing sentence checked against the source. ---
 % standard reference (not re-checked online); supports: "family resemblance".
+% checked 2026-10-08: SEP 'Wittgenstein' bibliography (Oxford: Blackwell 1953, trans. Anscombe) + PI §§66-67 as quoted; supports: 'family resemblances'. Add translator note.
 @book{wittgenstein1953philosophical,
   title     = {Philosophical Investigations},
   author    = {Wittgenstein, Ludwig},
@@ -544,22 +602,26 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.18653/v1/2024.findings-acl.137) and every citing sentence checked against the source. ---
 % checked: https://arxiv.org/abs/2402.03216; supports: BGE M3-Embedding, multilingual (100+ languages) dense
 % retrieval model with inputs up to 8,192 tokens, used here as the off-the-shelf retriever baseline.
-@misc{chen2024bge,
-  title  = {{M3-Embedding}: Multi-Linguality, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation},
-  author = {Chen, Jianlv and Xiao, Shitao and Zhang, Peitian and Luo, Kun and Lian, Defu and Liu, Zheng},
-  year   = {2024},
-  note   = {arXiv:2402.03216},
-  url    = {https://arxiv.org/abs/2402.03216}
+% checked 2026-10-08: Updated from arXiv to Findings of ACL 2024, pp. 2318-2335; XLM-RoBERTa encoder, [CLS] embedding for dense retrieval (Sec. 3).
+@inproceedings{chen2024bge,
+  title     = {{M3-Embedding}: Multi-Linguality, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation},
+  author    = {Chen, Jianlyu and Xiao, Shitao and Zhang, Peitian and Luo, Kun and Lian, Defu and Liu, Zheng},
+  booktitle = {Findings of the Association for Computational Linguistics: ACL 2024},
+  pages     = {2318--2335},
+  year      = {2024},
+  doi       = {10.18653/v1/2024.findings-acl.137},
+  url       = {https://aclanthology.org/2024.findings-acl.137/}
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2506.05176) and every citing sentence checked against the source. ---
 % checked 2026-10-04 against https://arxiv.org/abs/2506.05176: title, 12 authors in this order, June 2025; the
 % abstract describes the Qwen3 Embedding series (0.6B, 4B, 8B embedding and reranking models) built on Qwen3 with
 % multi-stage training; cited for the Qwen3-Embedding-8B model used as a retriever baseline.
+% checked 2026-10-08: 12 authors; 0.6B/4B/8B models; embedding = last-layer state of the appended [EOS] token (Sec. 3).
 @article{zhang2025qwen3embedding,
   title   = {Qwen3 Embedding: Advancing Text Embedding and Reranking Through Foundation Models},
   author  = {Zhang, Yanzhao and Li, Mingxin and Long, Dingkun and Zhang, Xin and Lin, Huan and Yang, Baosong and Xie, Pengjun and Yang, An and Liu, Dayiheng and Lin, Junyang and Huang, Fei and Zhou, Jingren},
@@ -568,9 +630,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref and PubMed 2231712) and every citing sentence checked against the source. ---
 % checked: Crossref DOI 10.1016/S0022-2836(05)80360-2 -> J. Mol. Biol. 215(3):403-410, Oct 1990, Altschul, Gish,
 % Miller, Myers, Lipman; supports: local alignment search finds relatedness in a few high-scoring segment pairs.
+% checked 2026-10-08: 5 authors, JMB 215(3):403-410; local similarity (maximal segment pair) scores with their statistical significance (abstract).
 @article{altschul1990blast,
   author  = {Altschul, Stephen F. and Gish, Warren and Miller, Webb and Myers, Eugene W. and Lipman, David J.},
   title   = {Basic local alignment search tool},
@@ -583,10 +646,11 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2411.16454) and every citing sentence checked against the source. ---
 % checked: arXiv API id 2411.16454 (published 2024-11-25): "Learning by Analogy: Enhancing Few-Shot Prompting for Math Word
 % Problem Solving with Computational Graph-Based Retrieval", Yang, Lin, Wang, Zhai; supports: text-embedding retrieval
 % favours surface similarity over structural correspondence (the owner's own paper, cited at the owner's request).
+% checked 2026-10-08: arXiv API + PDF 2411.16454v1; Intro: 'semantic retrieval tends to prioritize superficial linguistic similarity over deep structural alignment'.
 @misc{yang2024analogy,
   author        = {Yang, Xiaocong and Lin, Jiacheng and Wang, Ziqi and Zhai, Chengxiang},
   title         = {Learning by Analogy: Enhancing Few-Shot Prompting for Math Word Problem Solving with Computational Graph-Based Retrieval},
@@ -600,6 +664,8 @@
 
 
 
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (papers.nips.cc; proceedings.neurips.cc; arXiv 1706.03762) and every citing sentence checked against the source. ---
+% checked 2026-10-08: NeurIPS 2017 proceedings record + PDF (vol. 30); p.2 self-attention relates positions of a sequence to compute its representation. Owner's citing sentence has 'contextualize' where 'contextualizes' is meant.
 @inproceedings{attention,
   author    = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and Kaiser, {\L}ukasz and Polosukhin, Illia},
   title     = {Attention Is All You Need},
@@ -609,9 +675,10 @@
 }
 % checked: NeurIPS 2017 proceedings listing (papers.nips.cc, hash 3f5ee243...); arXiv 1706.03762
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 2505.09388) and every citing sentence checked against the source. ---
 % checked: arXiv API id 2505.09388 (published 2025-05-14), "Qwen3 Technical Report", An Yang and 59 co-authors (Qwen Team);
 % supports: Qwen3 base models pretrained on 36T tokens in 119 languages including coding and STEM data; corpus contents not itemised.
+% checked 2026-10-08: 'pre-trained on 36 trillion tokens'; a stage on STEM and coding data (abstract, Sec. 3); corpus contents not released.
 @misc{yang2025qwen3,
   author        = {Yang, An and Li, Anfeng and Yang, Baosong and others},
   title         = {Qwen3 Technical Report},
@@ -623,8 +690,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1016/j.artint.2021.103649; arXiv 2012.13635) and every citing sentence checked against the source. ---
 % checked: arXiv 2012.13635 journal_ref + DOI 10.1016/j.artint.2021.103649 (Crossref): Artificial Intelligence 303, 103649 (2022).
+% checked 2026-10-08: Crossref DOI 10.1016/j.artint.2021.103649 (AIJ 303:103649, 2022) + arXiv v4 abstract: 'fully differentiable logical language, called Real Logic'.
 @article{badreddine2022ltn,
   author  = {Badreddine, Samy and d'Avila Garcez, Artur and Serafini, Luciano and Spranger, Michael},
   title   = {{Logic Tensor Networks}},
@@ -636,8 +704,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (papers.nips.cc; proceedings.neurips.cc; arXiv 1705.11040) and every citing sentence checked against the source. ---
 % checked: arXiv 1705.11040 (authors, title) and the NeurIPS 2017 proceedings listing (papers.nips.cc, hash b2ab0019...).
+% checked 2026-10-08: NeurIPS 2017 proceedings record + PDF (vol. 30); p.2 'we introduce Neural Theorem Provers (NTPs): End-to-end differentiable provers'.
 @inproceedings{rocktaschel2017ntp,
   author    = {Rockt{\"a}schel, Tim and Riedel, Sebastian},
   title     = {End-to-end Differentiable Proving},
@@ -647,8 +716,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1613/jair.5714; arXiv 1711.04574) and every citing sentence checked against the source. ---
 % checked: Crossref DOI 10.1613/jair.5714: Journal of Artificial Intelligence Research 61:1-64 (2018); arXiv 1711.04574.
+% checked 2026-10-08: Crossref DOI 10.1613/jair.5714 (JAIR 61:1-64, 2018) + arXiv v2 p.3: '∂ILP is a reimplementation of ILP in an end-to-end differentiable architecture'.
 @article{evans2018dilp,
   author  = {Evans, Richard and Grefenstette, Edward},
   title   = {Learning Explanatory Rules from Noisy Data},
@@ -660,8 +730,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (papers.nips.cc; proceedings.neurips.cc; arXiv 1805.10872) and every citing sentence checked against the source. ---
 % checked: arXiv 1805.10872 (comment: "Accepted for spotlight at NeurIPS 2018") and the NeurIPS 2018 proceedings listing (hash dc5d637e...).
+% checked 2026-10-08: NeurIPS 2018 proceedings record + PDF (vol. 31); abstract: 'a probabilistic logic programming language that incorporates deep learning by means of neural predicates'.
 @inproceedings{manhaeve2018deepproblog,
   author    = {Manhaeve, Robin and Duman{\v{c}}i{\'c}, Sebastijan and Kimmig, Angelika and Demeester, Thomas and De Raedt, Luc},
   title     = {{DeepProbLog}: Neural Probabilistic Logic Programming},
@@ -671,8 +742,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (arXiv 1904.12584; dblp.org (unreachable)) and every citing sentence checked against the source. ---
 % checked: arXiv 1904.12584 (comment: "ICLR 2019 (Oral)"); authors and title from the arXiv record.
+% checked 2026-10-08: arXiv 1904.12584 + PDF header (ICLR 2019); p.1: neural perception module + symbolic program executor run on object-level scene representations. OpenReview blocked.
 @inproceedings{mao2019nscl,
   author    = {Mao, Jiayuan and Gan, Chuang and Kohli, Pushmeet and Tenenbaum, Joshua B. and Wu, Jiajun},
   title     = {The {Neuro-Symbolic Concept Learner}: Interpreting Scenes, Words, and Sentences From Natural Supervision},
@@ -681,8 +753,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.18653/v1/2023.findings-emnlp.248; aclanthology.org; arXiv 2305.12295) and every citing sentence checked against the source. ---
 % checked: Crossref DOI 10.18653/v1/2023.findings-emnlp.248: Findings of EMNLP 2023, pp. 3806-3824; arXiv 2305.12295.
+% checked 2026-10-08: ACL Anthology PDF + Crossref (Findings EMNLP 2023, pp. 3806-3824, DOI ok); abstract: 'integrates LLMs with symbolic solvers'.
 @inproceedings{pan2023logiclm,
   author    = {Pan, Liangming and Albalak, Alon and Wang, Xinyi and Wang, William Yang},
   title     = {{Logic-LM}: Empowering Large Language Models with Symbolic Solvers for Faithful Logical Reasoning},
@@ -693,8 +766,9 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1038/s41586-023-06747-5; nature.com) and every citing sentence checked against the source. ---
 % checked: Crossref DOI 10.1038/s41586-023-06747-5: Nature 625(7995):476-482, January 2024.
+% checked 2026-10-08: Crossref + nature.com (Nature 625(7995):476-482, 2024). Abstract: neural language model (151M, from scratch) guides a symbolic deduction engine; not an LLM. Fixed: 'LLMs paired with' changed to 'language models paired with'.
 @article{trinh2024alphageometry,
   author  = {Trinh, Trieu H. and Wu, Yuhuai and Le, Quoc V. and He, He and Luong, Thang},
   title   = {Solving Olympiad Geometry without Human Demonstrations},
@@ -707,11 +781,12 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (github.com/openai/math README and GitHub API) and every citing sentence checked against the source. ---
 % checked: https://github.com/openai/math README and GitHub API (fetched 2026-10-07). Repo created 2026-10-06; no
 % repo description, README heading is "Readme". README: "mathematical manuscripts and supporting proof artifacts produced
 % by an internal OpenAI model"; "we evaluate our models on open research problems"; 722 manuscripts in 372 families;
 % "Many, but not all, of the manuscripts have been formalized" (Lean library under lean/).
+% checked 2026-10-08: Manuscripts on 'open research problems'; 'Many, but not all, of the manuscripts have been formalized' in Lean; repo created 2026-10-06.
 @misc{openai2026math,
   author       = {{OpenAI}},
   title        = {{openai/math}},
@@ -721,9 +796,10 @@
 }
 % --- AI-GENERATED REFERENCE (VERIFY) ---
 
-% --- AI-GENERATED REFERENCE (VERIFY) ---
+% --- AI-GENERATED REFERENCE, VERIFIED 2026-10-08: metadata (Crossref 10.1145/3569951.3597559) and every citing sentence checked against the source. ---
 % checked: fetched from doi.org (10.1145/3569951.3597559) on 2026-10-07; citation required by ACCESS
 % (https://access-ci.org/acknowledging-access/). AI-generated entry, cleaned from the DOI BibTeX.
+% checked 2026-10-08: Title + subtitle, 5 authors, PEARC '23 pp. 173-176; the citation access-ci.org/acknowledging-access requires; cited only in the commented-out Acknowledgments.
 @inproceedings{boerner2023access,
   author    = {Boerner, Timothy J. and Deems, Stephen and Furlani, Thomas R. and Knuth, Shelley L. and Towns, John},
   title     = {{ACCESS}: Advancing Innovation: {NSF}'s Advanced Cyberinfrastructure Coordination Ecosystem: Services \& Support},

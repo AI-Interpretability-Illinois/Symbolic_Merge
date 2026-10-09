@@ -122,7 +122,7 @@ Let $h_t\in\R^d$ be the residual stream of a causal language model at layer $\el
 Every symbol $s$ comes with pieces of information recorded in its own system, which we call its \emph{views} $v_1(s),\dots,v_m(s)$: the instances of a knowledge-graph class, the axioms an ontology term occurs in, or the sampled cell values of a table column.
 Each view is turned into part of input to the LLM, consisting of a \emph{context} $c_j(s)$, followed by the symbol itself (Figure~\ref{fig:pipeline}).
 The LLM reads each input in a forward pass to the target layer $\ell$, whose residual-stream states $\{h_t\}$ are handed to the SAE of that layer in the next step.
-Table~\ref{tab:benchmarks} in the appendix lists the views and templates of every dataset.
+Table~\ref{tab:benchmarks} lists the views and templates of every dataset.
 
 \paragraph{Sparse code.}
 Of each input only the states at the symbol's own token positions $T_j(s)$ are used, as the information from context has been extracted and added to those tokens via self-attention. When the whole text is the symbol---a program, a formal statement, or a table column written as its name and sampled values---$T_j(s)$ is every position.
@@ -161,12 +161,12 @@ The cosine decomposes exactly over coordinates of all features: $\cos(w(s),w(t))
 Six different kinds of symbolic systems were chosen to test the universal applicability of \method, where every run uses the full test data and the benchmark's own metric code where one exists.
 miniF2F \citep{zheng2022minif2f}: from the Lean~4 port \citep{yang2023minif2flean4} we retrieve each problem's statement in another prover among all statements of that prover, with names, proofs, comments and labels stripped so that nothing but the mathematics identifies a problem.
 XLCoST \citep{zhu2022xlcost}: the official protocol and evaluator (the pool contains the query's own row, a free first hit); MRR and Precision@6 averaged over the seven query languages.
-Valentine \citep{koutras2021valentine}: all 551 fabricated joinable and unionable pairs, scored with Valentine's F1 (one-to-one assignment) and MRR.
+Valentine \citep{koutras2021valentine}: all 551 joinable and unionable pairs, scored with Valentine's F1 (one-to-one assignment) and MRR.
 Common-KG \citep{fallatah2020gold}: 129 NELL--DBpedia reference pairs and 304 YAGO--Wikidata pairs; classes without instances match on their label alone.
 MultiFarm \citep{meilicke2012multifarm}: foreign-language terms against the English terms of a \emph{different} conference ontology, so that neither language nor ontology is shared.
 Bio-ML \citep{he2022bioml} and OAEI Anatomy \citep{bodenreider2005mice}: biomedical ontologies, NCIT $\to$ DOID on the Bio-ML validation split with its 100-candidate ranking protocol, and mouse $\to$ human anatomy against all 3,298 human classes; about half of their gold pairs have identical labels.
 The metric is MRR unless stated; Appendix~\ref{app:benchmarks} gives view formats.
-PubChem SMILES / IUPAC / InChI \citep{kim2023pubchem}, notations the model cannot read, are reported in Appendix~\ref{app:tasks}.
+PubChem SMILES / IUPAC / InChI \citep{kim2023pubchem}, notations the model cannot read, are in Appendix~\ref{app:tasks}.
 
 \subsection{Setup and baselines}
 \label{sec:baselines}
@@ -206,8 +206,8 @@ At the other extreme, XLCoST programs are translations between coding languages 
 Removing the first principal component from dense hidden states recovers some of the gap on ontology and knowledge-graph terms, whose dense vectors share a large common component, but makes no difference on code, formal statements and tables.
 Stronger controls (Appendix~\ref{app:controls})---top-36 PC removal, standardization, whitening, a dense analogue of idf---sharpen the picture.
 
-Even without any training on retrieval objectives, \method outperforms the dedicated multilingual retriever BGE-M3 on 10 of 15 rows (same views, same controls; Appendix~\ref{app:embed}), and against Qwen3-Embedding-8B, a retriever of the same scale as our backbone, it leads on code, YAGO $\to$ Wikidata, MultiFarm Arabic and Bio-ML while trailing on 8 rows, mainly formal mathematics (0.97--0.99 MRR), while it might be attributed to memorization from pretraining data: these datasets have been public in all four provers under matching names since 2021 \citep{zheng2022minif2f}, and Qwen3's 36T-token pretraining corpus includes code and STEM data whose contents are not disclosed \citep{yang2025qwen3}.
-More importantly, our approach is naturally aligned with the trend of scaling up LLMs and their SAEs: sparse dictionaries now reach tens of millions of features on frontier models \citep{templeton2024scaling, gao2025scaling} and are released for entire model families \citep{lieberum2024gemmascope, he2024llamascope}, and \method inherits every such release at no training cost.
+Even without any training on retrieval objectives, \method outperforms the dedicated multilingual retriever BGE-M3 on 10 of 15 rows (same views, same controls; Appendix~\ref{app:embed}), and against Qwen3-Embedding-8B, a retriever of the same scale as our backbone, it leads on code, YAGO $\to$ Wikidata, MultiFarm Arabic and Bio-ML while trailing on 8 rows, mainly formal mathematics (0.97--0.99 MRR), while it might be attributed to memorization from pretraining data: these datasets have been public under matching names since 2021 \citep{zheng2022minif2f}, in Lean~4 since 2023 \citep{yang2023minif2flean4}, and Qwen3's 36T-token pretraining corpus includes code and STEM data whose contents are not disclosed \citep{yang2025qwen3}.
+More importantly, our approach is naturally aligned with the trend of scaling up LLMs and their SAEs: sparse dictionaries now reach tens of millions of features on frontier models \citep{templeton2024scaling, gao2025scaling} and are released for every layer of open models \citep{lieberum2024gemmascope, he2024llamascope}, and \method inherits every such release at no training cost.
 The empirical result confirms the benefit of scaling up in symbolic matching tasks: for example, HOL Light MRR rises from 0.87 to 0.94 and Metamath from 0.65 to 0.74 across Gemma-2-2B, 9B and 27B (Section~\ref{sec:sweeps}), whereas a retriever is bounded by its training pairs and must be retrained at each size. \textcolor{red}{(This could be a point to be attacked by reviewers: why using SAE-IDF over dense retrievers; careful discussion needed.)}
 
 \section{Ablations and Analysis}
@@ -306,16 +306,16 @@ A doubtful match shows its reason: \texttt{src\_id} (Table~\ref{tab:cases}), amo
 \label{sec:related}
 
 \paragraph{Alignment within one kind of system.}
-Ontology matching has a long line of systems and a yearly evaluation (OAEI), from logic-based lexical matchers such as LogMap \citep{jimenezruiz2011logmap} to fine-tuned language models \citep{he2022bertmap} and LLM agents \citep{hertling2023olala, qiang2025agentom}; \citet{euzenat2013ontology} survey the field.
+Ontology matching has many systems and a yearly evaluation (OAEI), from logic-based lexical matchers such as LogMap \citep{jimenezruiz2011logmap} to fine-tuned language models \citep{he2022bertmap}, prompted LLMs \citep{hertling2023olala} and LLM agents \citep{qiang2025agentom}; \citet{euzenat2013ontology} survey the field.
 Schema matching \citep{rahm2001survey, koutras2021valentine}, embedding-based entity alignment, which learns from seed alignments \citep{sun2020benchmarking}, and cross-language code retrieval with pretrained code models \citep{feng2020codebert, guo2022unixcoder} each have their own methods and benchmarks; none runs unchanged on another kind of system (Section~\ref{sec:baselines}).
 
 \paragraph{Sparse autoencoders.}
 SAEs recover sparse, interpretable features from superposed activations \citep{elhage2022toy, bricken2023monosemanticity, cunningham2024sparse, templeton2024scaling, gao2025scaling}, are released as open suites \citep{lieberum2024gemmascope, he2024llamascope}, and give interpretable axes for semantic search when trained on text embeddings \citep{oneill2024disentangling}.
-Against doubts about their downstream use \citep{kantamneni2025sparse}, ours is a case in which they help, provided the code is rarity-weighted.
+Against doubts about their downstream use \citep{kantamneni2025sparse}, they help here once the code is rarity-weighted.
 
 \paragraph{Neuro-symbolic models.}
-Neuro-symbolic systems combine learned representations with explicit symbolic structure \citep{kautz2022third}: differentiable logic and proving (Logic Tensor Networks, \citealp{badreddine2022ltn}; neural theorem provers, \citealp{rocktaschel2017ntp}; NLProlog, \citealp{weber2019nlprolog}; $\partial$ILP, \citealp{evans2018dilp}), probabilistic logic programs over neural predicates (DeepProbLog, \citealp{manhaeve2018deepproblog}), symbolic programs run over neural scene parses (NS-CL, \citealp{mao2019nscl}), and LLMs paired with symbolic solvers or deduction engines (Logic-LM, \citealp{pan2023logiclm}; AlphaGeometry, \citealp{trinh2024alphageometry}).
-Each reasons inside formalisms chosen for its task; none aligns the symbols of independently built systems, the step a universal symbolic backbone for such models needs \citep{yang2026generative} and the one we address.
+Neuro-symbolic systems combine learned representations with explicit symbolic structure \citep{kautz2022third}: differentiable logic and proving (Logic Tensor Networks, \citealp{badreddine2022ltn}; neural theorem provers, \citealp{rocktaschel2017ntp}; NLProlog, \citealp{weber2019nlprolog}; $\partial$ILP, \citealp{evans2018dilp}), probabilistic logic programs over neural predicates (DeepProbLog, \citealp{manhaeve2018deepproblog}), symbolic programs run over neural scene parses (NS-CL, \citealp{mao2019nscl}), and language models paired with symbolic solvers or deduction engines (Logic-LM, \citealp{pan2023logiclm}; AlphaGeometry, \citealp{trinh2024alphageometry}).
+Each reasons inside formalisms chosen for its task; none aligns the symbols of independently built systems, the step a universal symbolic backbone needs \citep{yang2026generative} and the one we address.
 
 \section{Conclusion}
 \label{sec:conclusion}
