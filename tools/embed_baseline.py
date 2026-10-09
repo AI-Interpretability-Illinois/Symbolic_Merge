@@ -39,28 +39,39 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "xlcost"))
 from eval_xlcost_sae import calculate_scores, precison_atk  # noqa: E402
 
-M = Path("/projects/biro/xiaocong/main_table")
-DATA = Path("/projects/biro/xiaocong/data")
+import os
+M = Path(os.environ.get("SYMBOLIC_MERGE_MAIN_TABLE", "/projects/biro/xiaocong/main_table"))
+DATA = Path(os.environ.get("SYMBOLIC_MERGE_DATA", "/projects/biro/xiaocong/data"))
 
 
 # ----------------------------------------------------------------------------- embedding
 class Embedder:
-    def __init__(self, model_dir, device, max_length, batch_size):
+    """CLS pooling (BGE-M3) or last-token pooling with left padding (Qwen3-Embedding, e5-mistral style)."""
+
+    def __init__(self, model_dir, device, max_length, batch_size, pooling="cls", dtype="float16", instruction=""):
         from transformers import AutoModel, AutoTokenizer
         self.tok = AutoTokenizer.from_pretrained(model_dir)
-        self.model = AutoModel.from_pretrained(model_dir, torch_dtype=torch.float16).to(device).eval()
-        self.device, self.max_length, self.batch_size = device, max_length, batch_size
+        if pooling == "last":
+            self.tok.padding_side = "left"
+        self.model = AutoModel.from_pretrained(model_dir, torch_dtype=getattr(torch, dtype)).to(device).eval()
+        self.device, self.max_length, self.batch_size, self.pooling = device, max_length, batch_size, pooling
+        self.instruction = instruction
         self.cache = {}
+
+    def query(self, text):
+        """The query-side text: with the retrieval instruction if the model takes one (Qwen3-Embedding format)."""
+        return f"Instruct: {self.instruction}\nQuery: {text}" if self.instruction else text
 
     @torch.inference_mode()
     def __call__(self, texts):
-        """L2-normalised CLS embeddings, cached by text."""
+        """L2-normalised embeddings, cached by text."""
         todo = [t for t in dict.fromkeys(texts) if t not in self.cache]
         todo.sort(key=len)   # length-sorted batches waste less padding
         for i in range(0, len(todo), self.batch_size):
             chunk = todo[i:i + self.batch_size]
             enc = self.tok(chunk, padding=True, truncation=True, max_length=self.max_length, return_tensors="pt").to(self.device)
-            out = self.model(**enc).last_hidden_state[:, 0]
+            hs = self.model(**enc).last_hidden_state
+            out = hs[:, -1] if self.pooling == "last" else hs[:, 0]
             out = torch.nn.functional.normalize(out.float(), dim=-1).cpu().numpy()
             for t, v in zip(chunk, out):
                 self.cache[t] = v
@@ -88,7 +99,7 @@ def cos_matrix(q, c):
 # ----------------------------------------------------------------------------- XLCoST-format tasks
 def xlcost_task(emb, dataset_file, topk=100):
     rows = [json.loads(l) for l in open(dataset_file, encoding="utf-8") if l.strip()]
-    q_text = [" ".join(r["docstring_tokens"]) for r in rows]
+    q_text = [emb.query(" ".join(r["docstring_tokens"])) for r in rows]
     c_text = [" ".join(r.get("code_tokens") or r["function_tokens"]) for r in rows]
     Q, C = emb(q_text), emb(c_text)
     answers = {r["url"]: r["idx"] for r in rows}
@@ -119,7 +130,8 @@ def ontology_task(emb, store, queries_file):
     queries = json.loads(Path(queries_file).read_text(encoding="utf-8"))
     iris = sorted({q["src"] for q in queries} | {c for q in queries for c in q["candidates"]} | {q["gold"] for q in queries})
     iris = [i for i in iris if i in texts]
-    flat = [t for i in iris for t in texts[i]]
+    srcs = {q["src"] for q in queries}
+    flat = [emb.query(t) if i in srcs else t for i in iris for t in texts[i]]   # instruction on the source side only
     E = emb(flat)
     vec, k = {}, 0
     for i in iris:
@@ -160,9 +172,10 @@ def valentine_task(emb, run_dir, out_dir, metrics="dense,dense_centered,dense_pc
         p = torch.load(pf, map_location="cpu", weights_only=False)
         cols = p["source"]["columns"] + p["target"]["columns"]
         texts = []
-        for c in cols:
+        for k, c in enumerate(cols):
             vals = ast.literal_eval(c["values"]) if isinstance(c["values"], str) else list(c["values"])
-            texts.append(f"{c['table']}.{c['column']}: " + "; ".join(str(v) for v in vals))
+            text = f"{c['table']}.{c['column']}: " + "; ".join(str(v) for v in vals)
+            texts.append(emb.query(text) if k < len(p["source"]["columns"]) else text)
         E = emb(texts)
         for c, v in zip(cols, E):
             c["dense"] = torch.from_numpy(v.astype(np.float16))
@@ -199,9 +212,12 @@ def main():
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--max_length", type=int, default=1024)
     ap.add_argument("--batch_size", type=int, default=16)
+    ap.add_argument("--pooling", choices=("cls", "last"), default="cls", help="cls for BGE-M3; last (left padding) for Qwen3-Embedding")
+    ap.add_argument("--dtype", choices=("float16", "bfloat16", "float32"), default="float16")
+    ap.add_argument("--instruction", default="", help="retrieval instruction for the query side (Qwen3-Embedding 'Instruct: ...\\nQuery: ' format); empty = none")
     args = ap.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    emb = Embedder(args.model_dir, args.device, args.max_length, args.batch_size)
+    emb = Embedder(args.model_dir, args.device, args.max_length, args.batch_size, args.pooling, args.dtype, args.instruction)
     names = list(TASKS) if args.tasks == "all" else args.tasks.split(",")
     for name in names:
         out = args.output_dir / f"{name}.json"
@@ -214,7 +230,7 @@ def main():
             res = ontology_task(emb, spec[1], spec[2])
         else:
             res = valentine_task(emb, spec[1], args.output_dir / "valentine_run")
-        res.update(task=name, model=str(args.model_dir), max_length=args.max_length)
+        res.update(task=name, model=str(args.model_dir), max_length=args.max_length, pooling=args.pooling, instruction=args.instruction)
         out.write_text(json.dumps(res, indent=2))
         print(f"[{name}] n={res['n']} " + " ".join(f"{m}={v.get('MRR', v.get('MeanReciprocalRank', 0)):.4f}" for m, v in res["metrics"].items()) + f" ({time.time()-t0:.0f}s)", flush=True)
 

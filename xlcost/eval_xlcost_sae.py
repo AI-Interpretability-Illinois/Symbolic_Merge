@@ -414,6 +414,9 @@ def main():
     ap.add_argument("--stable_frequencies", default="0.05,0.10,0.25",
                     help="adds sae_stable_<f> metrics; views are TOKENS, so these "
                          "are much lower than the Bio-ML context thresholds")
+    ap.add_argument("--background_run", type=Path, default=None,
+                    help="another run whose candidate representations define the reference collection "
+                         "(idf, background rates) instead of this run's candidate pool, e.g. a held-out library")
     ap.add_argument("--background_unit", choices=("token", "document"), default="token",
                     help="token: p_bg = corpus tokens where the feature fires; "
                          "document: document frequency (IDF-like)")
@@ -463,7 +466,12 @@ def main():
         device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"scoring backend: {device}")
 
-    corpus, bg_total = background(candidates, args.background_unit, size)
+    bg_docs = candidates
+    if args.background_run is not None:
+        bg_docs = load_side(args.background_run, "candidate")
+        assert int(bg_docs[0]["sae"]["size"]) == size, "background run uses a different SAE width"
+        print(f"background from {args.background_run}: {len(bg_docs)} documents")
+    corpus, bg_total = background(bg_docs, args.background_unit, size)
     print(f"background: unit={args.background_unit} total={bg_total} "
           f"features_seen={int((corpus['p_bg'] > 0).sum())}")
 
@@ -481,6 +489,7 @@ def main():
         "queries": len(queries), "candidates": len(candidates),
         "answers_in_file": len(answers),
         "background_unit": args.background_unit, "topk": args.topk,
+        "background_run": str(args.background_run) if args.background_run else None,
         "scoring_backend": device,
         "exclude_self": args.exclude_self, "truncated_documents": trunc,
         "metrics": {},

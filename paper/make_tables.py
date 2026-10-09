@@ -48,7 +48,7 @@ spec = [
     ("Code (XLCoST, program level)", [
         ("7 languages, mean", "MRR$^\\dagger$", xl_mean),
         ("7 languages, mean", "P@6$^\\dagger$", xl6_mean)]),
-    ("Table schemas (Valentine, 551 pairs)", [
+    ("Table schemas (Valentine)", [
         ("source $\\to$ target columns", "F1", {m: val(pick("Valentine (551 pairs)", "F1Score"), m) for m in METHODS}),
         ("source $\\to$ target columns", "MRR", {m: val(pick("Valentine (551 pairs)", "MeanReciprocalRank"), m) for m in METHODS})]),
     ("Knowledge graphs (OAEI Common-KG)", [
@@ -58,6 +58,9 @@ spec = [
         ("Chinese $\\to$ English", "MRR", {m: val(pick("MultiFarm Chinese->English"), m) for m in METHODS}),
         ("Russian $\\to$ English", "MRR", {m: val(pick("MultiFarm Russian->English"), m) for m in METHODS}),
         ("Arabic $\\to$ English", "MRR", {m: val(pick("MultiFarm Arabic->English"), m) for m in METHODS})]),
+    ("Biomedical ontologies (Bio-ML, Anatomy)", [
+        ("NCIT $\\to$ DOID", "MRR", {m: val(pick("Bio-ML NCIT->DOID valid", "MRR", "appendix"), m) for m in METHODS}),
+        ("mouse $\\to$ human", "MRR", {m: val(pick("Anatomy mouse->human", "MRR", "appendix"), m) for m in METHODS})]),
 ]
 E = HERE.parent / "paper" / "data" / "embed_baseline.csv"
 EMB = {}
@@ -66,20 +69,62 @@ if E.exists():
         EMB[(r["task"], r["metric"])] = float(r["emb"])
 emb_key = {"Lean 4 $\\to$ Isabelle": "Lean 4 $\\to$ Isabelle", "Lean 4 $\\to$ Metamath": "Lean 4 $\\to$ Metamath", "Lean 4 $\\to$ HOL Light": "Lean 4 $\\to$ HOL Light",
            "7 languages, mean": "XLCoST, 7 languages", "source $\\to$ target columns": "Valentine columns", "NELL $\\to$ DBpedia": "NELL $\\to$ DBpedia",
-           "YAGO $\\to$ Wikidata": "YAGO $\\to$ Wikidata", "Chinese $\\to$ English": "MultiFarm zh $\\to$ en", "Russian $\\to$ English": "MultiFarm ru $\\to$ en", "Arabic $\\to$ English": "MultiFarm ar $\\to$ en"}
-METHODS_E = ["strings", "dense", "dense_pc1", "sae_mean", "sae_idf", "bge"]
-lines = [r"\begin{tabular}{@{}llrrrrrrr@{}}", r"\toprule",
-         r"Task & Metric & Strings & Dense & \makecell{Dense,\\PC1 rm.} & \makecell{SAE\\unweighted} & \textbf{SAE-IDF} & \makecell{BGE-M3\\retriever} & $\Delta$ dense \\",
+           "YAGO $\\to$ Wikidata": "YAGO $\\to$ Wikidata", "Chinese $\\to$ English": "MultiFarm zh $\\to$ en", "Russian $\\to$ English": "MultiFarm ru $\\to$ en", "Arabic $\\to$ English": "MultiFarm ar $\\to$ en",
+           "NCIT $\\to$ DOID": "Bio-ML valid", "mouse $\\to$ human": "Anatomy"}
+LLAMA = {}                                                   # second model family (collect_delta_results.py; Bio-ML/Anatomy from data/llama_appendix.csv)
+for fname, fields in (("llama_main.csv", ("llama_dense", "llama_pc1", "llama_idf")), ("llama_appendix.csv", ("dense", "dense_pc1", "sae_idf"))):
+    p = HERE.parent / "paper" / "data" / fname
+    if p.exists():
+        for r in csv.DictReader(open(p)):
+            LLAMA[(r["task"], r["metric"])] = dict(zip(("dense", "dense_pc1", "sae_idf"), (float(r[k]) for k in fields)))
+BLOCK = ["dense", "dense_pc1", "sae_idf"]
+lines = [r"\begin{tabular}{@{}llrrrrrrrrr@{}}", r"\toprule",
+         r" & & & \multicolumn{4}{c}{Gemma-2-9B (layer 20)} & \multicolumn{4}{c}{Llama-3.1-8B (layer 15)} \\",
+         r"\cmidrule(lr){4-7}\cmidrule(lr){8-11}",
+         r"Task & Metric & Strings & Dense & \makecell{Dense,\\PC1 rm.} & \textbf{SAE-IDF} & \textbf{$\boldsymbol{\Delta}$ dense}"
+         r" & Dense & \makecell{Dense,\\PC1 rm.} & \textbf{SAE-IDF} & \textbf{$\boldsymbol{\Delta}$ dense} \\",
          r"\midrule"]
 for group, items in spec:
-    lines.append(r"\multicolumn{9}{@{}l}{\textit{" + group + r"}} \\")
+    lines.append(r"\multicolumn{11}{@{}l}{\textit{" + group + r"}} \\")
     for name, metric, d in items:
-        delta = d["sae_idf"] - d["dense"]
         mkey = {"MRR": "MRR", "MRR$^\\dagger$": "MRR", "P@6$^\\dagger$": "P@6", "F1": "F1"}[metric]
-        d = dict(d); d["bge"] = EMB.get((emb_key[name], mkey))
-        lines.append(f"\\quad {name} & {metric} & " + " & ".join(cells(d, METHODS_E)) + f" & {delta:+.2f} \\\\")
+        ll = LLAMA.get((emb_key[name], mkey), {k: None for k in BLOCK})
+        st = d.get("strings")
+        def best(block):                                       # best per row within one model, Strings counted in both;
+            cand = {k: round(v, 3) for k, v in block.items() if v is not None}   # ties at the printed precision are all bold
+            if st is not None:
+                cand["strings"] = round(st, 3)
+            top = max(cand.values())
+            return {k for k, v in cand.items() if v == top}
+        bg, bl = best({k: d[k] for k in BLOCK}), best(ll)
+        neg = lambda x: f"{x:+.2f}".replace("-", r"$\boldsymbol{-}$")
+        row = [fmt(st, "strings" in (bg | bl))]
+        bdelta = lambda x: neg(x) if round(x, 2) < 0 else r"\textbf{" + neg(x) + "}"  # owner: bold only gains
+        row += [fmt(d[k], k in bg) for k in BLOCK] + [bdelta(d["sae_idf"] - d["dense"])]
+        row += [fmt(ll[k], k in bl) for k in BLOCK]
+        row += [bdelta(ll["sae_idf"] - ll["dense"]) if ll["sae_idf"] is not None else "--"]
+        lines.append(f"\\quad {name} & {metric} & " + " & ".join(row) + r" \\")
 lines += [r"\bottomrule", r"\end{tabular}"]
 write("tab_main.tex", "\n".join(lines) + "\n")
+
+# ---------------------------------------------------------------- ablation table (Section 4.1): the two ingredients
+RND = {}
+R = HERE.parent / "paper" / "data" / "random_dict.csv"
+if R.exists():
+    for r in csv.DictReader(open(R)):
+        RND[(r["task"], r["metric"])] = float(r["random_idf"]) if r["random_idf"] else None
+METHODS_A = ["random_idf", "sae_mean", "sae_idf"]            # Dense is in Table 1
+lines = [r"\begin{tabular}{@{}llrrr@{}}", r"\toprule",
+         r"Task & Metric & \makecell{Random\\+\,idf} & \makecell{SAE\\unweighted} & \textbf{SAE-IDF} \\",
+         r"\midrule"]
+for group, items in spec:
+    lines.append(r"\multicolumn{5}{@{}l}{\textit{" + group + r"}} \\")
+    for name, metric, d in items:
+        mkey = {"MRR": "MRR", "MRR$^\\dagger$": "MRR", "P@6$^\\dagger$": "P@6", "F1": "F1"}[metric]
+        d = dict(d); d["random_idf"] = RND.get((emb_key.get(name), mkey))
+        lines.append(f"\\quad {name} & {metric} & " + " & ".join(cells(d, METHODS_A)) + r" \\")
+lines += [r"\bottomrule", r"\end{tabular}"]
+write("tab_ablation_main.tex", "\n".join(lines) + "\n")
 
 # ---------------------------------------------------------------- appendix: XLCoST per language
 lang = {"Java": "Java", "Cpp": "C++", "Python": "Python", "Csharp": "C\\#", "Javascript": "JavaScript", "PHP": "PHP", "C": "C"}

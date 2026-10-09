@@ -1,4 +1,4 @@
-"""Figure 2: main results as a dot plot, one row per task, four methods."""
+"""Appendix figure: Gemma-2-9B main-table results as a dot plot, one row per task, four methods."""
 import csv
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -20,6 +20,8 @@ tasks = [  # (label, selector)
     ("MultiFarm zh → en", lambda r: r["task"] == "MultiFarm Chinese->English" and r["group"] == "main"),
     ("MultiFarm ru → en", lambda r: r["task"] == "MultiFarm Russian->English" and r["group"] == "main"),
     ("MultiFarm ar → en", lambda r: r["task"] == "MultiFarm Arabic->English" and r["group"] == "main"),
+    ("Bio-ML NCIT → DOID", lambda r: r["task"] == "Bio-ML NCIT->DOID valid" and r["group"] == "appendix"),
+    ("Anatomy mouse → human", lambda r: r["task"] == "Anatomy mouse->human" and r["group"] == "appendix"),
 ]
 methods = ["strings", "dense", "dense_pc1", "sae_idf"]
 data = []
@@ -31,7 +33,7 @@ for label, sel in tasks:
         r = next(r for r in rows if sel(r))
         data.append((label, {m: val(r, m) for m in methods}))
 
-fig, ax = plt.subplots(figsize=(S.COLUMN_IN, 3.0))
+fig, ax = plt.subplots(figsize=(S.COLUMN_IN, 3.5))
 ys = list(range(len(data)))[::-1]
 for y, (label, d) in zip(ys, data):
     ax.plot([d["dense"], d["sae_idf"]], [y, y], color=S.AXIS, lw=1.2, zorder=1, solid_capstyle="round")
@@ -42,7 +44,7 @@ for y, (label, d) in zip(ys, data):
 ax.set_yticks(ys); ax.set_yticklabels([t for t, _ in data])
 ax.set_xlim(0, 1.0); ax.set_xlabel("MRR (XLCoST: official MRR)")
 ax.grid(axis="y", visible=False)
-for y in (6.5, 4.5, 2.5):   # separators between kinds of system
+for y in (8.5, 6.5, 4.5, 1.5):   # separators between kinds of system
     ax.axhline(y, color=S.GRID, lw=0.6)
 handles = [plt.Line2D([], [], **S.marker(m, markersize=4.5), label=S.SERIES[m]["label"]) for m in methods]
 fig.legend(handles=handles, loc="lower center", ncol=2, columnspacing=1.2, handletextpad=0.3, bbox_to_anchor=(0.55, -0.005))

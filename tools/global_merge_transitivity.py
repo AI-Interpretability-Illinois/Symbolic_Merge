@@ -72,15 +72,34 @@ def load_symbols(run_dir, max_programs=0):
     return symbols
 
 
-def weight_matrix(docs, metric, corpus, size, eps, device):
-    """Row-normalised dense matrix of the weighted signatures."""
+def dense_pc1_stats(docs):
+    """Mean and first principal direction of the dense vectors of all merged symbols."""
+    x = np.stack([d["dense"].numpy().astype(np.float64) for d in docs])
+    mu = x.mean(0)
+    _, _, vt = np.linalg.svd(x - mu, full_matrices=False)
+    return mu, vt[0]
+
+
+def weight_matrix(docs, metric, corpus, size, eps, device, pc1=None):
+    """Row-normalised dense matrix of the weighted signatures.
+
+    dense      the averaged hidden state
+    dense_pc1  the same after subtracting the mean and removing the first principal direction
+               of all merged symbols, (I - u u^T)(d - mu), as for the Dense-PC1 baseline
+               (before 2026-10-06 this branch silently returned plain dense)"""
     import eval_xlcost_sae as E
+    if metric in ("dense", "dense_pc1"):
+        x = np.stack([d["dense"].numpy().astype(np.float64) for d in docs])
+        if metric == "dense_pc1":
+            mu, u = pc1
+            x = x - mu
+            x = x - np.outer(x @ u, u)
+        rows = torch.from_numpy(x.astype(np.float32)).to(device)
+        return rows / rows.norm(dim=1, keepdim=True).clamp_min(1e-12)
+    if metric.startswith("dense"):
+        raise ValueError(f"unknown dense variant {metric}")
     rows = torch.zeros((len(docs), size), dtype=torch.float32, device=device)
     for i, d in enumerate(docs):
-        if metric.startswith("dense"):
-            v = torch.from_numpy(d["dense"].numpy().astype(np.float32)).to(device)
-            rows[i, :v.numel()] = v
-            continue
         idx, w = E.doc_weights(d, metric, corpus, eps)
         keep = w > 0
         if keep.any():
@@ -159,13 +178,14 @@ def main():
     # Background for the corpus-derived weightings: every symbol we have.
     all_docs = list(symbols.values())
     corpus, _ = E.background(all_docs, "token", size)
+    pc1 = dense_pc1_stats(all_docs)
 
     report = {"symbols": len(symbols), "languages": {l: len(by_lang[l]) for l in langs},
               "metrics": {}}
     for metric in [m.strip() for m in args.metrics.split(",") if m.strip()]:
         progs = {l: sorted(by_lang[l]) for l in langs}
         mats = {l: weight_matrix([by_lang[l][p] for p in progs[l]], metric, corpus,
-                                 size, args.epsilon, args.device) for l in langs}
+                                 size, args.epsilon, args.device, pc1=pc1) for l in langs}
         index = {l: {p: i for i, p in enumerate(progs[l])} for l in langs}
 
         # pairwise mutual-top-1 accuracy, restricted to shared programs

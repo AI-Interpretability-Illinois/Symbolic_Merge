@@ -156,14 +156,18 @@ if lk:
 
 # ---------------------------------------------------------------- four-prover merge
 mg = M / "interpretability/minif2f_merge/merge_transitivity.json"
+mg_fix = M / "interpretability/minif2f_merge_pc1fix/merge_transitivity.json"   # Dense-PC1 recomputed after the 2026-10-06 fix
 if mg.exists():
     rep = json.load(open(mg))
-    lines = [r"\begin{tabular}{@{}lrrrrr@{}}", r"\toprule", r"Method & Mutual-top-1 precision & Coverage & Transitivity & Merge purity & ARI \\", r"\midrule"]
+    if mg_fix.exists():                         # global_merge_transitivity.py used plain dense for dense_pc1 before the fix
+        rep["metrics"]["dense_pc1"] = json.load(open(mg_fix))["metrics"]["dense_pc1"]
+    lines = [r"\begin{tabular}{@{}lrrrrrr@{}}", r"\toprule",
+             r"Method & \makecell{Mutual-top-1\\precision} & Coverage & \makecell{Transitivity\\(triples)} & \makecell{Merge\\purity} & ARI & \makecell{Components\\(489 true)} \\", r"\midrule"]
     for m, lab in (("dense", "Dense"), ("dense_pc1", "Dense$_{-\\mathrm{PC1}}$"), ("sae_mean", "SAE unweighted"), ("sae_idf", "\\textbf{SAE-IDF}")):
         r = rep["metrics"].get(m)
         if not r:
             continue
-        lines.append(f"{lab} & {fmt(r.get('mean_pair_precision'))} & {fmt(r.get('mean_pair_coverage'))} & {fmt(r.get('transitivity'))} & {fmt(r.get('merge_purity'))} & {fmt(r.get('merge_ari'))} \\\\")
+        lines.append(f"{lab} & {fmt(r.get('mean_pair_precision'))} & {fmt(r.get('mean_pair_coverage'))} & {fmt(r.get('transitivity'))} ({r.get('transitivity_triples'):,}) & {fmt(r.get('merge_purity'))} & {fmt(r.get('merge_ari'))} & {r.get('merge_components'):,} \\\\")
     lines += [r"\bottomrule", r"\end{tabular}"]
     (HERE / "tables" / "tab_prover_merge.tex").write_text("\n".join(lines) + "\n")
     print("prover merge:", json.dumps({m: {k: (v if not isinstance(v, dict) else {kk: vv for kk, vv in v.items() if kk in ('purity', 'ARI', 'ari', 'agreement', 'components')}) for k, v in r.items() if k != 'pairwise'} for m, r in rep["metrics"].items()}, default=str)[:900])

@@ -1,0 +1,26 @@
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Task & Metric & \makecell{Random\\+\,idf} & \makecell{SAE\\unweighted} & \textbf{SAE-IDF} \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Formal mathematics (miniF2F)}} \\
+\quad Lean 4 $\to$ Isabelle & MRR & 0.865 & 0.882 & \textbf{0.961} \\
+\quad Lean 4 $\to$ Metamath & MRR & 0.146 & 0.095 & \textbf{0.661} \\
+\quad Lean 4 $\to$ HOL Light & MRR & 0.349 & 0.493 & \textbf{0.898} \\
+\multicolumn{5}{@{}l}{\textit{Code (XLCoST, program level)}} \\
+\quad 7 languages, mean & MRR$^\dagger$ & 0.417 & 0.449 & \textbf{0.464} \\
+\quad 7 languages, mean & P@6$^\dagger$ & 0.627 & 0.673 & \textbf{0.732} \\
+\multicolumn{5}{@{}l}{\textit{Table schemas (Valentine)}} \\
+\quad source $\to$ target columns & F1 & 0.482 & 0.458 & \textbf{0.614} \\
+\quad source $\to$ target columns & MRR & 0.647 & 0.685 & \textbf{0.856} \\
+\multicolumn{5}{@{}l}{\textit{Knowledge graphs (OAEI Common-KG)}} \\
+\quad NELL $\to$ DBpedia & MRR & 0.901 & 0.938 & \textbf{0.976} \\
+\quad YAGO $\to$ Wikidata & MRR & 0.797 & 0.872 & \textbf{0.962} \\
+\multicolumn{5}{@{}l}{\textit{Cross-lingual ontologies (MultiFarm)}} \\
+\quad Chinese $\to$ English & MRR & 0.533 & 0.404 & \textbf{0.754} \\
+\quad Russian $\to$ English & MRR & 0.542 & 0.252 & \textbf{0.765} \\
+\quad Arabic $\to$ English & MRR & 0.425 & 0.225 & \textbf{0.722} \\
+\multicolumn{5}{@{}l}{\textit{Biomedical ontologies (Bio-ML, Anatomy)}} \\
+\quad NCIT $\to$ DOID & MRR & 0.692 & 0.696 & \textbf{0.817} \\
+\quad mouse $\to$ human & MRR & 0.788 & 0.801 & \textbf{0.886} \\
+\bottomrule
+\end{tabular}

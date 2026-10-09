@@ -1,0 +1,22 @@
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Task & Metric & BGE-M3 & BGE-M3 $-$PC1 & Qwen3-Emb-8B & Qwen3-Emb-8B $-$PC1 & \textbf{SAE-IDF} \\
+\midrule
+Lean 4 $\to$ Isabelle & MRR & 0.956 & 0.932 & 0.992 & \textbf{0.995} & 0.961 \\
+Lean 4 $\to$ Metamath & MRR & 0.819 & 0.583 & \textbf{0.972} & 0.970 & 0.661 \\
+Lean 4 $\to$ HOL Light & MRR & 0.967 & 0.967 & 0.975 & \textbf{0.981} & 0.898 \\
+XLCoST, 7 languages & MRR & 0.438 & 0.451 & 0.440 & 0.447 & \textbf{0.464} \\
+XLCoST, 7 languages & P@6 & 0.671 & 0.702 & 0.684 & 0.710 & \textbf{0.732} \\
+Valentine columns & F1 & \textbf{0.645} & 0.612 & 0.633 & 0.609 & 0.614 \\
+Valentine columns & MRR & \textbf{0.879} & 0.875 & 0.872 & 0.847 & 0.856 \\
+NELL $\to$ DBpedia & MRR & 0.983 & \textbf{0.984} & 0.973 & 0.975 & 0.976 \\
+YAGO $\to$ Wikidata & MRR & 0.910 & 0.958 & 0.923 & 0.957 & \textbf{0.962} \\
+MultiFarm zh $\to$ en & MRR & 0.716 & 0.743 & 0.795 & \textbf{0.809} & 0.754 \\
+MultiFarm ru $\to$ en & MRR & 0.718 & 0.726 & 0.780 & \textbf{0.782} & 0.765 \\
+MultiFarm ar $\to$ en & MRR & 0.670 & 0.701 & 0.690 & 0.681 & \textbf{0.722} \\
+\midrule
+Bio-ML valid & MRR & 0.611 & 0.611 & 0.739 & 0.720 & \textbf{0.817} \\
+Bio-ML train & MRR & 0.636 & 0.740 & 0.759 & 0.795 & \textbf{0.815} \\
+Anatomy & MRR & 0.789 & 0.853 & 0.896 & \textbf{0.925} & 0.886 \\
+\bottomrule
+\end{tabular}

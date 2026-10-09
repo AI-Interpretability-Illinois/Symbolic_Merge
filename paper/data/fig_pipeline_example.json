@@ -1,0 +1,749 @@
+{
+ "task": "Common-KG NELL -> DBpedia",
+ "source_system": "NELL",
+ "target_system": "DBpedia",
+ "n_docs_reference": 266,
+ "symbol": {
+  "label": "trainstation",
+  "n_views": 16,
+  "views": [
+   "Instance: td tr longview community college. Class: trainstation",
+   "Instance: albany college of pharmacy. Class: trainstation",
+   "Instance: baylor university. Class: trainstation",
+   "Instance: castellemare. Class: trainstation",
+   "Instance: college for lifelong learning concord. Class: trainstation",
+   "Instance: collin county community college pr. Class: trainstation",
+   "Instance: kingwood college. Class: trainstation",
+   "Instance: lewis clark college. Class: trainstation",
+   "Instance: long island university c w post. Class: trainstation",
+   "Instance: oakland community college southfield campus. Class: trainstation",
+   "Instance: rochester city. Class: trainstation",
+   "Instance: southwest missouri state university. Class: trainstation",
+   "Instance: southwest virginia community college. Class: trainstation",
+   "Instance: the university of texas southwest med ctr dallas. Class: trainstation",
+   "Instance: tyndale theological seminary. Class: trainstation",
+   "Instance: universal technical institute. Class: trainstation"
+  ],
+  "n_active": 914,
+  "top_unweighted": [
+   {
+    "feature": 124051,
+    "a": 40.375,
+    "w": 23.94610595703125,
+    "idf": null,
+    "df": 146,
+    "density": 0.43748,
+    "explanation": "open source software license text and copyright notices."
+   },
+   {
+    "feature": 106376,
+    "a": 33.5,
+    "w": 0.0,
+    "idf": null,
+    "df": 266,
+    "density": 0.98839,
+    "explanation": "sections of text related to mathematical or programming notation and expressions."
+   },
+   {
+    "feature": 70984,
+    "a": 16.546875,
+    "w": 65.75436401367188,
+    "idf": null,
+    "df": 4,
+    "density": 0.00052,
+    "explanation": "references to railroads and train systems"
+   },
+   {
+    "feature": 20668,
+    "a": 13.3671875,
+    "w": 0.0,
+    "idf": null,
+    "df": 266,
+    "density": 0.58431,
+    "explanation": "technical terms and syntax related to programming or software development"
+   },
+   {
+    "feature": 115744,
+    "a": 13.0546875,
+    "w": 63.85869598388672,
+    "idf": null,
+    "df": 1,
+    "density": 0.00018999999999999998,
+    "explanation": "words related to tracking or tracing"
+   },
+   {
+    "feature": 71811,
+    "a": 12.2734375,
+    "w": 42.99481964111328,
+    "idf": null,
+    "df": 7,
+    "density": 0.00015,
+    "explanation": "references to \"stations\" and \"stationery\" in various contexts"
+   },
+   {
+    "feature": 128570,
+    "a": 10.8203125,
+    "w": 21.33909797668457,
+    "idf": null,
+    "df": 36,
+    "density": 0.03872,
+    "explanation": "words with scientific or technical suffixes, particularly \"-ity\", \"-osis\", \"-ous\", and \"-ose\"."
+   },
+   {
+    "feature": 19972,
+    "a": 10.5546875,
+    "w": 31.850976943969727,
+    "idf": null,
+    "df": 12,
+    "density": 0.00477,
+    "explanation": "programming functions and methods related to data manipulation and validation"
+   }
+  ],
+  "top_weighted": [
+   {
+    "feature": 70984,
+    "a": 16.546875,
+    "w": 65.75436401367188,
+    "idf": null,
+    "df": 4,
+    "density": 0.00052,
+    "explanation": "references to railroads and train systems"
+   },
+   {
+    "feature": 115744,
+    "a": 13.0546875,
+    "w": 63.85869598388672,
+    "idf": null,
+    "df": 1,
+    "density": 0.00018999999999999998,
+    "explanation": "words related to tracking or tracing"
+   },
+   {
+    "feature": 71811,
+    "a": 12.2734375,
+    "w": 42.99481964111328,
+    "idf": null,
+    "df": 7,
+    "density": 0.00015,
+    "explanation": "references to \"stations\" and \"stationery\" in various contexts"
+   },
+   {
+    "feature": 103156,
+    "a": 8.359375,
+    "w": 40.88384246826172,
+    "idf": null,
+    "df": 1,
+    "density": 5e-05,
+    "explanation": "references to trains and their related terminology"
+   },
+   {
+    "feature": 122409,
+    "a": 8.2265625,
+    "w": 40.24628448486328,
+    "idf": null,
+    "df": 1,
+    "density": 3e-05,
+    "explanation": "occurrences of the word \"inst\" and its variations, likely in a programming or technical context"
+   },
+   {
+    "feature": 19972,
+    "a": 10.5546875,
+    "w": 31.850976943969727,
+    "idf": null,
+    "df": 12,
+    "density": 0.00477,
+    "explanation": "programming functions and methods related to data manipulation and validation"
+   },
+   {
+    "feature": 112644,
+    "a": 5.59375,
+    "w": 27.34583854675293,
+    "idf": null,
+    "df": 1,
+    "density": 0.00013,
+    "explanation": "terms related to training or instructional content"
+   },
+   {
+    "feature": 124051,
+    "a": 40.375,
+    "w": 23.94610595703125,
+    "idf": null,
+    "df": 146,
+    "density": 0.43748,
+    "explanation": "open source software license text and copyright notices."
+   }
+  ]
+ },
+ "gold_symbol": {
+  "label": "RailwayStation",
+  "n_views": 16,
+  "views": [
+   "Instance: Acheon Station. Class: RailwayStation",
+   "Instance: Aengnam Station. Class: RailwayStation",
+   "Instance: Ainosato-kōen Station. Class: RailwayStation",
+   "Instance: Bosan Station. Class: RailwayStation",
+   "Instance: Celerina Staz (Rhaetian Railway station). Class: RailwayStation",
+   "Instance: Dobong Station. Class: RailwayStation",
+   "Instance: Dobongsan Station. Class: RailwayStation",
+   "Instance: Kikusui Station. Class: RailwayStation",
+   "Instance: Mangwolsa Station. Class: RailwayStation",
+   "Instance: Redhills railway station. Class: RailwayStation",
+   "Instance: Seodaejeon Station. Class: RailwayStation",
+   "Instance: Seokgye Station. Class: RailwayStation",
+   "Instance: Shiroishi Station (Sapporo Municipal Subway). Class: RailwayStation",
+   "Instance: Uijeongbu Station. Class: RailwayStation",
+   "Instance: Wolgye Station. Class: RailwayStation",
+   "Instance: Zürich Binz railway station. Class: RailwayStation"
+  ],
+  "n_active": 624,
+  "top_unweighted": [
+   {
+    "feature": 116246,
+    "a": 53.8125,
+    "w": 0.20268385112285614,
+    "idf": null,
+    "df": 264,
+    "density": 0.48473999999999995,
+    "explanation": "numbers, dates, and numerical measurements, particularly in scientific or technical contexts."
+   },
+   {
+    "feature": 106376,
+    "a": 46.5,
+    "w": 0.0,
+    "idf": null,
+    "df": 266,
+    "density": 0.98839,
+    "explanation": "sections of text related to mathematical or programming notation and expressions."
+   },
+   {
+    "feature": 70984,
+    "a": 22.21875,
+    "w": 88.28308868408203,
+    "idf": null,
+    "df": 4,
+    "density": 0.00052,
+    "explanation": "references to railroads and train systems"
+   },
+   {
+    "feature": 77571,
+    "a": 21.03125,
+    "w": 13.806729316711426,
+    "idf": null,
+    "df": 137,
+    "density": 0.036469999999999995,
+    "explanation": "technical terms related to software development and data management"
+   },
+   {
+    "feature": 71811,
+    "a": 20.71875,
+    "w": 72.5996322631836,
+    "idf": null,
+    "df": 7,
+    "density": 0.00015,
+    "explanation": "references to \"stations\" and \"stationery\" in various contexts"
+   },
+   {
+    "feature": 20668,
+    "a": 20.09375,
+    "w": 0.0,
+    "idf": null,
+    "df": 266,
+    "density": 0.58431,
+    "explanation": "technical terms and syntax related to programming or software development"
+   },
+   {
+    "feature": 51330,
+    "a": 18.5,
+    "w": 2.2925918102264404,
+    "idf": null,
+    "df": 234,
+    "density": 0.35233,
+    "explanation": "objects and materials related to scientific experiments and laboratory equipment, particularly those involving fluids, particles, or microscopic samples."
+   },
+   {
+    "feature": 78573,
+    "a": 14.875,
+    "w": 72.74394226074219,
+    "idf": null,
+    "df": 1,
+    "density": 0.00023,
+    "explanation": "references to railway-related terms"
+   }
+  ],
+  "top_weighted": [
+   {
+    "feature": 70984,
+    "a": 22.21875,
+    "w": 88.28308868408203,
+    "idf": null,
+    "df": 4,
+    "density": 0.00052,
+    "explanation": "references to railroads and train systems"
+   },
+   {
+    "feature": 78573,
+    "a": 14.875,
+    "w": 72.74394226074219,
+    "idf": null,
+    "df": 1,
+    "density": 0.00023,
+    "explanation": "references to railway-related terms"
+   },
+   {
+    "feature": 71811,
+    "a": 20.71875,
+    "w": 72.5996322631836,
+    "idf": null,
+    "df": 7,
+    "density": 0.00015,
+    "explanation": "references to \"stations\" and \"stationery\" in various contexts"
+   },
+   {
+    "feature": 71943,
+    "a": 11.421875,
+    "w": 55.856956481933594,
+    "idf": null,
+    "df": 1,
+    "density": 0.00010999999999999999,
+    "explanation": "references to rail-related concepts and infrastructures"
+   },
+   {
+    "feature": 448,
+    "a": 7.30078125,
+    "w": 32.749725341796875,
+    "idf": null,
+    "df": 2,
+    "density": 0.00024,
+    "explanation": "references to railway stations and their characteristics"
+   },
+   {
+    "feature": 18086,
+    "a": 6.12109375,
+    "w": 27.452396392822266,
+    "idf": null,
+    "df": 2,
+    "density": 6e-05,
+    "explanation": "references to highways and road systems"
+   },
+   {
+    "feature": 102420,
+    "a": 7.2890625,
+    "w": 25.548118591308594,
+    "idf": null,
+    "df": 7,
+    "density": 0.00447,
+    "explanation": "topics related to psychological assessments and interventions"
+   },
+   {
+    "feature": 61963,
+    "a": 6.71875,
+    "w": 22.75151252746582,
+    "idf": null,
+    "df": 8,
+    "density": 0.00012,
+    "explanation": "mentions of newspapers"
+   }
+  ]
+ },
+ "match": {
+  "query": {
+   "label": "trainstation",
+   "views": [
+    "Instance: td tr longview community college. Class: trainstation",
+    "Instance: albany college of pharmacy. Class: trainstation",
+    "Instance: baylor university. Class: trainstation"
+   ],
+   "n_active": 914,
+   "top_weighted": [
+    {
+     "feature": 70984,
+     "a": 16.546875,
+     "w": 65.75436401367188,
+     "idf": null,
+     "df": 4,
+     "density": 0.00052,
+     "explanation": "references to railroads and train systems"
+    },
+    {
+     "feature": 115744,
+     "a": 13.0546875,
+     "w": 63.85869598388672,
+     "idf": null,
+     "df": 1,
+     "density": 0.00018999999999999998,
+     "explanation": "words related to tracking or tracing"
+    },
+    {
+     "feature": 71811,
+     "a": 12.2734375,
+     "w": 42.99481964111328,
+     "idf": null,
+     "df": 7,
+     "density": 0.00015,
+     "explanation": "references to \"stations\" and \"stationery\" in various contexts"
+    },
+    {
+     "feature": 103156,
+     "a": 8.359375,
+     "w": 40.88384246826172,
+     "idf": null,
+     "df": 1,
+     "density": 5e-05,
+     "explanation": "references to trains and their related terminology"
+    },
+    {
+     "feature": 122409,
+     "a": 8.2265625,
+     "w": 40.24628448486328,
+     "idf": null,
+     "df": 1,
+     "density": 3e-05,
+     "explanation": "occurrences of the word \"inst\" and its variations, likely in a programming or technical context"
+    },
+    {
+     "feature": 19972,
+     "a": 10.5546875,
+     "w": 31.850976943969727,
+     "idf": null,
+     "df": 12,
+     "density": 0.00477,
+     "explanation": "programming functions and methods related to data manipulation and validation"
+    },
+    {
+     "feature": 112644,
+     "a": 5.59375,
+     "w": 27.34583854675293,
+     "idf": null,
+     "df": 1,
+     "density": 0.00013,
+     "explanation": "terms related to training or instructional content"
+    },
+    {
+     "feature": 124051,
+     "a": 40.375,
+     "w": 23.94610595703125,
+     "idf": null,
+     "df": 146,
+     "density": 0.43748,
+     "explanation": "open source software license text and copyright notices."
+    }
+   ]
+  },
+  "n_candidates": 137,
+  "gold": {
+   "label": "RailwayStation",
+   "cos_idf": 0.37274809410614246,
+   "cos_dense": 0.7863480908279641,
+   "rank_idf": 1,
+   "rank_dense": 5,
+   "contributions": [
+    {
+     "feature": 70984,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 4,
+     "density": 0.00052,
+     "explanation": "references to railroads and train systems",
+     "c": 0.2250645108363518,
+     "w_query": 65.75436401367188,
+     "w_cand": 88.28308868408203
+    },
+    {
+     "feature": 71811,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 7,
+     "density": 0.00015,
+     "explanation": "references to \"stations\" and \"stationery\" in various contexts",
+     "c": 0.12101953275307668,
+     "w_query": 42.99481964111328,
+     "w_cand": 72.5996322631836
+    },
+    {
+     "feature": 48088,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 6,
+     "density": 0.00021999999999999998,
+     "explanation": "terms related to transportation hubs and routes",
+     "c": 0.011377113243880469,
+     "w_query": 18.099567413330078,
+     "w_cand": 16.21283531188965
+    },
+    {
+     "feature": 32879,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 76,
+     "density": 0.00223,
+     "explanation": "specific terminologies related to technology and media",
+     "c": 0.005196567929431698,
+     "w_query": 11.115754127502441,
+     "w_cand": 12.057930946350098
+    },
+    {
+     "feature": 448,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 2,
+     "density": 0.00024,
+     "explanation": "references to railway stations and their characteristics",
+     "c": 0.0016089072340771042,
+     "w_query": 1.2671220302581787,
+     "w_cand": 32.749725341796875
+    },
+    {
+     "feature": 85044,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 11,
+     "density": 0.00167,
+     "explanation": "references to various modes of transportation and their implications",
+     "c": 0.0010509266381251684,
+     "w_query": 15.169926643371582,
+     "w_cand": 1.7868331670761108
+    }
+   ]
+  },
+  "distractor": {
+   "label": "AutombileEngine",
+   "views": [
+    "Instance: 3-sphere. Class: AutombileEngine",
+    "Instance: Botulinum toxin. Class: AutombileEngine",
+    "Instance: Carboxybenzyl. Class: AutombileEngine"
+   ],
+   "cos_idf": 0.08067834102366798,
+   "cos_dense": 0.8164651178883097,
+   "rank_idf": 4,
+   "rank_dense": 1,
+   "contributions": [
+    {
+     "feature": 124051,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 146,
+     "density": 0.43748,
+     "explanation": "open source software license text and copyright notices.",
+     "c": 0.01976643631139734,
+     "w_query": 23.94610595703125,
+     "w_cand": 15.943221092224121
+    },
+    {
+     "feature": 128570,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 36,
+     "density": 0.03872,
+     "explanation": "words with scientific or technical suffixes, particularly \"-ity\", \"-osis\", \"-ous\", and \"-ose\".",
+     "c": 0.012735598646056662,
+     "w_query": 21.33909797668457,
+     "w_cand": 11.527255058288574
+    },
+    {
+     "feature": 7191,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 12,
+     "density": 0.09792999999999999,
+     "explanation": "medical and clinical terminology related to conditions and treatments",
+     "c": 0.007515168210392018,
+     "w_query": 7.460697174072266,
+     "w_cand": 19.45547866821289
+    },
+    {
+     "feature": 39625,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 37,
+     "density": 0.03165,
+     "explanation": "terms related to ecosystems and environmental sciences",
+     "c": 0.0068069091882809905,
+     "w_query": 14.239919662475586,
+     "w_cand": 9.232621192932129
+    },
+    {
+     "feature": 67846,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 6,
+     "density": 0.00306,
+     "explanation": "names of characters and places in fantasy or historical contexts",
+     "c": 0.005653812269140917,
+     "w_query": 9.799324989318848,
+     "w_cand": 11.143659591674805
+    },
+    {
+     "feature": 85044,
+     "a": null,
+     "w": null,
+     "idf": null,
+     "df": 11,
+     "density": 0.00167,
+     "explanation": "references to various modes of transportation and their implications",
+     "c": 0.004587526177906822,
+     "w_query": 15.169926643371582,
+     "w_cand": 5.840871810913086
+    }
+   ],
+   "top_weighted": [
+    {
+     "feature": 65630,
+     "a": 15.78125,
+     "w": 66.2493896484375,
+     "idf": null,
+     "df": 3,
+     "density": 0.00017,
+     "explanation": "references to automobiles and related terminology"
+    },
+    {
+     "feature": 116687,
+     "a": 11.265625,
+     "w": 50.525020599365234,
+     "idf": null,
+     "df": 2,
+     "density": 8e-05,
+     "explanation": "references to engines and engine-related concepts"
+    },
+    {
+     "feature": 9005,
+     "a": 14.15625,
+     "w": 46.45661163330078,
+     "idf": null,
+     "df": 9,
+     "density": 0.00095,
+     "explanation": "references to the automotive industry and related technologies"
+    },
+    {
+     "feature": 55494,
+     "a": 8.1171875,
+     "w": 25.145780563354492,
+     "idf": null,
+     "df": 11,
+     "density": 0.00101,
+     "explanation": "key terms related to various fields of study or specific subjects"
+    },
+    {
+     "feature": 78761,
+     "a": 5.609375,
+     "w": 23.53548240661621,
+     "idf": null,
+     "df": 3,
+     "density": 0.00016,
+     "explanation": "terms related to cars and automotive topics"
+    },
+    {
+     "feature": 95469,
+     "a": 4.96875,
+     "w": 22.28426742553711,
+     "idf": null,
+     "df": 2,
+     "density": 0.00027,
+     "explanation": "references to engines and their components"
+    },
+    {
+     "feature": 127342,
+     "a": 4.68359375,
+     "w": 19.66208839416504,
+     "idf": null,
+     "df": 3,
+     "density": 0.0004,
+     "explanation": "words or phrases related to calculations and numerical data in scientific contexts"
+    },
+    {
+     "feature": 36741,
+     "a": 4.0078125,
+     "w": 19.59960174560547,
+     "idf": null,
+     "df": 1,
+     "density": 0.00029,
+     "explanation": "references to megabytes or storage capacity in various contexts"
+    }
+   ]
+  },
+  "unweighted_contributions_gold": [
+   {
+    "feature": 106376,
+    "a": null,
+    "w": null,
+    "idf": null,
+    "df": 266,
+    "density": 0.98839,
+    "explanation": "sections of text related to mathematical or programming notation and expressions.",
+    "c": 0.2085832535413649,
+    "w_query": 33.5,
+    "w_cand": 46.5
+   },
+   {
+    "feature": 70984,
+    "a": null,
+    "w": null,
+    "idf": null,
+    "df": 4,
+    "density": 0.00052,
+    "explanation": "references to railroads and train systems",
+    "c": 0.049228577428732455,
+    "w_query": 16.546875,
+    "w_cand": 22.21875
+   },
+   {
+    "feature": 20668,
+    "a": null,
+    "w": null,
+    "idf": null,
+    "df": 266,
+    "density": 0.58431,
+    "explanation": "technical terms and syntax related to programming or software development",
+    "c": 0.03596521923496868,
+    "w_query": 13.3671875,
+    "w_cand": 20.09375
+   },
+   {
+    "feature": 71811,
+    "a": null,
+    "w": null,
+    "idf": null,
+    "df": 7,
+    "density": 0.00015,
+    "explanation": "references to \"stations\" and \"stationery\" in various contexts",
+    "c": 0.034049555201067505,
+    "w_query": 12.2734375,
+    "w_cand": 20.71875
+   },
+   {
+    "feature": 116246,
+    "a": null,
+    "w": null,
+    "idf": null,
+    "df": 264,
+    "density": 0.48473999999999995,
+    "explanation": "numbers, dates, and numerical measurements, particularly in scientific or technical contexts.",
+    "c": 0.03121450319294385,
+    "w_query": 4.33203125,
+    "w_cand": 53.8125
+   },
+   {
+    "feature": 51330,
+    "a": null,
+    "w": null,
+    "idf": null,
+    "df": 234,
+    "density": 0.35233,
+    "explanation": "objects and materials related to scientific experiments and laboratory equipment, particularly those involving fluids, particles, or microscopic samples.",
+    "c": 0.02256534546090506,
+    "w_query": 9.109375,
+    "w_cand": 18.5
+   }
+  ]
+ }
+}

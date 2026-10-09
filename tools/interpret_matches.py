@@ -151,9 +151,13 @@ def load_xlcost(task, rng, max_pairs):
     for run in task["runs"]:
         cfg = json.loads((run / "run_config.json").read_text())
         dataset = Path(cfg["dataset_file"])
-        if not dataset.is_file():  # runs made on a timan host record its local data path
-            dataset = Path(str(dataset).replace("/srv/local/xy51/symbolic_merge/data",
-                                                "/projects/biro/xiaocong/data"))
+        if not dataset.is_file():  # runs record the data path of the host they ran on; try the other host's
+            roots = ("/srv/local/xy51/symbolic_merge/data", "/projects/biro/xiaocong/data")
+            for a, b in (roots, roots[::-1]):
+                alt = Path(str(dataset).replace(a, b))
+                if alt.is_file():
+                    dataset = alt
+                    break
         rows = [json.loads(l) for l in open(dataset, encoding="utf-8")]
         q, c = E.load_side(run, "query"), E.load_side(run, "candidate")
         size = int(c[0]["sae"]["size"])
